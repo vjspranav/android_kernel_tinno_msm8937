@@ -1657,7 +1657,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	#endif 
 
 	//yangliang mask and add for p7201 linear hph20160729
-	#if defined(CONFIG_PROJECT_P7201)
+	#ifdef CONFIG_PROJECT_P7201
  	btn_low[0] = 100;
 	btn_high[0] = 100;
 	btn_low[1] = 250;

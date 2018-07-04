@@ -237,7 +237,7 @@ enum vdd_io_level {
 };
 
 // Added by zx 20170422 for recovery mode sdcar detect (start)	
-#if defined(CONFIG_PROJECT_P6901)
+#ifdef CONFIG_PROJECT_P6901
 static int not_recovery_mode = 0;
 static __init int recovery_mode_setup(char *s)
 {

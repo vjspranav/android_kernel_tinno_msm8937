@@ -58,7 +58,7 @@ static void scm_disable_sdi(void);
 //zenghaihui forbid download mode for 7201 DCC
 #ifdef __BUILD_TYPE_USER__
 
-#if defined(CONFIG_PROJECT_P7201)
+#ifdef CONFIG_PROJECT_P7201
 static int download_mode = 0;
 #else
 static int download_mode = 1;

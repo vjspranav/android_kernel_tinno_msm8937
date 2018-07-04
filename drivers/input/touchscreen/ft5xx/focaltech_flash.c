@@ -3199,7 +3199,7 @@ int save_ft5xx_tp_info(int product_id, char *config_id, int id)
 {
 	char buf[80];
        char ic_name[16];
-	#if defined(CONFIG_PROJECT_P7201)	   
+	#ifdef CONFIG_PROJECT_P7201	   
          if ((id==0x54))
 	{
 		sprintf(ic_name, "FT%d3%d",5,46);
