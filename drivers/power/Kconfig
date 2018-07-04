@@ -628,12 +628,6 @@ config MSM_BCL_PERIPHERAL_CTL
 
 source "drivers/power/reset/Kconfig"
 
-config TNMB_SPECIAL_BATSOC
-	bool "special battery soc"
-	default n
-	help
-	  Say Y here to enable special battery soc function.
-
 #yixuhong 20170306 add compile options for smaft charging control
 config SMART_CHARGING_CONTROL
 	bool "smart charing"

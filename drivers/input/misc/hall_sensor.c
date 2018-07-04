@@ -53,9 +53,6 @@ struct switch_dev hall_sensor_data = {
 //LINE<JIRA_ID><DATE20160330><BUG_INFO>zenghaihui
 static int g_hall_state = 0;
 //const int keycode = KEY_MEDIA;
-#ifdef 	CONFIG_PROJECT_I9051
-	extern int smart_cover_switch(bool onoff);
-#endif /*CONFIG_PROJECT_I9051*/
 
 static  void sendevent(int status ,struct input_dev *dev_input)
 {
@@ -83,9 +80,6 @@ static  void sendevent(int status ,struct input_dev *dev_input)
         //LINE<JIRA_ID><DATE20160330><BUG_INFO>zenghaihui
         g_hall_state = 0; // (0:cover;1:open)
     }
-#ifdef 	CONFIG_PROJECT_I9051
-	smart_cover_switch(!(bool)g_hall_state);
-#endif /*CONFIG_PROJECT_I9051*/
     input_sync(dev_input);	
 }
 

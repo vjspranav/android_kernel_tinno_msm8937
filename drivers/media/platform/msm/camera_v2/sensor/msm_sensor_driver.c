@@ -1076,48 +1076,6 @@ static int32_t msm_sensor_driver_get_dt_data(struct msm_sensor_ctrl_t *s_ctrl)
 		sensordata->sensor_info->modes_supported = CAMERA_MODE_INVALID;
 	}
 	/* Get vdd-cx regulator */
-	//BEGIN<20170225>liaoshuang add for mipi switch
-#if 0//defined(CONFIG_GPIO_CONTRAL_MIPI_SWITCH)
-	mipi_switch_gpio_oe = of_get_named_gpio(of_node,
-			"qcom,mipi_switch_gpio_oe", 0);
-	if (gpio_is_valid(mipi_switch_gpio_oe)) { 
-		rc = gpio_request(mipi_switch_gpio_oe,
-				"mipi_switch_gpio_oe");
-		if (rc) {
-			pr_err("mipi_switch_gpio_oe request fail \n");
-			gpio_free(mipi_switch_gpio_oe);
-			//return -EINVAL;
-		}
-
-		rc = gpio_direction_output(mipi_switch_gpio_oe, 1);
-		if (rc) {
-			pr_err("mipi_switch_gpio_oe set dir fail \n");
-			gpio_free(mipi_switch_gpio_oe);
-			//return -EINVAL;
-		}
-		gpio_set_value(mipi_switch_gpio_oe, 0);
-	}
-	mipi_switch_gpio_sel = of_get_named_gpio(of_node,
-			"qcom,mipi_switch_gpio_sel", 0);
-	if (gpio_is_valid(mipi_switch_gpio_sel)) { 
-		rc = gpio_request(mipi_switch_gpio_sel,
-				"mipi_switch_gpio_sel");
-		if (rc) {
-			pr_err("mipi_switch_gpio_sel request fail \n");
-			gpio_free(mipi_switch_gpio_sel);
-			//return -EINVAL;
-		}
-
-		rc = gpio_direction_output(mipi_switch_gpio_sel, 1);
-		if (rc) {
-			pr_err("mipi_switch_gpio_sel set dir fail \n");
-			gpio_free(mipi_switch_gpio_sel);
-			//return -EINVAL;
-		}
-		gpio_set_value(mipi_switch_gpio_sel, 0);
-	}
-#endif
-     //END<20170225>liaoshuang add for mipi switch
 	/*Optional property, don't return error if absent */
 	of_property_read_string(of_node, "qcom,vdd-cx-name",
 		&sensordata->misc_regulator);

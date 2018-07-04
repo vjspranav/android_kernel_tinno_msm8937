@@ -1248,16 +1248,10 @@ static int synaptics_rmi4_f11_abs_report(struct synaptics_rmi4_data *rmi4_data,
                              sizeof(charstatus));
         	   if (retval < 0)
                     return 0;
-        	   
-        	#ifdef CONFIG_S2333_IC
-        	   dev_dbg(&rmi4_data->i2c_client->dev,
-					"charstatus [2] is %d",charstatus[2]);
-        	   switch (charstatus[2])
-        	#else
+
         		dev_dbg(&rmi4_data->i2c_client->dev,
 					"charstatus [6] is %d",charstatus[6]);
         	   switch (charstatus[6])
-        	#endif
     		{
                     case 0x63:
                         gTGesture ='c';
@@ -4836,11 +4830,6 @@ static int synaptics_rmi4_resume(struct device *dev)
 		dev_info(dev, "Already in awake state\n");
 		return 0;
 	}
-//Begin <release all touches><20160614>;xiongdajun
-       #if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705)
-    	synaptics_rmi4_release_all(rmi4_data);
-	#endif
-//END <release all touches><20160614>;xiongdajun
     //Begin<REQ><><20150902>Add WAKEUP_GESTURE for synaptics;xiongdajun
       #ifdef CONFIG_SYNA_TGESTURE_FUNCTION
         if (rmi4_data->enable_wakeup_gesture&&bEnTGesture) {

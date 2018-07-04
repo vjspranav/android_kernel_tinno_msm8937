@@ -8611,12 +8611,6 @@ static int smbchg_probe(struct spmi_device *spmi)
 			goto unregister_led_class;
 		}
 	}
-#ifdef CONFIG_PROJECT_I9051
-	else
-	{//yixuhong 20170104 add,disable pmic charging leds
-		smbchg_masked_write(chip,chip->bat_if_base + CMD_CHG_LED_REG,CHG_LED_CTRL_BIT | LED_BLINKING_CFG_MASK, 0x1);
-	}
-#endif /*CONFIG_PROJECT_I9051*/
 
 	rc = smbchg_request_irqs(chip);
 	if (rc < 0) {

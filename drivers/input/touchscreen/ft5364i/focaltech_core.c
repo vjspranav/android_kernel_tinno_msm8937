@@ -147,16 +147,6 @@ extern int bEnTGesture;
 static unsigned int buf_count_add=0;
 static unsigned int buf_count_neg=0;
 
-#if defined(CONFIG_PROJECT_P7601)
-u8 key_value=0;
-u8 key_flag=0;
-
-#define KEY_BACK  158 
-#define KEY_HOMEPAGE  172
-#define KEY_MENU  139	
-
-#endif
-
 u8 buf_touch_data[30*POINT_READ_BUF] = { 0 };
 
 #ifdef CONFIG_TOUCHSCREEN_FTS_PSENSOR
@@ -589,31 +579,6 @@ static void fts_report_value(struct fts_ts_data *data)
 		{
 			input_mt_report_slot_state(data->input_dev, MT_TOOL_FINGER, true);
 
-#if defined(CONFIG_PROJECT_P7601)
-			if(event->au16_y[i] > 2100) // = 2120
-			{
-				key_flag=1;
-				if (event->au16_x[i] == 300)
-				{
-					key_value = KEY_BACK;
-					input_report_key(data->input_dev, KEY_BACK, 1);
-				}
-				else if(event->au16_x[i] == 600)
-				{
-					key_value = KEY_HOMEPAGE ;
-					input_report_key(data->input_dev, KEY_HOMEPAGE, 1);
-					
-				}
-				else  if(event->au16_x[i] == 900)
-				{
-					key_value = KEY_MENU ;
-					input_report_key(data->input_dev, KEY_MENU, 1);
-					
-				}else printk("geroge ---button err -------\n");
-			}
-		else
-#endif
-
         	 {
 
 			input_report_abs(data->input_dev, ABS_MT_TOUCH_MAJOR, event->area[i]);
@@ -647,28 +612,13 @@ static void fts_report_value(struct fts_ts_data *data)
 	}
 	data->touchs = touchs;
 	if(event->touch_point == uppoint)
-	{
-#if defined(CONFIG_PROJECT_P7601)	
-		if(key_value != 0)
-		{
-			input_report_key(data->input_dev, key_value, 0);
-			key_value = 0; 
-		}
-		else
-#endif			
+	{		
 		{
 		input_report_key(data->input_dev, BTN_TOUCH, 0);
 		}
 	}
 	else
-	{
-#if defined(CONFIG_PROJECT_P7601)		
-		if(key_flag != 0)
-		{
-			key_flag=0;
-		}
-		else
-#endif	
+	{	
 		{
 		input_report_key(data->input_dev, BTN_TOUCH, event->touch_point > 0);
 	}
@@ -1032,7 +982,7 @@ static int fts_ts_stop(struct device *dev)
 	input_mt_report_pointer_emulation(data->input_dev, false);
 	input_sync(data->input_dev);
       //Begin<20160617><modify for curent when close gesture>;xiongdajun
-       #if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7203)||defined(CONFIG_PROJECT_P6901)
+       #ifdef CONFIG_PROJECT_P6901
         //if (!gpio_is_valid(data->pdata->reset_gpio)) {
 		txbuf[0] = FTS_REG_PMODE;
 		txbuf[1] = FTS_PMODE_HIBERNATE;
@@ -1217,29 +1167,12 @@ if (bEnTGesture) {
 int fts_ts_resume(struct device *dev)
 {
 	int err;
-       //Begin <release all touches><20160614>;xiongdajun
-       #if defined(CONFIG_PROJECT_P7701)
-       int i;
-       #endif
-       //END <release all touches><20160614>;xiongdajun
 	struct fts_ts_data *data = dev_get_drvdata(dev);
 
 	if (!data->suspended) {
 		dev_dbg(dev, "Already in awake state\n");
 		return 0;
 	}
-    //Begin <release all touches><20160614>;xiongdajun
-    #if defined(CONFIG_PROJECT_P7701)
-      /* release all touches */
-         for (i = 0; i < data->pdata->num_max_touches; i++)
-         {
-                   input_mt_slot(data->input_dev, i);
-                   input_mt_report_slot_state(data->input_dev, MT_TOOL_FINGER, 0);
-         }
-         input_mt_report_pointer_emulation(data->input_dev, false);
-         input_sync(data->input_dev);
-     #endif
-     //End <release all touches><20160614>;xiongdajun
 //Begin<REQ><><20150910>Add WAKEUP_GESTURE for ft5xx;xiongdajun
 #ifdef CONFIG_FT5XX_TGESTURE_FUNCTION
 #if FTS_GESTRUE_EN
@@ -1902,11 +1835,6 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
 	__set_bit(EV_KEY, input_dev->evbit);
 	__set_bit(EV_ABS, input_dev->evbit);
 	__set_bit(BTN_TOUCH, input_dev->keybit);
-#if defined(CONFIG_PROJECT_P7601)
-	__set_bit(KEY_HOMEPAGE, input_dev->keybit);  
-	__set_bit(KEY_BACK, input_dev->keybit);  
-	__set_bit(KEY_MENU, input_dev->keybit); 
-#endif
 	__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
 
 	input_mt_init_slots(input_dev, pdata->num_max_touches,0);

@@ -532,15 +532,7 @@ static int32_t msm_flash_low(
 			}
 			CDBG("low_flash_current[%d] = %d", i, curr);
                 //begin xiongdajun add front/near flash
-                    #if defined (CONFIG_LEDS_MSM_GPIO_DUAL_FLASH)
-                      if((msm_sensor_is_front_camera()||flash_data->camera_id == 1))//LINE<20160601>wangyanhui add for cts test
-    			    led_trigger_event(flash_ctrl->torch_trigger[1],
-    				curr);
-                        else
-                            led_trigger_event(flash_ctrl->torch_trigger[0],
-    				curr);
-			//BEGIN<20160601>wangyanhui add for front flash 			
-			#elif defined(CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH)
+                    #ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 
 	                      if((msm_sensor_is_front_camera()||flash_data->camera_id == 1))
 	    			    led_trigger_event(flash_ctrl->torch_trigger[2],
@@ -590,15 +582,7 @@ static int32_t msm_flash_high(
 			}
 			CDBG("high_flash_current[%d] = %d", i, curr);
                     //begin xiongdajun add front/near flash
-                    #if defined CONFIG_LEDS_MSM_GPIO_DUAL_FLASH
-                        if((msm_sensor_is_front_camera()|| flash_data->camera_id == 1))//LINE<20160601>wangyanhui add for cts test
-            			led_trigger_event(flash_ctrl->flash_trigger[1],
-            				curr);
-                        else
-                                led_trigger_event(flash_ctrl->flash_trigger[0],
-            				curr);
-			//BEGIN<20160601>wangyanhui add for front flash 			
-			#elif defined(CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH)
+                    #ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
                         if((msm_sensor_is_front_camera()|| flash_data->camera_id == 1))
             			led_trigger_event(flash_ctrl->flash_trigger[2],
             				curr);
@@ -968,8 +952,7 @@ static int32_t msm_flash_get_dt_data(struct device_node *of_node,
 		return rc;
 	}
 
-#if (defined CONFIG_PROJECT_P7701)||(defined CONFIG_PROJECT_P7705)||(defined CONFIG_PROJECT_P7201)||(defined CONFIG_PROJECT_P7203) ||(defined CONFIG_PROJECT_V3941) //MYOSC-710.前后闪光灯都设置为长亮，切换前后置摄像头，有时前置闪光灯不亮.wupingzhou,20160611.
-#else
+#ifndef CONFIG_PROJECT_P7201
 	if (fctrl->flash_driver_type == FLASH_DRIVER_DEFAULT)
 		fctrl->flash_driver_type = FLASH_DRIVER_GPIO;
 #endif

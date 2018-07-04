@@ -601,12 +601,6 @@ config TINNO_DEV_INFO
    	 This option enables support tinno dev info.
 # TINNO END
 
-#add for aux camera info by lhm 2017-0608
-config CAMERA_AUX_INFO
-   tristate "add aux camera info"
-   help
-    This option enables supportadd camera aux info.
-#end by lhm
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"

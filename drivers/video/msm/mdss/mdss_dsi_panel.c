@@ -225,7 +225,7 @@ static int mdss_dsi_request_gpios(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 	int rc = 0;
 
 //BEGIN<20160622><sharp lcd  power timing>wangyanhui 
-#if (!defined(CONFIG_PROJECT_P7201) && !defined(CONFIG_PROJECT_P7203) && !defined(CONFIG_PROJECT_I9051) && !defined(CONFIG_PROJECT_P6901) && !defined(CONFIG_PROJECT_P7601) && !defined(CONFIG_PROJECT_V3941) )
+#if (!defined(CONFIG_PROJECT_P7201) && !defined(CONFIG_PROJECT_P6901))
 	if (gpio_is_valid(ctrl_pdata->disp_en_gpio)) {
 		rc = gpio_request(ctrl_pdata->disp_en_gpio,
 						"disp_enable");
@@ -271,7 +271,7 @@ rst_gpio_err:
 	if (gpio_is_valid(ctrl_pdata->disp_en_gpio))
 		gpio_free(ctrl_pdata->disp_en_gpio);
 
-#if (!defined(CONFIG_PROJECT_P7201) && !defined(CONFIG_PROJECT_P7203) && !defined(CONFIG_PROJECT_I9051) && !defined(CONFIG_PROJECT_P6901) && !defined(CONFIG_PROJECT_P7601) && !defined(CONFIG_PROJECT_V3941))	//LINE<20160622><sharp lcd  power timing>wangyanhui 
+#if (!defined(CONFIG_PROJECT_P7201) && !defined(CONFIG_PROJECT_P6901)) //LINE<20160622><sharp lcd  power timing>wangyanhui 
 disp_en_gpio_err:
 #endif
 	return rc;
@@ -322,7 +322,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 		if (!pinfo->cont_splash_enabled) {
 
 		//BEGIN<20160622><sharp lcd  power timing>wangyanhui 
-		#if (!defined(CONFIG_PROJECT_P7201) && !defined(CONFIG_PROJECT_P7203) && !defined(CONFIG_PROJECT_I9051) && !defined(CONFIG_PROJECT_P6901)&& !defined(CONFIG_PROJECT_P7601) && !defined(CONFIG_PROJECT_V3941))	
+		#if (!defined(CONFIG_PROJECT_P7201) && !defined(CONFIG_PROJECT_P6901))	
 			if (gpio_is_valid(ctrl_pdata->disp_en_gpio)) {
 				rc = gpio_direction_output(
 					ctrl_pdata->disp_en_gpio, 1);
@@ -389,7 +389,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 			gpio_free(ctrl_pdata->bklt_en_gpio);
 		}
 	//BEGIN<20160622><sharp lcd  power timing>wangyanhui 
-	#if (!defined(CONFIG_PROJECT_P7201) && !defined(CONFIG_PROJECT_P7203) && !defined(CONFIG_PROJECT_I9051) && !defined(CONFIG_PROJECT_P6901)&& !defined(CONFIG_PROJECT_P7601) && !defined(CONFIG_PROJECT_V3941))	
+	#if (!defined(CONFIG_PROJECT_P7201) && && !defined(CONFIG_PROJECT_P6901))	
 		if (gpio_is_valid(ctrl_pdata->disp_en_gpio)) {
 			gpio_set_value((ctrl_pdata->disp_en_gpio), 0);
 			gpio_free(ctrl_pdata->disp_en_gpio);
@@ -2658,7 +2658,7 @@ int mdss_dsi_panel_init(struct device_node *node,
 }
 
 //BEGIN<20160622><sharp lcd  power timing>wangyanhui 
-#if defined(CONFIG_PROJECT_P7201) ||defined(CONFIG_PROJECT_P7203) || defined(CONFIG_PROJECT_I9051) || defined(CONFIG_PROJECT_P6901)|| defined(CONFIG_PROJECT_P7601)|| defined(CONFIG_PROJECT_V3941)
+#if defined(CONFIG_PROJECT_P7201) || defined(CONFIG_PROJECT_P6901)
 int mdss_dsi_panel_disp_en_gpio(struct mdss_panel_data *pdata, int enable)
 {
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
@@ -2725,118 +2725,6 @@ int mdss_dsi_panel_disp_en_gpio(struct mdss_panel_data *pdata, int enable)
 		}
 	}
 
-exit:
-	return rc;
-}
-#endif
-
-#if defined(CONFIG_PROJECT_I9051)
-int mdss_dsi_panel_vddi_vci_en_gpio(struct mdss_panel_data *pdata, int power_source,int enable)
-{
-	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
-	struct mdss_panel_info *pinfo = NULL;
-	int  rc = 0;
-
-	if (pdata == NULL) {
-		pr_err("%s: Invalid input data\n", __func__);
-		return -EINVAL;
-	}
-
-	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
-				panel_data);
-
-	pinfo = &(ctrl_pdata->panel_data.panel_info);
-	if ((mdss_dsi_is_right_ctrl(ctrl_pdata) &&
-		mdss_dsi_is_hw_config_split(ctrl_pdata->shared_data)) ||
-			pinfo->is_dba_panel) {
-		pr_debug("%s:%d, right ctrl gpio configuration not needed\n",
-			__func__, __LINE__);
-		return rc;
-	}
-
-	if( (!gpio_is_valid(ctrl_pdata->disp_en_gpio))  || (!gpio_is_valid(ctrl_pdata->vddi_en_gpio))){
-		pr_debug("%s:%d, reset line not configured\n",
-			   __func__, __LINE__);
-	}
-
-	pr_debug("%s: power_source = %d,enable = %d\n", __func__,power_source, enable);
-
-	if (power_source){ 	//vddi 1.8v
-		if (enable) {
-		if (gpio_is_valid(ctrl_pdata->vddi_en_gpio)) {
-			rc = gpio_request(ctrl_pdata->vddi_en_gpio,
-							"vddi_enable");
-			if (rc) {
-				pr_err("request vddi_en gpio failed, rc=%d\n",
-					       rc);
-				return rc;
-			}
-		}
-		
-		if (!pinfo->cont_splash_enabled) {
-			if (gpio_is_valid(ctrl_pdata->vddi_en_gpio)) {
-				rc = gpio_direction_output(
-					ctrl_pdata->vddi_en_gpio, 1);
-				if (rc) {
-					pr_err("%s: unable to set dir for en gpio\n",
-						__func__);
-					goto exit;
-				}
-			}
-		}
-
-		if (ctrl_pdata->ctrl_state & CTRL_STATE_PANEL_INIT) {
-			pr_debug("%s: Panel Not properly turned OFF\n",
-						__func__);
-			ctrl_pdata->ctrl_state &= ~CTRL_STATE_PANEL_INIT;
-			pr_debug("%s: Reset panel done\n", __func__);
-		}
-	} else {
-		if (gpio_is_valid(ctrl_pdata->vddi_en_gpio)) {
-			gpio_set_value((ctrl_pdata->vddi_en_gpio), 0);
-			gpio_free(ctrl_pdata->vddi_en_gpio);
-		}
-	}
-	
-}else{ // vci 3.3v
-
-	if (enable) {
-		if (gpio_is_valid(ctrl_pdata->disp_en_gpio)) {
-			rc = gpio_request(ctrl_pdata->disp_en_gpio,
-							"disp_enable");
-			if (rc) {
-				pr_err("request disp_en gpio failed, rc=%d\n",
-					       rc);
-				return rc;
-			}
-		}
-		
-		if (!pinfo->cont_splash_enabled) {
-			if (gpio_is_valid(ctrl_pdata->disp_en_gpio)) {
-				rc = gpio_direction_output(
-					ctrl_pdata->disp_en_gpio, 1);
-				if (rc) {
-					pr_err("%s: unable to set dir for en gpio\n",
-						__func__);
-					goto exit;
-				}
-			}
-		}
-
-		if (ctrl_pdata->ctrl_state & CTRL_STATE_PANEL_INIT) {
-			pr_debug("%s: Panel Not properly turned OFF\n",
-						__func__);
-			ctrl_pdata->ctrl_state &= ~CTRL_STATE_PANEL_INIT;
-			pr_debug("%s: Reset panel done\n", __func__);
-		}
-	} else {
-		if (gpio_is_valid(ctrl_pdata->disp_en_gpio)) {
-			gpio_set_value((ctrl_pdata->disp_en_gpio), 0);
-			gpio_free(ctrl_pdata->disp_en_gpio);
-		}
-	}
-}
-	
 exit:
 	return rc;
 }

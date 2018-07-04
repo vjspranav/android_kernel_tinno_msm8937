@@ -138,15 +138,7 @@ static unsigned char CTPM_FW_BE[] = {
 	#include "BE_FT5346I_P6901_V13_D01_20161221_app.i"
 };
 
-#if defined(CONFIG_PROJECT_P7601)
-static unsigned char CTPM_FW_YEJI[] = {
-	#include "FT5346DQQ_7601_ID0X80_V11_D01_20170328_app.i"
-};
-#elif defined(CONFIG_PROJECT_V3941)
-static unsigned char CTPM_FW_YEJI[] = {
-	#include "F5346I_Each_Tinno_V3941_V12_D01_20170606_app.i"
-};
-#else
+#ifdef(CONFIG_PROJECT_P6901)
 static unsigned char CTPM_FW_YEJI[] = {
 	#include "YEJI_FT5346I_P6901_V17_D01_20170518_app.i"
 };

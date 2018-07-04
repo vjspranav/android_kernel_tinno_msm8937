@@ -13,7 +13,6 @@
 
 include $(srctree)/arch/arm/boot/dts/Makefile
 
-include $(srctree)/arch/arm/boot/dts/v3941_32/Makefile
 ifneq ($(DTSSUBDIR),)
 DTSSUBDIR_INCS=$(foreach DIR, $(DTSSUBDIR), $(addsuffix /Makefile, $(addprefix $(srctree)/arch/arm/boot/dts/, $(DIR))))
 include $(DTSSUBDIR_INCS)
@@ -31,9 +30,6 @@ export ZRELADDR INITRD_PHYS PARAMS_PHYS
 
 targets := Image zImage xipImage bootpImage uImage
 DTS_CUSTOM_DIR := qcom
-ifeq ($(CONFIG_PROJECT_V3941),y)
-DTS_CUSTOM_DIR := v3941_32
-endif
 
 
 

@@ -66,6 +66,3 @@ obj-$(CONFIG_LEDS_DAC124S085)		+= leds-dac124s085.o
 
 # LED Triggers
 obj-$(CONFIG_LEDS_TRIGGERS)		+= trigger/
-
-#yixuhong 20161129 add BCT3253 RGB led
-obj-$(CONFIG_LEDS_BCT3253)		+= led_bct3253_dirver.o

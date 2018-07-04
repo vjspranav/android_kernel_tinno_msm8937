@@ -840,7 +840,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.probe = fe_dai_probe,
 	},
 
-	#if defined(CONFIG_PROJECT_I9051) ||  defined(CONFIG_PROJECT_P6901)//yangliang add for smartpa fm-spk20160922
+	#ifdef CONFIG_PROJECT_P6901 //yangliang add for smartpa fm-spk20160922
 	{
 		.capture = {
 			.stream_name = "Quinary MI2S_TX Hostless Capture",

@@ -53,7 +53,7 @@
 #define MSM_DT_MAX_PROP_SIZE 80
 
 //++ camera selfie stick TN:peter
-#if defined CONFIG_PROJECT_P7705 ||defined CONFIG_PROJECT_P7203 ||defined CONFIG_PROJECT_P7201 ||defined CONFIG_PROJECT_P7701 || defined CONFIG_PROJECT_P6901 ||defined CONFIG_PROJECT_I9051
+#if defined CONFIG_PROJECT_P7201 || defined CONFIG_PROJECT_P6901
 #define CAMERA_SELFIE_STICK
 #endif
 //-- camera selfie stick
@@ -79,7 +79,7 @@ static atomic_t quin_mi2s_clk_ref;
 static atomic_t auxpcm_mi2s_clk_ref;
 
 //yangliang add for external padac for spk;20150708
-#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705) || defined(CONFIG_PROJECT_P7203) || defined(CONFIG_PROJECT_P7201)
+#ifdef CONFIG_PROJECT_P7201
 int ext_spk_pa_gpio = -1;
 #endif
 
@@ -280,7 +280,7 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 
 	pdata->spk_ext_pa_gpio = of_get_named_gpio(pdev->dev.of_node,
 				spk_ext_pa, 0);
-	#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705) || defined(CONFIG_PROJECT_P7201) || defined(CONFIG_PROJECT_P7203)
+	#ifdef CONFIG_PROJECT_P7201
 		ext_spk_pa_gpio = pdata->spk_ext_pa_gpio;//yangliang add 
 	#endif
 	of_property_read_u32(pdev->dev.of_node, "qcom,spk-ext-pa_mode", &pdata->ext_pa_mode);//ext pa mode number added by liuweiwei
@@ -294,41 +294,16 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 				__func__, pdata->spk_ext_pa_gpio);
 			return -EINVAL;
 		}
-#ifdef CONFIG_PROJECT_P7601 //added by liuweiwei for aw89319pa
-#else
 		gpio_direction_output(pdata->spk_ext_pa_gpio, 0); //<20160310>wangyanhui add for ext speaker--new
-#endif
 	}
 	return 0;
 }
-#ifdef CONFIG_PROJECT_P7601 //added by liuweiwei for aw89319pa
-extern unsigned char AW87319_Audio_Speaker(void);
-extern unsigned char AW87319_Audio_OFF(void);
-
-static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
-{
-	pr_debug("%s: %s external speaker PA\n", __func__,
-			enable ? "Enable" : "Disable");
-	if(enable)
-	{
-		AW87319_Audio_Speaker();
-	}
-	else
-	{
-		AW87319_Audio_OFF();
-	}
-	return 0;
-}
-#else
 static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 {
 	struct snd_soc_card *card = codec->component.card;
 	struct msm8916_asoc_mach_data *pdata = snd_soc_card_get_drvdata(card);
 	//int ret; //<20160310>wangyanhui delete for  ext spk
 	int ret = 0;
-#if defined(CONFIG_PROJECT_V3941)
-	int mode = 0;
-#endif
 
 	static bool ext_pa_gpio_requested = false;//yangliang add for pa mode-2;20150901	
 	if (!gpio_is_valid(pdata->spk_ext_pa_gpio)) {
@@ -363,8 +338,7 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 					__func__, "ext_spk_gpio");
 			return ret;
 		}*/
-		//#ifdef CONFIG_PROJECT_P7705	//external pa mode 2 TN:Peter	
-		#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705) || defined(CONFIG_PROJECT_P7203) || defined(CONFIG_PROJECT_P7201)
+		#ifdef CONFIG_PROJECT_P7201
 			printk(KERN_ERR"goto mode-2");
 			ext_spk_pa_current_state = true;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
 			//gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 0);		
@@ -374,15 +348,6 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 			gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 0);			
 			udelay(2);
 			gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 1);
-		#elif defined(CONFIG_PROJECT_V3941)
-			ext_spk_pa_current_state = true;
-			for(mode = 0 ; mode < pdata->ext_pa_mode ; mode++)//set ext pa mode liuweiwei
-			{
-				gpio_direction_output(pdata->spk_ext_pa_gpio, 0);
-				udelay(5);
-				gpio_direction_output(pdata->spk_ext_pa_gpio, 1);
-				udelay(5);
-			}
 		#else
 			ext_spk_pa_current_state = true;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
 			//gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, enable);
@@ -403,7 +368,7 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 err:
 	return 0;
 }
-#endif
+
 /* Validate whether US EU switch is present or not */
 int is_us_eu_switch_gpio_support(struct platform_device *pdev,
 		struct msm8916_asoc_mach_data *pdata)
@@ -1654,7 +1619,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	 * 210-290 == Button 2
 	 * 360-680 == Button 3
 	 */
-	#if 1 //def CONFIG_PROJECT_P7705 //TN:peter  //<use same para>wangyanhui 
+	#if 1 //TN:peter  //<use same para>wangyanhui 
  	btn_low[0] = 120;
 	btn_high[0] = 600;
 	btn_low[1] = 200;
@@ -1678,7 +1643,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	#endif
 	
 	//bt2 ==> camera selfie stick TN:peter 
-	#if defined CONFIG_PROJECT_P7705 ||defined CONFIG_PROJECT_P7203 ||defined CONFIG_PROJECT_P7701 || defined CONFIG_PROJECT_P6901 ||defined CONFIG_PROJECT_I9051//TN:peter
+	#ifdef CONFIG_PROJECT_P6901 //TN:peter
 	btn_low[0] = 75;
 	btn_high[0] = 75;
 	btn_low[1] = 100;
@@ -2418,7 +2383,7 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.be_id = MSM_FRONTEND_DAI_QCHAT,
 	},
 
-	#if defined(CONFIG_PROJECT_I9051) || defined(CONFIG_PROJECT_P6901) //yangliang add for smartpa 20161008
+	#ifdef CONFIG_PROJECT_P6901 //yangliang add for smartpa 20161008
 	#if 1
 	{ /* hw:x,37 */
 		.name = "QUIN_MI2S Hostless",
@@ -2435,10 +2400,7 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.ignore_pmdown_time = 1,
 		/* tfa98xx: nxp smart pa for speaker */
 		
-		#if defined(CONFIG_PROJECT_I9051)
-		.codec_dai_name = "tfa98xx-aif-8-34",//"tfa98xx_codec",yangliang change old name to new name;20161026
-		.codec_name = "tfa98xx.8-0034",//it is from tfa98xx.c tfa98xx_i2c_driver`s  .name = "tfa98xx",  ;yangliang
-		#elif defined(CONFIG_PROJECT_P6901)
+		#ifdef CONFIG_PROJECT_P6901
 		.codec_dai_name = "tfa98xx-aif-2-34",//"tfa98xx_codec",yangliang change old name to new name;20161026
 		.codec_name = "tfa98xx.2-0034",//it is from tfa98xx.c tfa98xx_i2c_driver`s  .name = "tfa98xx",  ;yangliang
 		#endif
@@ -2728,7 +2690,7 @@ static struct snd_soc_dai_link msm8952_hdmi_dba_dai_link[] = {
 };
 
 static struct snd_soc_dai_link msm8952_quin_dai_link[] = {
-	#if defined(CONFIG_PROJECT_I9051) || defined(CONFIG_PROJECT_P6901) //yangliang add for smartpa 20161008
+	#ifdef CONFIG_PROJECT_P6901 //yangliang add for smartpa 20161008
 		#if 1
 	{
 		.name = LPASS_BE_QUIN_MI2S_RX,
@@ -2736,10 +2698,7 @@ static struct snd_soc_dai_link msm8952_quin_dai_link[] = {
 		.cpu_dai_name = "msm-dai-q6-mi2s.5",
 		.platform_name = "msm-pcm-routing",
 
-		#if defined(CONFIG_PROJECT_I9051)
-		.codec_dai_name = "tfa98xx-aif-8-34",//"tfa98xx_codec",yangliang change old name to new name;20161026
-		.codec_name = "tfa98xx.8-0034",//it is from tfa98xx.c tfa98xx_i2c_driver`s  .name = "tfa98xx",  ;yangliang
-		#elif defined(CONFIG_PROJECT_P6901)
+		#ifdef CONFIG_PROJECT_P6901
 		.codec_dai_name = "tfa98xx-aif-2-34",//"tfa98xx_codec",yangliang change old name to new name;20161026
 		.codec_name = "tfa98xx.2-0034",//it is from tfa98xx.c tfa98xx_i2c_driver`s  .name = "tfa98xx",  ;yangliang
 		#endif
@@ -3429,7 +3388,7 @@ static int msm8952_asoc_machine_remove(struct platform_device *pdev)
 	int i;
 
 	//yangliang add for external padac for spk;20150708
-	#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705) || defined(CONFIG_PROJECT_P7203) || defined(CONFIG_PROJECT_P7201)
+	#ifdef CONFIG_PROJECT_P7201
 	if (gpio_is_valid(ext_spk_pa_gpio))
 		gpio_free(ext_spk_pa_gpio);
 	#endif
