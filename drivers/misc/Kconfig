@@ -553,12 +553,6 @@ config VEXPRESS_SYSCFG
 	  bus. System Configuration interface is one of the possible means
 	  of generating transactions on this bus.
 
-config TINNO_KE_DBUG
-   tristate "support tinno kernel debug!"
-   default y
-   help
-    This option enables support tinno kernel debug.    
-
 config UID_SYS_STATS
 	bool "Per-UID statistics"
 	depends on PROFILING

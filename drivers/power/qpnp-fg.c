@@ -7543,15 +7543,8 @@ static int fg_of_init(struct fg_chip *chip)
 	struct device_node *node = chip->spmi->dev.of_node;
 	u32 temp[2] = {0};
 
-	// pony.ma, DATE20161114, optimize code, DATE20161114-01 START
-	#if defined (CONFIG_TINNO_FCC_INTMODE)
-	OF_READ_SETTING(FG_MEM_SOFT_HOT, "fastchg-temp-max-bat-decidegc", rc, 1);
-	OF_READ_SETTING(FG_MEM_SOFT_COLD, "fastchg-temp-s1-bat-decidegc", rc, 1);
-	#else
 	OF_READ_SETTING(FG_MEM_SOFT_HOT, "warm-bat-decidegc", rc, 1);
 	OF_READ_SETTING(FG_MEM_SOFT_COLD, "cool-bat-decidegc", rc, 1);
-	#endif  /* CONFIG_TINNO_FCC_INTMODE */	
-	// pony.ma, DATE20161114-01 END
 	OF_READ_SETTING(FG_MEM_HARD_HOT, "hot-bat-decidegc", rc, 1);
 	OF_READ_SETTING(FG_MEM_HARD_COLD, "cold-bat-decidegc", rc, 1);
 

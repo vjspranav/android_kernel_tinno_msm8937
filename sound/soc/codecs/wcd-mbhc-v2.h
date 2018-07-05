@@ -355,12 +355,6 @@ struct wcd_mbhc_cb {
 	void (*mbhc_bias)(struct snd_soc_codec *, bool);
 	void (*mbhc_common_micb_ctrl)(struct snd_soc_codec *,
 				      int event, bool);
-	// TINNO BEGIN
-	// huaidong.tan , IAAO-315 , DATE20171120 , bump up micbias2 from 1.8V to 2.7V
-	#ifdef CONFIG_TINNO_AUDIO_MICBIAS_2V7
-    void (*mbhc_micb2_2v7_ctrl)(struct snd_soc_codec *,bool en);
-	#endif
-	// TINNO END
 	void (*micb_internal)(struct snd_soc_codec *,
 			int micb_num, bool);
 	bool (*hph_pa_on_status)(struct snd_soc_codec *);

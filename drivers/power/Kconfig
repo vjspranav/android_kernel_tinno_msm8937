@@ -515,20 +515,6 @@ config TINNO_CHECK_LOWBAT_CAP
 	help
           Say Y here to enable tinno battery low high current discharger feature config.
           
-#pony.ma, DATE20161011, add temp FCC for project requirement
-config TINNO_FCC
-        bool "Tinno fcc config"
-        default n
-	help
-          Say Y here to enable tinno fcc config.
-
-#pony.ma, DATE20161110, temp FCC INTMODE for project requirement
-config TINNO_FCC_INTMODE
-        bool "Tinno fcc intmode config"
-        default n
-	help
-          Say Y here to enable tinno fcc intmode config.
-          
 config TINNO_BATTERY_CMD_DEBUG
         bool "Tinno battery command debug config"
         default n

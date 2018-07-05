@@ -53,18 +53,6 @@ extern const char* Tinno_battery_name;
 #define TINNO_SPECIAL_TEMP_SETTING
 #define ENABLE_SMART_CHARGING_CONTROL //enable smart charging control.
 // pony.ma, DATE20171009, ID usb wk battery model, DATE20171009-01 START
-#ifdef FEATURE_REQS_UNIFY
-extern char* Market_Area;
-bool is_Asia_area_id_bat= false;
-static void Tinno_Get_Market_Area_is_Asia(void)
-{
-	pr_info("pony1009 Market_Area=%s\n",Market_Area);
-	if((Market_Area != NULL) &&  (!strcmp(Market_Area, "ID"))){
-			is_Asia_area_id_bat = true;
-	}
-}
-#endif
-// pony.ma, DATE20171009-01 END
 
 // pony.ma, DATE20171010, Define project battery capacity for 3rd apk, DATE20171010-01 LINE
 int tinno_battery_capacity;
@@ -129,12 +117,6 @@ struct smbchg_version_tables {
 	int				aicl_rerun_period_len;
 	int				rchg_thr_mv;
 };
-
-// pony.ma, DATE20161011, add temp FCC for project requirement, DATE20161011-01 START
-#ifdef CONFIG_TINNO_FCC
-#define SMBCHG_TEMP_CONTROL_DELAY_MS      10000
-#endif  /* CONFIG_TINNO_FCC */
-// pony.ma, DATE20161011-01 END
 
 // pony.ma, DATE20171214, add input voltage log, DATE20171214-01 LINE
 #define SMBCHG_GET_INPUT_VOLTAGE_DELAY_MS      1000
@@ -361,29 +343,8 @@ struct smbchg_chip {
 
 	struct votable			*hvdcp_enable_votable;
 	
-	// pony.ma, DATE20161114, optimize name, DATE20161114-01 START
-	#ifdef CONFIG_TINNO_FCC
-	bool        fastchg_temp_initial;
-	struct delayed_work		fastchg_temp_control_work;
-	#endif  /* CONFIG_TINNO_FCC */
-
 	// pony.ma, DATE20171214, add input voltage log, DATE20171214-01 LINE
 	struct delayed_work		get_input_voltage_work;
-	
-   	#if defined (CONFIG_TINNO_FCC_INTMODE) || defined (CONFIG_TINNO_FCC)
-	bool 	enable_cool_fastchg_current_comp;
-	int		fastchg_current_comp_low;
-	int		fastchg_temp_min_bat_decidegc;
-	int		fastchg_temp_s1_bat_decidegc;
-	int 		fastchg_temp_s2_bat_decidegc;
-	int		fastchg_temp_max_bat_decidegc;
-	int		fastchg_temp_current_low;
-	int		fastchg_temp_current_high;
-	// pony.ma, DATE20161123, JCABCNA-267:solve mistake notice APP health, DATE20161123-01 LINE
-	bool		fastchg_warm_status;      //0: warm temp=26;  1:warm temp=45   pony 20161123
-	bool		fastchg_cool_status;      //0: cool temp=25;  1:cool temp=10   pony 20161123
-   	#endif  /* CONFIG_TINNO_FCC_INTMODE */   	
-	// pony.ma, DATE20161114-01 END
 };
 
 enum qpnp_schg {
@@ -433,23 +394,12 @@ enum wake_reason {
 	PM_ESR_PULSE = BIT(2),
 	PM_PARALLEL_TAPER = BIT(3),
 	PM_DETECT_HVDCP = BIT(4),
-	// pony.ma, DATE20161011, add temp FCC for project requirement, DATE20161011-01 START
-	#ifdef CONFIG_TINNO_FCC
-	PM_FCC_TEMP = BIT(5),
-	#endif  /* CONFIG_TINNO_FCC */
-	// pony.ma, DATE20161011-01 END
 };
 
 /* fcc_voters */
 #define ESR_PULSE_FCC_VOTER	"ESR_PULSE_FCC_VOTER"
 #define BATT_TYPE_FCC_VOTER	"BATT_TYPE_FCC_VOTER"
 #define RESTRICTED_CHG_FCC_VOTER	"RESTRICTED_CHG_FCC_VOTER"
-	
-// pony.ma, DATE20161114, optimize code, DATE20161114-01 START
-#if defined (CONFIG_TINNO_FCC)  || defined(CONFIG_TINNO_FCC_INTMODE)
-#define BATT_NORTEMP_FCC_VOTER   "BATT_NORTEMP_FCC_VOTER"
-#endif /* CONFIG_TINNO_FCC || CONFIG_TINNO_FCC_INTMODE */
-// pony.ma, DATE20161114-01 END
 
 /* ICL VOTERS */
 #define PSY_ICL_VOTER		"PSY_ICL_VOTER"
@@ -752,12 +702,6 @@ static int get_prop_batt_capacity(struct smbchg_chip *chip);
 #ifdef ENABLE_SMART_CHARGING_CONTROL
 static int smbchg_charge_speed_set(struct smbchg_chip *chip, int speed);
 #endif
-
-// pony.ma, DATE20161114, optimize name, DATE20161114-01 START	
-#ifdef CONFIG_TINNO_FCC
-static int smbchg_set_fastchg_temp_current(struct smbchg_chip *chip);
-#endif  /* CONFIG_TINNO_FCC */ 
-// pony.ma, DATE20161114-01 END
 
 #ifdef CONFIG_TINNO_KE_LOG_CTRL//add charger log contrl by lijian
 extern char * module_parser_mask(char *module);
@@ -5295,13 +5239,7 @@ static void handle_usb_removal(struct smbchg_chip *chip)
 	/* cancel/wait for hvdcp pending work if any */
 	cancel_delayed_work_sync(&chip->hvdcp_det_work);
 	
-	// pony.ma, DATE20161114, optimize name, DATE20161114-01 START
-	#ifdef CONFIG_TINNO_FCC
-	cancel_delayed_work(&chip->fastchg_temp_control_work);
-	smbchg_relax(chip, PM_FCC_TEMP);
-	#endif
-	// pony.ma, DATE20161114-01 END
-	
+
 	smbchg_relax(chip, PM_DETECT_HVDCP);
 	smbchg_change_usb_supply_type(chip, POWER_SUPPLY_TYPE_UNKNOWN);
 
@@ -5394,13 +5332,6 @@ static void handle_usb_insertion(struct smbchg_chip *chip)
 	smbchg_aicl_deglitch_wa_check(chip);
 	if (chip->typec_psy)
 		update_typec_status(chip);
-	
-	// pony.ma, DATE20161114, optimize name, DATE20161114-01 START
-	#ifdef CONFIG_TINNO_FCC
-	smbchg_stay_awake(chip, PM_FCC_TEMP);	
-	smbchg_set_fastchg_temp_current(chip);
-	#endif  /* CONFIG_TINNO_FCC */
-	// pony.ma, DATE20161114-01 END
 	
 	smbchg_change_usb_supply_type(chip, usb_supply_type);
 	if (!chip->skip_usb_notification) {
@@ -7008,92 +6939,6 @@ static irqreturn_t batt_cold_handler(int irq, void *_chip)
 	return IRQ_HANDLED;
 }
 
-// pony.ma, DATE20161114, optimize code, DATE20161114-01 START
-#ifdef CONFIG_TINNO_FCC_INTMODE
-static int smbchg_set_fastchg_temp_current_intmode(struct smbchg_chip *chip)
-{
-	int warm_temp = 0,cool_temp = 0;
-	int rc = 0;
-	int temp = 0;
-	
-	rc = get_property_from_fg(chip, POWER_SUPPLY_PROP_COOL_TEMP,&cool_temp);
-	rc = get_property_from_fg(chip, POWER_SUPPLY_PROP_WARM_TEMP,&warm_temp);
-	pr_smb(PR_INTERRUPT,"before changed jetia get cool = %d , warm = %d\n", cool_temp,warm_temp);
-
-	if (chip->batt_cool){
-		// pony.ma, DATE20170118, Adjust float compensate voltage for fake health, DATE20170118-01 LINE
-		smbchg_float_voltage_comp_set(chip,0);
-		if(cool_temp == chip->fastchg_temp_s1_bat_decidegc){
-			rc = vote(chip->fcc_votable, BATT_NORTEMP_FCC_VOTER, true,	chip->fastchg_temp_current_low);
-			if (rc < 0)
-				pr_err("vote for s1 temp_current fail rc %d\n", rc);
-			pr_smb(PR_INTERRUPT, "set fastchg temp s1 current to %d\n",
-				chip->fastchg_temp_current_low);				
-			set_property_on_fg(chip, POWER_SUPPLY_PROP_COOL_TEMP,
-				chip->fastchg_temp_min_bat_decidegc);
-			set_property_on_fg(chip, POWER_SUPPLY_PROP_WARM_TEMP,
-				chip->fastchg_temp_s2_bat_decidegc);	
-			pr_smb(PR_INTERRUPT, "after changed jetia set set cool = %d, set warm = %d\n",
-				chip->fastchg_temp_min_bat_decidegc,chip->fastchg_temp_s2_bat_decidegc);
-			// pony.ma, DATE20161123, JCABCNA-267:solve mistake notice APP health, DATE20161123-01 LINE
-			chip->fastchg_cool_status = false;
-			// pony.ma, DATE20170118,correct init status, DATE20170118-01 START
-			get_property_from_fg(chip, POWER_SUPPLY_PROP_TEMP, &temp);
-			if(temp == -22)
-				chip->fastchg_cool_status = true;
-			// pony.ma, DATE20170118-01 END
-			
-		}  //set 10 to 26
-		if(cool_temp == chip->fastchg_temp_min_bat_decidegc){
-			rc = vote(chip->fcc_votable, BATT_NORTEMP_FCC_VOTER, true,	chip->fastchg_temp_current_low);
-			if (rc < 0)
-				pr_err("vote for s1 temp_current fail rc %d\n", rc);
-			pr_smb(PR_INTERRUPT, "set fastchg current to %d\n",
-				chip->fastchg_temp_current_low);
-			// pony.ma, DATE20161123, JCABCNA-267:solve mistake notice APP health, DATE20161123-01 LINE
-			chip->fastchg_cool_status = true;
-		}  //set 10 to 26
-		// pony.ma, DATE20161123, JCABCNA-267:solve mistake notice APP health, DATE20161123-01 LINE
-		pr_smb(PR_STATUS, "fastchg cool status : %d\n",	chip->fastchg_cool_status);
-	}
-	
-	if (chip->batt_warm){
-		if(warm_temp == chip->fastchg_temp_s2_bat_decidegc){
-			// pony.ma, DATE20170118, Adjust float compensate voltage for fake health, DATE20170118-01 LINE
-			smbchg_float_voltage_comp_set(chip,0);
-			rc = vote(chip->fcc_votable, BATT_NORTEMP_FCC_VOTER, true,	chip->fastchg_temp_current_high);
-			if (rc < 0)
-				pr_err("vote for s2 temp_current fail rc %d\n", rc);
-			pr_smb(PR_INTERRUPT, "set fastchg temp s2 current to %d\n",
-				chip->fastchg_temp_current_high);	
-			set_property_on_fg(chip, POWER_SUPPLY_PROP_COOL_TEMP,
-				chip->fastchg_temp_s1_bat_decidegc);
-			set_property_on_fg(chip, POWER_SUPPLY_PROP_WARM_TEMP,
-				chip->fastchg_temp_max_bat_decidegc);	
-			pr_smb(PR_INTERRUPT, "after changed jetia set cool = %d, set warm = %d\n",
-				chip->fastchg_temp_s1_bat_decidegc,chip->fastchg_temp_max_bat_decidegc);
-			// pony.ma, DATE20161123, JCABCNA-267:solve mistake notice APP health, DATE20161123-01 LINE
-			chip->fastchg_warm_status = false;
-		}  //set 25 to 45
-		if(warm_temp == chip->fastchg_temp_max_bat_decidegc){	
-			// pony.ma, DATE20170118, Adjust float compensate voltage for fake health, DATE20170118-01 LINE
-			smbchg_float_voltage_comp_set(chip,chip->float_voltage_comp);
-			rc = vote(chip->fcc_votable, BATT_NORTEMP_FCC_VOTER, true,	chip->fastchg_temp_current_high);
-			if (rc < 0)
-				pr_err("vote for s2 temp_current fail rc %d\n", rc);
-			pr_smb(PR_INTERRUPT, "set fastchg temp s2 current to %d\n",
-				chip->fastchg_temp_current_high);
-			// pony.ma, DATE20161123, JCABCNA-267:solve mistake notice APP health, DATE20161123-01 LINE
-			chip->fastchg_warm_status = true;
-		}  //set 25 to 45
-		// pony.ma, DATE20161123, JCABCNA-267:solve mistake notice APP health, DATE20161123-01 LINE
-		pr_smb(PR_STATUS, "fastchg warm status : %d\n", chip->fastchg_warm_status);
-	}
-	return 0;
-}
-#endif  /* CONFIG_TINNO_FCC_INTMODE */
-// pony.ma, DATE20161114-01 END
-
 static irqreturn_t batt_warm_handler(int irq, void *_chip)
 {
 	struct smbchg_chip *chip = _chip;
@@ -7107,16 +6952,6 @@ static irqreturn_t batt_warm_handler(int irq, void *_chip)
 	pr_smb(PR_INTERRUPT, "triggered: 0x%02x\n", reg);
 	smbchg_parallel_usb_check_ok(chip);
 	
-	// pony.ma, DATE20161114, optimize code, DATE20161114-01 START
-	#ifdef CONFIG_TINNO_FCC_INTMODE
-	if (chip->batt_warm){
-		smbchg_set_fastchg_temp_current_intmode(chip);
-		// pony.ma, DATE20161123, JCABCNA-267:solve mistake notice APP health, DATE20161123-01 LINE
-		chip->batt_warm = chip->fastchg_warm_status;
-	}
-	#endif  /* CONFIG_TINNO_FCC_INTMODE */
-	// pony.ma, DATE20161114-01 END
-
 	if (chip->psy_registered)
 		power_supply_changed(&chip->batt_psy);
 	set_property_on_fg(chip, POWER_SUPPLY_PROP_HEALTH,
@@ -7181,26 +7016,7 @@ static irqreturn_t batt_cool_handler(int irq, void *_chip)
 	chip->batt_cool = !!(reg & COLD_BAT_SOFT_BIT);
 	pr_smb(PR_INTERRUPT, "triggered: 0x%02x\n", reg);
 	smbchg_parallel_usb_check_ok(chip);
-// pony.ma, DATE20170209, compatible other battery(v3967), DATE20170209-01 LINE
-#if defined(TINNO_SPECIAL_TEMP_SETTING) && !defined(CONFIG_TINNO_FCC_INTMODE)
-	if(chip->batt_cool)
-	{
-		Tinno_Set_Jeita_Vfloat_Compensation(0,chip);
-	}else{
-		Tinno_Set_Jeita_Vfloat_Compensation(1,chip);
-	}
-#endif
 
-	// pony.ma, DATE20161114, optimize code, DATE20161114-01 START
-	#ifdef CONFIG_TINNO_FCC_INTMODE
-	if(chip->batt_cool){
-		smbchg_set_fastchg_temp_current_intmode(chip);
-		// pony.ma, DATE20161123, JCABCNA-267:solve mistake notice APP health, DATE20161123-01 LINE
-		chip->batt_cool = chip->fastchg_cool_status;
-	}
-	#endif  /* CONFIG_TINNO_FCC_INTMODE */
-	// pony.ma, DATE20161114-01 END
-	
 	if (chip->psy_registered)
 		power_supply_changed(&chip->batt_psy);
 	set_property_on_fg(chip, POWER_SUPPLY_PROP_HEALTH,
@@ -9125,139 +8941,6 @@ static int smbchg_init_speed_current_map(struct smbchg_chip *chip)
 }
 #endif
 
-// pony.ma, DATE20161114, optimize name, DATE20161114-01 START
-#ifdef CONFIG_TINNO_FCC
-static int smbchg_set_fastchg_temp_current(struct smbchg_chip *chip)
-{
-	int temp = 0;
-	int rc = 0;
-	temp = get_prop_batt_temp(chip);
-	pr_smb(PR_MISC,	"temp = %d\n",temp);
-    	if (chip->fastchg_temp_initial){
-			if(chip->enable_cool_fastchg_current_comp)
-			{
-				if(temp <= chip->fastchg_temp_min_bat_decidegc)
-				{
-					/* set the fast charge current compensation */
-					if (chip->fastchg_current_comp != -EINVAL) {
-						rc = smbchg_fastchg_current_comp_set(chip,
-							chip->fastchg_current_comp_low);
-						if (rc < 0) {
-							dev_err(chip->dev, "Couldn't set fastchg current comp rc = %d\n",
-								rc);
-							return rc;
-						}
-						pr_smb(PR_STATUS, "set fastchg current comp to %d\n",
-							chip->fastchg_current_comp_low);
-					}
-				
-				}
-				else
-				{
-					/* set the fast charge current compensation */
-					if (chip->fastchg_current_comp != -EINVAL) {
-						rc = smbchg_fastchg_current_comp_set(chip,
-							chip->fastchg_current_comp);
-						if (rc < 0) {
-							dev_err(chip->dev, "Couldn't set fastchg current comp rc = %d\n",
-								rc);
-							return rc;
-						}
-						pr_smb(PR_STATUS, "set fastchg current comp to %d\n",
-							chip->fastchg_current_comp);
-					}	
-				
-				}
-			}
-			
-		if( (temp > chip->fastchg_temp_min_bat_decidegc) && (temp < chip->fastchg_temp_max_bat_decidegc) ){
-			if((temp > chip->fastchg_temp_min_bat_decidegc) && (temp < chip->fastchg_temp_s1_bat_decidegc)){
-				rc = vote(chip->fcc_votable, BATT_NORTEMP_FCC_VOTER, true,	chip->fastchg_temp_current_low);
-				pr_smb(PR_MISC,	"s1temp = %d,warm = %d,cool = %d,s1 temp_current = %d, s2 temp_current= %d \n",
-					chip->fastchg_temp_s1_bat_decidegc,chip->fastchg_temp_max_bat_decidegc,
-					chip->fastchg_temp_min_bat_decidegc,chip->fastchg_temp_current_low,chip->fastchg_temp_current_high);
-				if (rc < 0) {
-					pr_smb(PR_MISC,	"rc = %d\n",rc);
-					dev_err(chip->dev,
-						"Couldn't vote for s1 temp current rc=%d\n", rc);
-						return rc;
-				}							
-			}
-			else{
-				rc = vote(chip->fcc_votable, BATT_NORTEMP_FCC_VOTER, true,	chip->fastchg_temp_current_high);
-				pr_smb(PR_MISC,	"s1temp = %d,warm = %d,cool = %d,s1 temp_current = %d, s2 temp_current= %d \n",
-					chip->fastchg_temp_s1_bat_decidegc,chip->fastchg_temp_max_bat_decidegc,
-					chip->fastchg_temp_min_bat_decidegc,chip->fastchg_temp_current_low,chip->fastchg_temp_current_high);
-				if (rc < 0) {
-					pr_smb(PR_MISC,	"rc = %d\n",rc);
-					dev_err(chip->dev,
-						"Couldn't vote for s2 temp current rc=%d\n", rc);
-						return rc;
-				}					
-			}
-		}
-   	}
-	pr_smb(PR_STATUS, "reschedule fcc work\n");
-	cancel_delayed_work(&chip->fastchg_temp_control_work);
-	schedule_delayed_work(&chip->fastchg_temp_control_work,
-              msecs_to_jiffies(SMBCHG_TEMP_CONTROL_DELAY_MS));
-	return 0;
-}
-static void smbchg_fastchg_temp_control_work(struct work_struct *work)
-{
-	struct smbchg_chip *chip =
-		container_of(work, struct smbchg_chip,
-				fastchg_temp_control_work.work);
-	FUNC_ENTER();
-      smbchg_set_fastchg_temp_current(chip);
-}
-static int smbchg_init_fastchg_temp(struct smbchg_chip *chip)
-{
-	int rc = 0;
-	struct device_node *node = chip->dev->of_node;
-	
-	chip->enable_cool_fastchg_current_comp = of_property_read_bool(node,
-					"qcom,enable-cool-fastchg-current-comp");
-	OF_PROP_READ(chip, chip->fastchg_current_comp_low, "fastchg-current-comp-low", rc, 1);	
-	
-    	OF_PROP_READ(chip, chip->fastchg_temp_min_bat_decidegc, "fastchg-temp-min-bat-decidegc",	rc, 1);
-    	OF_PROP_READ(chip, chip->fastchg_temp_s1_bat_decidegc, "fastchg-temp-s1-bat-decidegc",	rc, 1);
-	OF_PROP_READ(chip, chip->fastchg_temp_max_bat_decidegc, "fastchg-temp-max-bat-decidegc",rc, 1);
-	OF_PROP_READ(chip, chip->fastchg_temp_current_low, "fastchg-temp-current-low",rc, 1);
-	OF_PROP_READ(chip, chip->fastchg_temp_current_high, "fastchg-temp-current-high", rc, 1);
-	pr_smb(PR_MISC,	"nortemp = %d,warm = %d,cool = %d,s1 temp current = %d,s2 temp current = %d \n",
-		chip->fastchg_temp_s1_bat_decidegc,chip->fastchg_temp_max_bat_decidegc,
-		chip->fastchg_temp_min_bat_decidegc,chip->fastchg_temp_current_high,chip->fastchg_temp_current_low);
-	
-  	chip->fastchg_temp_initial = true;
-	return 0;
-}
-#endif  /* CONFIG_TINNO_FCC */
-// pony.ma, DATE20161114-01 END
-
-// pony.ma, DATE20161114, optimize name, DATE20161114-01 START
-#ifdef CONFIG_TINNO_FCC_INTMODE
-static int smbchg_init_fastchg_temp_intmode(struct smbchg_chip *chip)
-{
-	int rc = 0;
-	
-    	OF_PROP_READ(chip, chip->fastchg_temp_min_bat_decidegc, "fastchg-temp-min-bat-decidegc",	rc, 1);	
-    	OF_PROP_READ(chip, chip->fastchg_temp_s1_bat_decidegc, "fastchg-temp-s1-bat-decidegc",rc, 1);
-	OF_PROP_READ(chip, chip->fastchg_temp_s2_bat_decidegc, "fastchg-temp-s2-bat-decidegc", rc, 1);
-	OF_PROP_READ(chip, chip->fastchg_temp_max_bat_decidegc, "fastchg-temp-max-bat-decidegc",rc, 1);
-    	OF_PROP_READ(chip, chip->fastchg_temp_current_low, "fastchg-temp-current-low",rc, 1);
-	OF_PROP_READ(chip, chip->fastchg_temp_current_high, "fastchg-temp-current-high", rc, 1);
-	pr_smb(PR_MISC,	"tempmin = %d,temps1 = %d,temps2 = %d, tempmax = %d,s1 temp current = %d,s2 temp current = %d \n",
-		chip->fastchg_temp_min_bat_decidegc,chip->fastchg_temp_s1_bat_decidegc,	chip->fastchg_temp_s2_bat_decidegc,
-		chip->fastchg_temp_max_bat_decidegc,chip->fastchg_temp_current_low,chip->fastchg_temp_current_high);
-	// pony.ma, DATE20161123, JCABCNA-267:solve mistake notice APP health, DATE20161123-01 LINE
-	chip->fastchg_warm_status = false;
-	chip->fastchg_cool_status = false;
-  	return 0;
-}
-#endif  /* CONFIG_TINNO_FCC_INTMODE */
-// pony.ma, DATE20161114-01 END
-
 // pony.ma, DATE20171214, add input voltage log, DATE20171214-01 START
 static void smbchg_get_input_voltage_work(struct work_struct *work)
 {
@@ -9578,13 +9261,6 @@ static int smbchg_probe(struct spmi_device *spmi)
 			smbchg_parallel_usb_en_work);
 	INIT_DELAYED_WORK(&chip->vfloat_adjust_work, smbchg_vfloat_adjust_work);
 	INIT_DELAYED_WORK(&chip->hvdcp_det_work, smbchg_hvdcp_det_work);
-	
-// pony.ma, DATE20161114, optimize name, DATE20161114-01 START
-#ifdef CONFIG_TINNO_FCC
-    chip->fastchg_temp_initial = false;
-    INIT_DELAYED_WORK(&chip->fastchg_temp_control_work, smbchg_fastchg_temp_control_work);     
-#endif  /* CONFIG_TINNO_FCC */
-// pony.ma, DATE20161114-01 END
 
 	// pony.ma, DATE20171214, add input voltage log, DATE20171214-01 LINE
 	INIT_DELAYED_WORK(&chip->get_input_voltage_work, smbchg_get_input_voltage_work);     
@@ -9646,12 +9322,6 @@ static int smbchg_probe(struct spmi_device *spmi)
 		goto out;
 	}
 	
-	// pony.ma, DATE20161114, optimize name, DATE20161114-01 START
-	#ifdef CONFIG_TINNO_FCC_INTMODE
-	smbchg_init_fastchg_temp_intmode(chip);
-	#endif  /* CONFIG_TINNO_FCC_INTMODE */
-	// pony.ma, DATE20161114-01 END
-
 	// pony.ma, DATE20171009, ID usb wk battery model, DATE20171009-01 START
 	#ifdef FEATURE_REQS_UNIFY
        Tinno_Get_Market_Area_is_Asia();
@@ -9745,12 +9415,6 @@ static int smbchg_probe(struct spmi_device *spmi)
     smbchg_init_speed_current_map(chip);
     INIT_DELAYED_WORK(&chip->smart_charging_control_work, smbchg_smart_charging_control_work);
 #endif
-
-	// pony.ma, DATE20161114, optimize name, DATE20161114-01 START
-	#ifdef CONFIG_TINNO_FCC
-	smbchg_init_fastchg_temp(chip);
-	#endif  /* CONFIG_TINNO_FCC */
-	// pony.ma, DATE20161114-01 END
 
     #if defined (CONFIG_TINNO_BATTERY_CMD_DEBUG)
     // Initialize variable and create node /proc/tinno_battery_cmd/battery_cmd

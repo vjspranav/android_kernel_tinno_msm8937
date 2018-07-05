@@ -1121,28 +1121,11 @@ config PROJECT_msm8937_tinno
 	tristate "project support"
 	help
 	  This option enables support project name 
-
-config PROJECT_sdm450_tinno
-	tristate "project support"
-	help
-	  This option enables support project name
-	  
-config PROJECT_c800_tinno
-	tristate "project support"
-	help
-	  This option enables support project name
 	    
 config PROJECT_V12bnlite
 	tristate "project support"
 	help
 	  This option enables support project name 
-config TINNO_ROOT_PROTECT
-bool "for tinno root protect "
-default n
-
-config TINNO_PRINTK_UART
-bool "for tinno product printk uart dts build"
-default n
 
 config TINNO_CPU_TRACE
 bool "for TINNO cpu trace"

@@ -622,16 +622,7 @@ static int32_t msm_flash_low(
     				curr);
                         else
                             led_trigger_event(flash_ctrl->torch_trigger[0],
-    				curr);
-			//BEGIN<20160601>wangyanhui add for front flash 			
-			#elif defined(CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH)
-	                      if((msm_sensor_is_front_camera()||flash_data->camera_id == 1))
-	    			    led_trigger_event(flash_ctrl->torch_trigger[2],
-	    				curr);
-	                        else if(i < 2)
-	                            led_trigger_event(flash_ctrl->torch_trigger[i],
-	    				curr);
-			//END<20160601>wangyanhui add for front flash				
+    				curr);			
                     #else
                     led_trigger_event(flash_ctrl->torch_trigger[i],
 				curr);
@@ -679,16 +670,7 @@ static int32_t msm_flash_high(
 				curr);
             else
             led_trigger_event(flash_ctrl->flash_trigger[0],
-				curr);
-	  //BEGIN<20160601>wangyanhui add for front flash 			
-    	#elif defined(CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH)
-                        if((msm_sensor_is_front_camera()|| flash_data->camera_id == 1))
-    			led_trigger_event(flash_ctrl->flash_trigger[2],
-    				curr);
-                else if(i < 2)
-                        led_trigger_event(flash_ctrl->flash_trigger[i],
-    				curr);
-	//END<20160601>wangyanhui add for front flash 			
+				curr); 			
         #else
                 led_trigger_event(flash_ctrl->flash_trigger[i],
 				curr);
@@ -1120,12 +1102,6 @@ static long msm_flash_subdev_do_ioctl(
 			flash_data.flash_current[i] = u32->flash_current[i];
 			flash_data.flash_duration[i] = u32->flash_duration[i];
 		}
-	//BEGIN<20160601>wangyanhui add for front flash 
-	#if defined(CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH)
-		flash_data.flash_current[MAX_LED_TRIGGERS - 1] = flash_data.flash_current[MAX_LED_TRIGGERS - 2];
-		flash_data.flash_duration[MAX_LED_TRIGGERS - 1] = flash_data.flash_duration[MAX_LED_TRIGGERS - 2];
-	#endif
-	//END<20160601>wangyanhui add for front flash
 		cmd = VIDIOC_MSM_FLASH_CFG;
 		switch (flash_data.cfg_type) {
 		case CFG_FLASH_OFF:

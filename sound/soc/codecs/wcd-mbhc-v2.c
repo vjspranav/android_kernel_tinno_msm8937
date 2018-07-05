@@ -32,12 +32,6 @@
 #include "wcdcal-hwdep.h"
 
 #include <linux/switch.h>//yangliang add for ftm hph detect20150830
-//++ camera selfie stick TN:peter
-#if defined CONFIG_CAMERA_SELFIE_STICK_SUSPORT
-#define CAMERA_SELFIE_STICK
-#endif
-//-- camera selfie stick
-
 
 #define WCD_MBHC_JACK_MASK (SND_JACK_HEADSET | SND_JACK_OC_HPHL | \
 			   SND_JACK_OC_HPHR | SND_JACK_LINEOUT | \
@@ -80,18 +74,6 @@ enum wcd_mbhc_cs_mb_en_flag {
 extern struct switch_dev wcd_mbhc_headset_switch ;
 extern struct switch_dev wcd_mbhc_button_switch ;
 #endif
-//++ camera selfie stick TN:peter
-#ifdef CAMERA_SELFIE_STICK
-bool self_pole = false;
-#endif
-//-- camera selfie stick
-
-// TINNO BEGIN
-// huaidong.tan , IAAO-2566 , DATE20180416 , detect headphone impedance
-#if defined(CONFIG_TINNO_AUDIO_HEADPHONES_HIGH_IMPED)
-bool is_headphones_high_imped = false;
-#endif
-// TINNO END
 
 static void wcd_mbhc_jack_report(struct wcd_mbhc *mbhc,
 				struct snd_soc_jack *jack, int status, int mask)
@@ -192,15 +174,6 @@ static void wcd_enable_curr_micbias(const struct wcd_mbhc *mbhc,
 		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_BTN_ISRC_CTL, 3);
 		/* Program Button threshold registers as per CS */
 		wcd_program_btn_threshold(mbhc, false);
-
-		// TINNO BEGIN
-		// huaidong.tan , IAAO-315 , DATE20171120 , bump up micbias2 from 1.8V to 2.7V
-		#ifdef CONFIG_TINNO_AUDIO_MICBIAS_2V7
-		mbhc->mbhc_cb->mbhc_micb2_2v7_ctrl(mbhc->codec,true);
-		/*wait for micbias2 bump up to 2v7 */
-		msleep(50);
-		#endif
-		// TINNO END
 		break;
 	case WCD_MBHC_EN_MB:
 		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_BTN_ISRC_CTL, 0);
@@ -211,14 +184,6 @@ static void wcd_enable_curr_micbias(const struct wcd_mbhc *mbhc,
 		/* Program Button threshold registers as per MICBIAS */
 		wcd_program_btn_threshold(mbhc, true);
 
-		// TINNO BEGIN
-		// huaidong.tan , IAAO-315 , DATE20171120 , bump up micbias2 from 1.8V to 2.7V
-		#ifdef CONFIG_TINNO_AUDIO_MICBIAS_2V7
-		mbhc->mbhc_cb->mbhc_micb2_2v7_ctrl(mbhc->codec,true);
-		/*wait for micbias2 bump up to 2v7 */
-		msleep(50);
-		#endif
-		// TINNO END
 		break;
 	case WCD_MBHC_EN_PULLUP:
 		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_BTN_ISRC_CTL, 3);
@@ -623,13 +588,6 @@ static void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 	switch_set_state(&wcd_mbhc_headset_switch, insertion ? 1:0);
 #endif
 
-// TINNO BEGIN
-// huaidong.tan , IAAO-2566 , DATE20180416 , detect headphone impedance
-#if defined(CONFIG_TINNO_AUDIO_HEADPHONES_HIGH_IMPED)
-	is_headphones_high_imped = false;
-#endif
-// TINNO END
-
 	if (!insertion) {
 		/* Report removal */
 		mbhc->hph_status &= ~jack_type;
@@ -663,16 +621,6 @@ static void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 			}
 			mbhc->micbias_enable = false;
 		}
-		// TINNO BEGIN
-		// huaidong.tan , IAAO-315 , DATE20171120 , bump up micbias2 from 1.8V to 2.7V
-		#ifdef CONFIG_TINNO_AUDIO_MICBIAS_2V7
-		else {
-			if(mbhc->mbhc_cb->mbhc_micb2_2v7_ctrl)
-				mbhc->mbhc_cb->mbhc_micb2_2v7_ctrl(
-						mbhc->codec,false);
-		}
-		#endif
-		// TINNO END
 
 		mbhc->hph_type = WCD_MBHC_HPH_NONE;
 		mbhc->zl = mbhc->zr = 0;
@@ -786,17 +734,6 @@ static void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 				pr_debug("%s: Marking jack type as SND_JACK_LINEOUT\n",
 				__func__);
 			}
-// TINNO BEGIN
-// huaidong.tan , IAAO-2566 , DATE20180416 , detect headphone impedance
-#if defined(CONFIG_TINNO_AUDIO_HEADPHONES_HIGH_IMPED)
-			else if ((mbhc->zl > mbhc->mbhc_cfg->headphones_high_imped_th && mbhc->zl < MAX_IMPED) 
-                  && (mbhc->zr > mbhc->mbhc_cfg->headphones_high_imped_th && mbhc->zr < MAX_IMPED)
-                  && (jack_type == SND_JACK_HEADPHONE)) {
-				//switch to high impedace audio path(100<impedance<5000)
-				is_headphones_high_imped = true;
-			}
-#endif
-// TINNO END
 		}
 
 		mbhc->hph_status |= jack_type;
@@ -925,29 +862,7 @@ static void wcd_mbhc_find_plug_and_report(struct wcd_mbhc *mbhc,
 						SND_JACK_HEADPHONE);
 			if (mbhc->current_plug == MBHC_PLUG_TYPE_HEADSET)
 				wcd_mbhc_report_plug(mbhc, 0, SND_JACK_HEADSET);
-	//++ camera selfie stick TN:peter
-	#ifdef CAMERA_SELFIE_STICK
-		if (mbhc->impedance_detect) {
-				mbhc->mbhc_cb->compute_impedance(mbhc,
-						&mbhc->zl, &mbhc->zr);
-				if ((mbhc->zl > 20000) && (mbhc->zr > 20000)) {
-					pr_debug("%s: special accessory \n", __func__);
-					/* Toggle switch back */
-					if (mbhc->mbhc_cfg->swap_gnd_mic &&
-						mbhc->mbhc_cfg->swap_gnd_mic(mbhc->codec)) {
-						pr_debug("%s: US_EU gpio present,flip switch again\n"
-								, __func__);
-					}
-					wcd_mbhc_report_plug(mbhc, 1, SND_JACK_HEADSET);
-					self_pole = true;
-				}
-				else {
-					wcd_mbhc_report_plug(mbhc, 1, SND_JACK_UNSUPPORTED);
-				}
-			}
-	#else
 		wcd_mbhc_report_plug(mbhc, 1, SND_JACK_UNSUPPORTED);
-	#endif	
 	//-- camera selfie stick
 	} else if (plug_type == MBHC_PLUG_TYPE_HEADSET) {
 		if (mbhc->mbhc_cfg->enable_anc_mic_detect)
@@ -1208,12 +1123,6 @@ static void wcd_enable_mbhc_supply(struct wcd_mbhc *mbhc,
 							WCD_MBHC_EN_CS);
 		} else if (plug_type == MBHC_PLUG_TYPE_HEADPHONE) {
 			wcd_enable_curr_micbias(mbhc, WCD_MBHC_EN_CS);
-		//++ camera selfie stick TN:peter		
-		#ifdef CAMERA_SELFIE_STICK
-		} else if (self_pole == true){
-			wcd_enable_curr_micbias(mbhc, WCD_MBHC_EN_CS);		
-		#endif
-		//-- camera selfie stick 
 		} else {
 			wcd_enable_curr_micbias(mbhc, WCD_MBHC_EN_NONE);
 		}

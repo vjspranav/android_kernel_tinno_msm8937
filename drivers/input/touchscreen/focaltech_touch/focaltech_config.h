@@ -227,12 +227,10 @@
  */
 //#define FTS_UPGRADE_FW_APP                      "include/firmware/FT8716_app_sample.i"
 
-#if defined(CONFIG_PROJECT_V12bn) || defined(CONFIG_PROJECT_V12cn_s)
+#if defined(CONFIG_PROJECT_V12bn)
 	#define FTS_UPGRADE_FW_APP                      "include/firmware/FT5346DQQ_V12BN_ID0X80_V01_D01_20170614_app.i"
-#elif defined(CONFIG_PROJECT_V12bnlite) || defined(CONFIG_PROJECT_V12fnlite) || defined(CONFIG_PROJECT_sdm450_tinno)
+#elif defined(CONFIG_PROJECT_V12bnlite)
 	#define FTS_UPGRADE_FW_APP                      "include/firmware/FT5346DQQ_V12LITE_ID0X80_V02_D01_20170525_app.i"
-#elif defined(CONFIG_PROJECT_V11bnlite) || defined(CONFIG_PROJECT_V11dnlite)
-	#define FTS_UPGRADE_FW_APP                      "include/firmware/5446_Ref_V11BN_V01_D01_20170605_app.i"
 #else
 	#define FTS_UPGRADE_FW_APP                      "include/firmware/FT8716_app_sample.i"
 #endif
@@ -241,19 +239,13 @@
  * if FTS_GET_VENDOR_ID_NUM >= 2, fw corrsponding with FTS_VENDOR_2_ID
  * define your own fw_app, the sample one is invalid
  */
-#if defined(CONFIG_PROJECT_V11bnlite) || defined(CONFIG_PROJECT_V11dnlite)
-	#define FTS_UPGRADE_FW2_APP                     "include/firmware/TL_V11_DJ0x67_FT5446_720x1440_V10_D01_20170721_app.i"
-#elif defined(CONFIG_PROJECT_sdm450_tinno)
-	#define FTS_UPGRADE_FW2_APP                     "include/firmware/TL_C860_DJ_FT5446_720x1528_app.i"
-#else
-	#define FTS_UPGRADE_FW2_APP                     "include/firmware/FT8716_app_sample.i"
-#endif
+#define FTS_UPGRADE_FW2_APP                     "include/firmware/FT8716_app_sample.i"
 
 /*
  * if FTS_GET_VENDOR_ID_NUM == 3, fw corrsponding with FTS_VENDOR_3_ID
  * define your own fw_app, the sample one is invalid
  */
-#if defined(CONFIG_PROJECT_V12bnlite) || defined(CONFIG_PROJECT_V12fnlite) || defined(CONFIG_PROJECT_sdm450_tinno)
+#if defined(CONFIG_PROJECT_V12bnlite)
 	#define FTS_UPGRADE_FW3_APP                     "include/firmware/CCF9723_TLv12_720x1440_5436DQQ_V11_82_20170913_app.i"
 #else
 	#define FTS_UPGRADE_FW3_APP                     "include/firmware/FT8716_app_sample.i"

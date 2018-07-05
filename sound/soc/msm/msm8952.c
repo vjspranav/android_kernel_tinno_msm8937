@@ -53,12 +53,6 @@
 #define MAX_WSA_CODEC_NAME_LENGTH 80
 #define MSM_DT_MAX_PROP_SIZE 80
 
-//++ camera selfie stick  TN:peter
-#if defined CONFIG_CAMERA_SELFIE_STICK_SUSPORT
-#define CAMERA_SELFIE_STICK
-#endif
-//-- camera selfie stick 
-
 enum btsco_rates {
 	RATE_8KHZ_ID,
 	RATE_16KHZ_ID,
@@ -143,12 +137,6 @@ static struct wcd_mbhc_config mbhc_cfg = {
 	.key_code[6] = 0,
 	.key_code[7] = 0,
 	.linein_th = 5000,
-// TINNO BEGIN
-// huaidong.tan , IAAO-2566 , DATE20180416 , detect headphone impedance
-#if defined(CONFIG_TINNO_AUDIO_HEADPHONES_HIGH_IMPED)
-	.headphones_high_imped_th = 100,
-#endif
-// TINNO END
 };
 
 static struct afe_clk_cfg mi2s_rx_clk_v1 = {
@@ -1870,15 +1858,9 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	if (!msm8952_wcd_cal)
 		return NULL;
 
-//++ camera selfie stick TN:peter
-#ifdef  CAMERA_SELFIE_STICK
-#define S(X, Y) ((WCD_MBHC_CAL_PLUG_TYPE_PTR(msm8952_wcd_cal)->X) = (Y))
-	S(v_hs_max, 1700);
-#else
 #define S(X, Y) ((WCD_MBHC_CAL_PLUG_TYPE_PTR(msm8952_wcd_cal)->X) = (Y))
 	S(v_hs_max, 1500);
 #endif
-//-- camera selfie stick
 #undef S
 #define S(X, Y) ((WCD_MBHC_CAL_BTN_DET_PTR(msm8952_wcd_cal)->X) = (Y))
 	S(num_btn, WCD_MBHC_DEF_BUTTONS);
@@ -3407,50 +3389,6 @@ static int tinno_dt_parse_mbhc_btn(struct platform_device *pdev)
 }
 //-- tinno_mba,btn vol
 
-// TINNO BEGIN
-// huaidong.tan , IAAO-2566 , DATE20180416 , detect headphone impedance
-#if defined(CONFIG_TINNO_AUDIO_HEADPHONES_HIGH_IMPED)
-extern bool is_headphones_high_imped;
-
-static ssize_t show_headphones_high_imped(struct device_driver *ddri, char *buf)
-{
-	if (buf == NULL) {
-		pr_err("[%s] *buf is NULL Pointer\n",  __func__);
-		return -EINVAL;
-	}
-
-	pr_debug("show_headphones_high_imped = %d\n", is_headphones_high_imped);
-	return sprintf(buf, "%u\n", is_headphones_high_imped);
-}
-
-static DRIVER_ATTR(headphones_high_imped, S_IWUSR | S_IRUGO, show_headphones_high_imped, NULL);
-
-static struct driver_attribute *msm8952_asoc_attr_list[] = {
-    &driver_attr_headphones_high_imped,
-};
-
-static int msm8952_asoc_create_attr(struct device_driver *driver)
-{
-	int idx, err = 0;
-	int num = (int)ARRAY_SIZE(msm8952_asoc_attr_list);
-
-	if (driver == NULL)
-		return -EINVAL;
-	for (idx = 0; idx < num; idx++) {
-		err = driver_create_file(driver, msm8952_asoc_attr_list[idx]);
-		if (err) {
-			pr_err("[msm8952_asoc_create_attr](%s) = %d\n",
-				msm8952_asoc_attr_list[idx]->attr.name, err);
-			break;
-		}
-	}
-	return err;
-}
-
-struct platform_driver msm8952_asoc_machine_driver_func(void);
-#endif
-// TINNO END
-
 static int msm8952_asoc_machine_probe(struct platform_device *pdev)
 {
 	struct snd_soc_card *card;
@@ -3468,12 +3406,6 @@ static int msm8952_asoc_machine_probe(struct platform_device *pdev)
 	int ret, id, i, val;
 	struct resource	*muxsel;
 	char *temp_str = NULL;
-// TINNO BEGIN
-// huaidong.tan , IAAO-2566 , DATE20180416 , detect headphone impedance
-#if defined(CONFIG_TINNO_AUDIO_HEADPHONES_HIGH_IMPED)
-	struct platform_driver asoc_machine_driver = msm8952_asoc_machine_driver_func();
-#endif
-// TINNO END
 
 	pdata = devm_kzalloc(&pdev->dev,
 			sizeof(struct msm8916_asoc_mach_data), GFP_KERNEL);
@@ -3760,16 +3692,6 @@ parse_mclk_freq:
 		goto err;
 	}
 
-// TINNO BEGIN
-// huaidong.tan , IAAO-2566 , DATE20180416 , detect headphone impedance
-#if defined(CONFIG_TINNO_AUDIO_HEADPHONES_HIGH_IMPED)
-	/* create /sys/bus/platform/drivers/msm8952-asoc-wcd/headphones_high_imped */
-	ret = msm8952_asoc_create_attr(&asoc_machine_driver.driver);
-	if (ret != 0)
-		pr_err("msm8952_asoc_create_attr err= %d\n", ret);
-#endif
-// TINNO END
-
 	return 0;
 err:
 	if (pdata->vaddr_gpio_mux_spkr_ctl)
@@ -3834,16 +3756,6 @@ static struct platform_driver msm8952_asoc_machine_driver = {
 	.probe = msm8952_asoc_machine_probe,
 	.remove = msm8952_asoc_machine_remove,
 };
-
-// TINNO BEGIN
-// huaidong.tan , IAAO-2566 , DATE20180416 , detect headphone impedance
-#if defined(CONFIG_TINNO_AUDIO_HEADPHONES_HIGH_IMPED)
-struct platform_driver msm8952_asoc_machine_driver_func(void)
-{
-    return msm8952_asoc_machine_driver;
-}
-#endif
-// TINNO END
 
 static int __init msm8952_machine_init(void)
 {

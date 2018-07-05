@@ -317,12 +317,6 @@ static void msm8x16_wcd_configure_cap(struct snd_soc_codec *codec,
 		bool micbias1, bool micbias2);
 static bool msm8x16_wcd_use_mb(struct snd_soc_codec *codec);
 
-// TINNO BEGIN
-// huaidong.tan , IAAO-315 , DATE20171120 , bump up micbias2 from 1.8V to 2.7V
-#ifdef CONFIG_TINNO_AUDIO_MICBIAS_2V7
-static void msm8x16_wcd_mbhc_micb_2V7_ctrl(struct snd_soc_codec *codec,bool en);
-#endif
-// TINNO END
 struct msm8x16_wcd_spmi msm8x16_wcd_modules[MAX_MSM8X16_WCD_DEVICE];
 
 static void *adsp_state_notifier;
@@ -376,14 +370,9 @@ static void wcd_mbhc_meas_imped(struct snd_soc_codec *codec,
 				0x04, 0x04);
 		/* Wait for 2ms for measurement to complete */
 		usleep_range(2000, 2100);
-#if defined(CONFIG_PROJECT_c800_tinno)
-		/* speaker is connect to HPHR, so we only compute HPHL impedance to ensure the accuracy */
-		*impedance_r = *impedance_l;
-#else
 		/* Read Right impedance value from Result1 */
 		*impedance_r = snd_soc_read(codec,
 				MSM8X16_WCD_A_ANALOG_MBHC_BTN_RESULT);
-#endif
 		snd_soc_update_bits(codec,
 				MSM8X16_WCD_A_ANALOG_MBHC_FSM_CTL,
 				0x04, 0x00);
@@ -696,14 +685,8 @@ static void msm8x16_wcd_mbhc_internal_micbias_ctrl(struct snd_soc_codec *codec,
 
 static bool msm8x16_wcd_mbhc_hph_pa_on_status(struct snd_soc_codec *codec)
 {
-#if defined(CONFIG_PROJECT_c800_tinno)
-	/* Both=0x30, HPHL=0x20(which can really help confirm the hp is on) */
-	return (snd_soc_read(codec, MSM8X16_WCD_A_ANALOG_RX_HPH_CNP_EN) &
-		0x20) ? true : false;
-#else
 	return (snd_soc_read(codec, MSM8X16_WCD_A_ANALOG_RX_HPH_CNP_EN) &
 		0x30) ? true : false;
-#endif
 }
 
 static void msm8x16_wcd_mbhc_program_btn_thr(struct snd_soc_codec *codec,
@@ -1030,12 +1013,6 @@ static const struct wcd_mbhc_cb mbhc_cb = {
 	.micbias_enable_status = msm8x16_wcd_micb_en_status,
 	.mbhc_bias = msm8x16_wcd_enable_master_bias,
 	.mbhc_common_micb_ctrl = msm8x16_wcd_mbhc_common_micb_ctrl,
-	// TINNO BEGIN
-	// huaidong.tan , IAAO-315 , DATE20171120 , bump up micbias2 from 1.8V to 2.7V
-	#ifdef CONFIG_TINNO_AUDIO_MICBIAS_2V7
-	.mbhc_micb2_2v7_ctrl = msm8x16_wcd_mbhc_micb_2V7_ctrl,
-	#endif
-	// TINNO END
 	.micb_internal = msm8x16_wcd_mbhc_internal_micbias_ctrl,
 	.hph_pa_on_status = msm8x16_wcd_mbhc_hph_pa_on_status,
 	.set_btn_thr = msm8x16_wcd_mbhc_program_btn_thr,
@@ -5714,21 +5691,6 @@ void msm8x16_wcd_hs_detect_exit(struct snd_soc_codec *codec)
 	wcd_mbhc_stop(&msm8x16_wcd_priv->mbhc);
 }
 EXPORT_SYMBOL(msm8x16_wcd_hs_detect_exit);
-
-// TINNO BEGIN
-// huaidong.tan , IAAO-315 , DATE20171120 , bump up micbias2 from 1.8V to 2.7V
-#ifdef CONFIG_TINNO_AUDIO_MICBIAS_2V7
-static void msm8x16_wcd_mbhc_micb_2V7_ctrl(struct snd_soc_codec *codec,bool en)
-{
-    /*Page 849 in document 80-NT390-2X, reg 0x0001F141, up to 2P70V and normal to 1P80V*/
-    pr_debug("\n %s: micbias_en= %d\n", __func__, en);
-    if(en)
-	snd_soc_write(codec, MSM8X16_WCD_A_ANALOG_MICB_1_VAL, 0xb0);
-    else
-	snd_soc_write(codec, MSM8X16_WCD_A_ANALOG_MICB_1_VAL, 0x20);
-}
-#endif
-// TINNO END
 
 void msm8x16_update_int_spk_boost(bool enable)
 {
