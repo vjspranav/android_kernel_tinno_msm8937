@@ -116,7 +116,7 @@
 *******************************************************************************/
 static unsigned char CTPM_FW[] = {
 
-	#ifdef CONFIG_PROJECT_P7201
+	#ifdef CONFIG_PROJECT_GARLIC
 #include "FT5346_BOEN_TL_7201_V21_D01_20160805_app.i"
 	#else
 #include "FT_Upgrade_App.i"

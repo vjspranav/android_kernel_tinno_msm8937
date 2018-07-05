@@ -2291,12 +2291,12 @@ config PLATFORM_TINNO
 	help
 	  Tells whether it is a tinno device or not
 
-config PROJECT_P7201
+config PROJECT_GARLIC
 	tristate "project support"
 	help
 	  This option enables support project name
 	  
-config PROJECT_P6901
+config PROJECT_WIMLITE
 	tristate "project support"
 	help
 	  This option enables support project name	

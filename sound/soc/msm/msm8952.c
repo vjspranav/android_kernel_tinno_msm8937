@@ -72,7 +72,7 @@ static atomic_t quat_mi2s_clk_ref;
 static atomic_t quin_mi2s_clk_ref;
 static atomic_t auxpcm_mi2s_clk_ref;
 
-#ifdef CONFIG_PROJECT_P7201
+#ifdef CONFIG_PROJECT_GARLIC
 int ext_spk_pa_gpio = -1;
 #endif
 
@@ -90,7 +90,7 @@ static int msm8952_wsa_switch_event(struct snd_soc_dapm_widget *w,
  * Need to report LINEIN
  * if R/L channel impedance is larger than 5K ohm
  */
-#ifdef CONFIG_PROJECT_P7201
+#ifdef CONFIG_PROJECT_GARLIC
 static struct wcd_mbhc_config mbhc_cfg = {
 	.read_fw_bin = false,
 	.calibration = NULL,
@@ -269,7 +269,7 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 
 	pdata->spk_ext_pa_gpio = of_get_named_gpio(pdev->dev.of_node,
 				spk_ext_pa, 0);
-	#ifdef CONFIG_PROJECT_P7201
+	#ifdef CONFIG_PROJECT_GARLIC
 	ext_spk_pa_gpio = pdata->spk_ext_pa_gpio;
 	#endif
 	#ifdef CONFIG_PLATFORM_TINNO
@@ -330,7 +330,7 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 			return ret;
 		}
 		#endif
-		#ifdef CONFIG_PROJECT_P7201
+		#ifdef CONFIG_PROJECT_GARLIC
 		printk(KERN_ERR"goto mode-2");
 		ext_spk_pa_current_state = true;
 		gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 1);
@@ -1629,7 +1629,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_low[3] = 450;
 	btn_high[3] = 450;
 	#endif
-	#ifdef CONFIG_PROJECT_P6901 
+	#ifdef CONFIG_PROJECT_WIMLITE 
 	btn_low[0] = 75;
 	btn_high[0] = 75;
 	btn_low[1] = 100;
@@ -1641,7 +1641,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_low[4] = 500;
 	btn_high[4] = 500;
 	#endif
-	#ifdef CONFIG_PROJECT_P7201
+	#ifdef CONFIG_PROJECT_GARLIC
 	btn_low[0] = 100;
 	btn_high[0] = 100;
 	btn_low[1] = 250;
@@ -2373,7 +2373,7 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.be_id = MSM_FRONTEND_DAI_QCHAT,
 	},
 
-	#ifdef CONFIG_PROJECT_P6901
+	#ifdef CONFIG_PROJECT_WIMLITE
 	#if 1
 	{ /* hw:x,37 */
 		.name = "QUIN_MI2S Hostless",
@@ -2390,7 +2390,7 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.ignore_pmdown_time = 1,
 		/* tfa98xx: nxp smart pa for speaker */
 		
-		#ifdef CONFIG_PROJECT_P6901
+		#ifdef CONFIG_PROJECT_WIMLITE
 		.codec_dai_name = "tfa98xx-aif-2-34",
 		.codec_name = "tfa98xx.2-0034",
 		#endif
@@ -2680,7 +2680,7 @@ static struct snd_soc_dai_link msm8952_hdmi_dba_dai_link[] = {
 };
 
 static struct snd_soc_dai_link msm8952_quin_dai_link[] = {
-	#ifdef CONFIG_PROJECT_P6901
+	#ifdef CONFIG_PROJECT_WIMLITE
 	#if 1
 	{
 		.name = LPASS_BE_QUIN_MI2S_RX,
@@ -2688,7 +2688,7 @@ static struct snd_soc_dai_link msm8952_quin_dai_link[] = {
 		.cpu_dai_name = "msm-dai-q6-mi2s.5",
 		.platform_name = "msm-pcm-routing",
 
-		#ifdef CONFIG_PROJECT_P6901
+		#ifdef CONFIG_PROJECT_WIMLITE
 		.codec_dai_name = "tfa98xx-aif-2-34",
 		.codec_name = "tfa98xx.2-0034",
 		#endif
@@ -3377,7 +3377,7 @@ static int msm8952_asoc_machine_remove(struct platform_device *pdev)
 	struct msm8916_asoc_mach_data *pdata = snd_soc_card_get_drvdata(card);
 	int i;
 
-	#ifdef CONFIG_PROJECT_P7201
+	#ifdef CONFIG_PROJECT_GARLIC
 	if (gpio_is_valid(ext_spk_pa_gpio))
 		gpio_free(ext_spk_pa_gpio);
 	#endif

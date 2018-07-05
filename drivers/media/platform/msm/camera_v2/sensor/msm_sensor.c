@@ -268,7 +268,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	int rc = 0;
 	uint16_t chipid = 0;
-	#ifdef CONFIG_PROJECT_P7201
+	#ifdef CONFIG_PROJECT_GARLIC
 	uint16_t mid = 0;
 	uint16_t flag = 0;
 	#endif
@@ -306,9 +306,9 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 	}
 
 
-	#ifdef CONFIG_PROJECT_P7201
+	#ifdef CONFIG_PROJECT_GARLIC
 	pr_err("%s: sensor_name is %s\n", __func__, sensor_name);
-	if((!strncmp(s_ctrl->sensordata->sensor_name, "imx258_guangbao_p7201", sizeof("imx258_guangbao_p7201")))) {
+	if((!strncmp(s_ctrl->sensordata->sensor_name, "imx258_guangbao_garlic", sizeof("imx258_guangbao_garlic")))) {
 		unsigned short addr_temp = 0;
 		addr_temp = sensor_i2c_client->cci_client->sid;
 		sensor_i2c_client->cci_client->sid = 0xA0>>1;
@@ -331,7 +331,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 
 
 		if(mid == 0x03)
-			pr_err("mid of camera is imx258_guangbao_p7201\n");
+			pr_err("mid of camera is imx258_guangbao_garlic\n");
 		else
 			return -ENODEV;
 
@@ -344,7 +344,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 
 	}
 
-	if((!strncmp(s_ctrl->sensordata->sensor_name, "imx258_sunny_p7201", sizeof("imx258_sunny_p7201")))) {
+	if((!strncmp(s_ctrl->sensordata->sensor_name, "imx258_sunny_garlic", sizeof("imx258_sunny_garlic")))) {
 		unsigned short addr_temp = 0;
 		addr_temp = sensor_i2c_client->cci_client->sid;
 		sensor_i2c_client->cci_client->sid = 0xA0 >>1;
@@ -367,7 +367,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 
 
 		if(mid == 0x01)
-			pr_err("mid of camera is imx258_sunny_p7201 \n");
+			pr_err("mid of camera is imx258_sunny_garlic \n");
 		else
 			return -ENODEV;
 

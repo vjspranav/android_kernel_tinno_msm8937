@@ -286,7 +286,7 @@ static int mdss_dsi_panel_power_off(struct mdss_panel_data *pdata)
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 	                          panel_data);
 
-	#if defined(CONFIG_PROJECT_P7201) || defined(CONFIG_PROJECT_P6901)
+	#if defined(CONFIG_PROJECT_GARLIC) || defined(CONFIG_PROJECT_WIMLITE)
 	ret = msm_dss_enable_vreg(
 	          ctrl_pdata->panel_power_data.vreg_config,
 	          ctrl_pdata->panel_power_data.num_vreg, 0);
@@ -347,7 +347,7 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
-	#if defined(CONFIG_PROJECT_P7201) || defined(CONFIG_PROJECT_P6901)
+	#if defined(CONFIG_PROJECT_GARLIC) || defined(CONFIG_PROJECT_WIMLITE)
 	ret = mdss_dsi_panel_disp_en_gpio(pdata, 1);
 	if (ret)
 		pr_err("%s: Panel disp_en_gpio failed. ret=%d\n",

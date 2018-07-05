@@ -16,12 +16,12 @@
 
 DTS_CUSTOM_DIR := qcom
 
-ifeq ($(CONFIG_PROJECT_P7201),y)
-DTS_CUSTOM_DIR := p7201
+ifeq ($(CONFIG_PROJECT_GARLIC),y)
+DTS_CUSTOM_DIR := garlic
 endif
 
-ifeq ($(CONFIG_PROJECT_P6901),y)
-DTS_CUSTOM_DIR := p6901
+ifeq ($(CONFIG_PROJECT_WIMLITE),y)
+DTS_CUSTOM_DIR := wimlite
 endif
 
 #include $(srctree)/arch/arm64/boot/dts/qcom/Makefile

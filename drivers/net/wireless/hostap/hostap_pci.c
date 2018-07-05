@@ -229,7 +229,7 @@ static void prism2_pci_cor_sreset(local_info_t *local)
 
 	/* linux-wlan-ng uses extremely long hold and settle times for
 	 * COR sreset. A comment in the driver code mentions that the long
-	 * delays appear to be necessary. However, at least IBM 22P6901 seems
+	 * delays appear to be necessary. However, at least IBM 22WIMLITE seems
 	 * to work fine with shorter delays.
 	 *
 	 * Longer delays can be configured by uncommenting following line: */

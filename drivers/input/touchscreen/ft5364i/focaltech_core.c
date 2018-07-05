@@ -960,7 +960,7 @@ static int fts_ts_stop(struct device *dev)
 	}
 	input_mt_report_pointer_emulation(data->input_dev, false);
 	input_sync(data->input_dev);
-	#ifdef CONFIG_PROJECT_P6901
+	#ifdef CONFIG_PROJECT_WIMLITE
 	txbuf[0] = FTS_REG_PMODE;
 	txbuf[1] = FTS_PMODE_HIBERNATE;
 	fts_i2c_write(data->client, txbuf, sizeof(txbuf));
@@ -1704,7 +1704,7 @@ static const struct file_operations debug_dump_info_fops = {
 *  Output:
 *  Return:
 *******************************************************************************/
-u8 p6901_tp_vendor_id = 0;
+u8 wimlite_tp_vendor_id = 0;
 static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
 	struct fts_ts_platform_data *pdata;
@@ -1998,7 +1998,7 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
 	fts_update_fw_ver(data);
 	fts_update_fw_vendor_id(data);
 
-	p6901_tp_vendor_id = data->fw_vendor_id;
+	wimlite_tp_vendor_id = data->fw_vendor_id;
 	dev_err(&client->dev, "geroge data->fw_vendor_id is %x",data->fw_vendor_id );
 	if ( 0xA8 == data->fw_vendor_id || 0x00 == data->fw_vendor_id ) {
 		fts_ctpm_fw_upgrade_ReadVendorID(data->client, &data->fw_vendor_id);

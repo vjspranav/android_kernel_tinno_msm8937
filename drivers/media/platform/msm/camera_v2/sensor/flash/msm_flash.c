@@ -955,7 +955,7 @@ static int32_t msm_flash_get_dt_data(struct device_node *of_node,
 		return rc;
 	}
 
-#ifndef CONFIG_PROJECT_P7201
+#ifndef CONFIG_PROJECT_GARLIC
 	if (fctrl->flash_driver_type == FLASH_DRIVER_DEFAULT)
 		fctrl->flash_driver_type = FLASH_DRIVER_GPIO;
 #endif

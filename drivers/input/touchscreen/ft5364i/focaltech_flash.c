@@ -118,12 +118,12 @@ static unsigned char *CTPM_FW = NULL;
 int yeji_fw_size,be_fw_size;
 
 static unsigned char CTPM_FW_BE[] = {
-#include "BE_FT5346I_P6901_V13_D01_20161221_app.i"
+#include "BE_FT5346I_WIMLITE_V13_D01_20161221_app.i"
 };
 
-#ifdef(CONFIG_PROJECT_P6901)
+#ifdef(CONFIG_PROJECT_WIMLITE)
 static unsigned char CTPM_FW_YEJI[] = {
-#include "YEJI_FT5346I_P6901_V17_D01_20170518_app.i"
+#include "YEJI_FT5346I_WIMLITE_V17_D01_20170518_app.i"
 };
 #endif
 
@@ -1334,7 +1334,7 @@ int fts_5x26_ctpm_fw_upgrade(struct i2c_client *client, u8 *pbt_buf, u32 dw_lent
 * Output: no
 * Return: fail <0
 ***********************************************************************/
-extern u8 p6901_tp_vendor_id;
+extern u8 wimlite_tp_vendor_id;
 int fts_5x36_ctpm_fw_upgrade(struct i2c_client *client, u8 *pbt_buf, u32 dw_lenth)
 {
 	u8 reg_val[2] = {0};
@@ -1350,7 +1350,7 @@ int fts_5x36_ctpm_fw_upgrade(struct i2c_client *client, u8 *pbt_buf, u32 dw_lent
 	u8  	bt_ecc;
 	int	i_ret;
 	int	fw_filenth;
-	if (0x80 == p6901_tp_vendor_id) {
+	if (0x80 == wimlite_tp_vendor_id) {
 		fw_filenth = sizeof(CTPM_FW_YEJI);
 	} else {
 		fw_filenth = sizeof(CTPM_FW_BE);
@@ -2766,7 +2766,7 @@ int fts_ctpm_fw_upgrade_with_app_file(struct i2c_client *client, char *firmware_
 int fts_ctpm_get_i_file_ver(void)
 {
 	u16 ui_sz;
-	if (0x80 == p6901_tp_vendor_id) {
+	if (0x80 == wimlite_tp_vendor_id) {
 		ui_sz = sizeof(CTPM_FW_YEJI);
 	} else {
 		ui_sz = sizeof(CTPM_FW_BE);
@@ -2904,7 +2904,7 @@ int fts_ctpm_fw_upgrade_with_i_file(struct i2c_client *client)
 	u8 *pbt_buf = NULL;
 	int i_ret=0;
 	int fw_len;
-	if (0x80 == p6901_tp_vendor_id) {
+	if (0x80 == wimlite_tp_vendor_id) {
 		fw_len = sizeof(CTPM_FW_YEJI);
 	} else {
 		fw_len = sizeof(CTPM_FW_BE);
@@ -3056,7 +3056,7 @@ int fts_ctpm_auto_upgrade(struct i2c_client *client,u8 vendor_id,char *config_id
 	u8 uc_tp_fm_ver;
 	int i_ret;
 
-	if (0x80 == p6901_tp_vendor_id) {
+	if (0x80 == wimlite_tp_vendor_id) {
 		CTPM_FW = CTPM_FW_YEJI;
 		yeji_fw_size = sizeof(CTPM_FW_YEJI);
 		dev_err(&client->dev, "%s,line=%d,for YEJI yeji_fw_size=%d",__func__,__LINE__,yeji_fw_size);

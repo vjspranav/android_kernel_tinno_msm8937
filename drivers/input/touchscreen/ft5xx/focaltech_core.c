@@ -950,7 +950,7 @@ static int fts_ts_stop(struct device *dev)
 	}
 	input_mt_report_pointer_emulation(data->input_dev, false);
 	input_sync(data->input_dev);
-	#ifdef CONFIG_PROJECT_P7201
+	#ifdef CONFIG_PROJECT_GARLIC
 	txbuf[0] = FTS_REG_PMODE;
 	txbuf[1] = FTS_PMODE_HIBERNATE;
 	fts_i2c_write(data->client, txbuf, sizeof(txbuf));

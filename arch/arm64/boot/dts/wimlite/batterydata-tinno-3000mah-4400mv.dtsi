@@ -1,6 +1,6 @@
 
 qcom,tinno-3000mah {
-	/* #2785615_Tinno_P6901ACatl_3000mAh_averaged_MasterSlave_Feb13th2017*/
+	/* #2785615_Tinno_WIMLITEACatl_3000mAh_averaged_MasterSlave_Feb13th2017*/
 	qcom,max-voltage-uv = <4400000>;
 	qcom,nom-batt-capacity-mah = <3000>;
 	qcom,batt-id-kohm = <100>;

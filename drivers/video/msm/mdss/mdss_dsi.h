@@ -666,7 +666,7 @@ void mdss_dsi_set_reg(struct mdss_dsi_ctrl_pdata *ctrl, int off,
 	u32 mask, u32 val);
 int mdss_dsi_phy_pll_reset_status(struct mdss_dsi_ctrl_pdata *ctrl);
 
-#if defined(CONFIG_PROJECT_P7201) || defined(CONFIG_PROJECT_P6901)
+#if defined(CONFIG_PROJECT_GARLIC) || defined(CONFIG_PROJECT_WIMLITE)
 int mdss_dsi_panel_disp_en_gpio(struct mdss_panel_data *pdata, int enable);
 #endif
 

@@ -34,7 +34,7 @@
 #include <linux/switch.h>//yangliang add for ftm hph detect20150830
 #endif
 
-#ifdef CONFIG_PROJECT_P7201
+#ifdef CONFIG_PROJECT_GARLIC
 extern bool ext_spk_pa_current_state;
 #endif
 
@@ -522,7 +522,7 @@ static void wcd_mbhc_set_and_turnoff_hph_padac(struct wcd_mbhc *mbhc)
 	}
 
 	//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
-	#ifdef CONFIG_PROJECT_P7201
+	#ifdef CONFIG_PROJECT_GARLIC
 	if(ext_spk_pa_current_state == false) {
 		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
 	}
