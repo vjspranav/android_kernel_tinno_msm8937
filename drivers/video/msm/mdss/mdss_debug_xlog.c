@@ -29,7 +29,7 @@
 #endif
 
 #ifdef CONFIG_PLATFORM_TINNO
-#define XLOG_DEFAULT_PANIC 0   //1  //LINE<20161123><Don't entry panic when LCD has errors>wangyanhui
+#define XLOG_DEFAULT_PANIC 0   
 #else
 #define XLOG_DEFAULT_PANIC 1
 #endif

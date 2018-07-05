@@ -133,22 +133,22 @@ static unsigned char aucFW_PRAM_BOOT[] = {
 };
 
 struct fts_Upgrade_Info fts_updateinfo[] = {
-	{0x55,FTS_MAX_POINTS_5,AUTO_CLB_NEED,50, 30, 0x79, 0x03, 10, 2000}, //,"FT5x06"
-	{0x08,FTS_MAX_POINTS_5,AUTO_CLB_NEED,50, 10, 0x79, 0x06, 100, 2000}, //,"FT5606"
-	{0x0a,FTS_MAX_POINTS_5,AUTO_CLB_NEED,50, 30, 0x79, 0x07, 10, 1500}, //,"FT5x16"
-	{0x06,FTS_MAX_POINTS_2,AUTO_CLB_NONEED,100, 30, 0x79, 0x08, 10, 2000}, //,"FT6x06"
-	{0x36,FTS_MAX_POINTS_2,AUTO_CLB_NONEED,10, 10, 0x79, 0x18, 10, 2000}, //,"FT6x36"
-	{0x64,FTS_MAX_POINTS_2,AUTO_CLB_NONEED,10, 10, 0x79, 0x1c, 10, 2000}, //,"FT6336GU"
-	{0x55,FTS_MAX_POINTS_5,AUTO_CLB_NEED,50, 30, 0x79, 0x03, 10, 2000}, //,"FT5x06i"
-	{0x14,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,30, 30, 0x79, 0x11, 10, 2000}, //,"FT5336"
-	{0x13,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,30, 30, 0x79, 0x11, 10, 2000}, //,"FT3316"
-	{0x12,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,30, 30, 0x79, 0x11, 10, 2000}, //,"FT5436i"
-	{0x11,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,30, 30, 0x79, 0x11, 10, 2000}, //,"FT5336i"
-	{0x54,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,2, 2, 0x54, 0x2c, 20, 2000}, //,"FT5x46"
-	{0x58,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,2, 2, 0x58, 0x2c, 20, 2000},//"FT5822",
-	{0x59,FTS_MAX_POINTS_10,AUTO_CLB_NONEED,30, 50, 0x79, 0x10, 1, 2000},//"FT5x26",
-	{0x86,FTS_MAX_POINTS_10,AUTO_CLB_NONEED,2, 2, 0x86, 0xA6, 20, 2000},//"FT8606",
-	{0x0e,FTS_MAX_POINTS_2,AUTO_CLB_NONEED,10, 10, 0x79, 0x18, 10, 2000}, //,"FT3X07"
+	{0x55,FTS_MAX_POINTS_5,AUTO_CLB_NEED,50, 30, 0x79, 0x03, 10, 2000}, 
+	{0x08,FTS_MAX_POINTS_5,AUTO_CLB_NEED,50, 10, 0x79, 0x06, 100, 2000}, 
+	{0x0a,FTS_MAX_POINTS_5,AUTO_CLB_NEED,50, 30, 0x79, 0x07, 10, 1500}, 
+	{0x06,FTS_MAX_POINTS_2,AUTO_CLB_NONEED,100, 30, 0x79, 0x08, 10, 2000}, 
+	{0x36,FTS_MAX_POINTS_2,AUTO_CLB_NONEED,10, 10, 0x79, 0x18, 10, 2000}, 
+	{0x64,FTS_MAX_POINTS_2,AUTO_CLB_NONEED,10, 10, 0x79, 0x1c, 10, 2000}, 
+	{0x55,FTS_MAX_POINTS_5,AUTO_CLB_NEED,50, 30, 0x79, 0x03, 10, 2000}, 
+	{0x14,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,30, 30, 0x79, 0x11, 10, 2000}, 
+	{0x13,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,30, 30, 0x79, 0x11, 10, 2000}, 
+	{0x12,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,30, 30, 0x79, 0x11, 10, 2000}, 
+	{0x11,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,30, 30, 0x79, 0x11, 10, 2000}, 
+	{0x54,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,2, 2, 0x54, 0x2c, 20, 2000}, 
+	{0x58,FTS_MAX_POINTS_5,AUTO_CLB_NONEED,2, 2, 0x58, 0x2c, 20, 2000},
+	{0x59,FTS_MAX_POINTS_10,AUTO_CLB_NONEED,30, 50, 0x79, 0x10, 1, 2000},
+	{0x86,FTS_MAX_POINTS_10,AUTO_CLB_NONEED,2, 2, 0x86, 0xA6, 20, 2000},
+	{0x0e,FTS_MAX_POINTS_2,AUTO_CLB_NONEED,10, 10, 0x79, 0x18, 10, 2000}, 
 };
 /*******************************************************************************
 * Global variable or extern global variabls/functions
@@ -242,7 +242,7 @@ int fts_ctpm_i2c_hid2std(struct i2c_client *client)
 ***********************************************************************/
 #define CONFIG_START_ADDR                (0xD780)
 #define CONFIG_VENDOR_ID_OFFSET     (0x04)
-#define CONFIG_VENDOR_ID_ADDR       (CONFIG_START_ADDR+CONFIG_VENDOR_ID_OFFSET)  //
+#define CONFIG_VENDOR_ID_ADDR       (CONFIG_START_ADDR+CONFIG_VENDOR_ID_OFFSET)  
 
 #define FTS_UPGRADE_LOOP                    30
 #define FTS_UPGRADE_AA                      0xAA
@@ -337,15 +337,15 @@ static int fts_ft5x46_get_vendor_id_flash(struct i2c_client *client, u8 *ucPVend
 void fts_update_fw_vendor_id(struct fts_ts_data *data)
 {
 	struct i2c_client *client = data->client;
-	//u8 reg_addr;
+	
 	int err;
 
-	//reg_addr = FTS_REG_FW_VENDOR_ID;
-	//err = fts_i2c_read(client, &reg_addr, 1, &data->fw_vendor_id, 1);
+	
+	
 	err = fts_ft5x46_get_vendor_id_flash(client,&data->fw_vendor_id);
 	if (err < 0)
 		dev_err(&client->dev, "fw vendor id read failed\n");
-	//dev_err(&client->dev, "fts_update_fw_vendor_id: data->fw_vendor_id=%x",data->fw_vendor_id);
+	
 	FTS_DBG("fts_update_fw_vendor_id: data->fw_vendor_id=%x\n",data->fw_vendor_id);
 }
 
@@ -609,12 +609,12 @@ void fts_get_upgrade_array(void)
 	int ret = 0;
 
 	ret = fts_read_reg(fts_i2c_client, FTS_REG_ID,&chip_id);
-//begin <add for update failed><20160627><>;xiongdajun
-//#if defined(CONFIG_PROJECT_P6901)
+
+
 	if (chip_id == 0)
 		chip_id = 0x54;
-//#endif
-//END <add for update failed><20160627><>;xiongdajun
+
+
 	if (ret<0) {
 		FTS_DBG("[Focal][Touch] read value fail");
 	}
@@ -653,7 +653,7 @@ int fts_ctpm_auto_clb(struct i2c_client *client)
 	/*write command to start calibration */
 	fts_write_reg(client, 2, 0x4);
 	msleep(300);
-	if ((fts_updateinfo_curr.CHIP_ID==0x11) ||(fts_updateinfo_curr.CHIP_ID==0x12) ||(fts_updateinfo_curr.CHIP_ID==0x13) ||(fts_updateinfo_curr.CHIP_ID==0x14)) { //5x36,5x36i
+	if ((fts_updateinfo_curr.CHIP_ID==0x11) ||(fts_updateinfo_curr.CHIP_ID==0x12) ||(fts_updateinfo_curr.CHIP_ID==0x13) ||(fts_updateinfo_curr.CHIP_ID==0x14)) { 
 		for(i=0; i<100; i++) {
 			fts_read_reg(client, 0x02, &uc_temp);
 			if (0x02 == uc_temp ||
@@ -1357,7 +1357,7 @@ int fts_5x36_ctpm_fw_upgrade(struct i2c_client *client, u8 *pbt_buf, u32 dw_lent
 	u8  	auc_i2c_write_buf[10];
 	u8  	bt_ecc;
 	int	i_ret;
-	//int	fw_filenth = sizeof(CTPM_FW);
+	
 	int	fw_filenth;
 	if (0x80 == p6901_tp_vendor_id) {
 		fw_filenth = sizeof(CTPM_FW_YEJI);
@@ -1883,7 +1883,7 @@ int  fts_5x46_ctpm_fw_upgrade(struct i2c_client * client, u8* pbt_buf, u32 dw_le
 		fts_write_reg(client, FTS_RST_CMD_REG1, FTS_UPGRADE_AA);
 		msleep(fts_updateinfo_curr.delay_aa);
 
-		//write 0x55 to register FTS_RST_CMD_REG1
+		
 		fts_write_reg(client, FTS_RST_CMD_REG1, FTS_UPGRADE_55);
 		msleep(200);
 		/*********Step 2:Enter upgrade mode *****/
@@ -2258,8 +2258,8 @@ int  fts_8606_ctpm_fw_upgrade(struct i2c_client * client, u8* pbt_buf, u32 dw_le
 
 	{
 		cmd[0] = 0x05;
-		cmd[1] = reg_val_id[0];//0x80;
-		cmd[2] = 0x00;//???
+		cmd[1] = reg_val_id[0];
+		cmd[2] = 0x00;
 		fts_i2c_write(client, cmd, 3);
 	}
 
@@ -2389,9 +2389,9 @@ int  fts_8606_ctpm_fw_upgrade(struct i2c_client * client, u8* pbt_buf, u32 dw_le
 		msleep(1);
 
 	}
-	//----------------------------------------------------------------------
+	
 	if (dw_lenth > LEN_FLASH_ECC_MAX) {
-		temp = LEN_FLASH_ECC_MAX;//??? 0x1000+LEN_FLASH_ECC_MAX
+		temp = LEN_FLASH_ECC_MAX;
 		auc_i2c_write_buf[0] = 0x65;
 		auc_i2c_write_buf[1] = (u8)(temp >> 16);
 		auc_i2c_write_buf[2] = (u8)(temp >> 8);
@@ -2429,7 +2429,7 @@ int  fts_8606_ctpm_fw_upgrade(struct i2c_client * client, u8* pbt_buf, u32 dw_le
 	FTS_DBG("Step 7: reset the new FW\n");
 	auc_i2c_write_buf[0] = 0x07;
 	fts_i2c_write(client, auc_i2c_write_buf, 1);
-	msleep(200);   //make sure CTP startup normally
+	msleep(200);   
 	return 0;
 }
 
@@ -2776,7 +2776,7 @@ int fts_ctpm_fw_upgrade_with_app_file(struct i2c_client *client, char *firmware_
 int fts_ctpm_get_i_file_ver(void)
 {
 	u16 ui_sz;
-	//ui_sz = sizeof(CTPM_FW);
+	
 	if (0x80 == p6901_tp_vendor_id) {
 		ui_sz = sizeof(CTPM_FW_YEJI);
 	} else {
@@ -2914,7 +2914,7 @@ int fts_ctpm_fw_upgrade_with_i_file(struct i2c_client *client)
 {
 	u8 *pbt_buf = NULL;
 	int i_ret=0;
-	//int fw_len = sizeof(CTPM_FW);
+	
 	int fw_len;
 	if (0x80 == p6901_tp_vendor_id) {
 		fw_len = sizeof(CTPM_FW_YEJI);
@@ -3083,7 +3083,7 @@ int fts_ctpm_auto_upgrade(struct i2c_client *client,u8 vendor_id,char *config_id
 	         uc_tp_fm_ver, uc_host_fm_ver, FTS_REG_FW_VER);
 
 
-	if(uc_tp_fm_ver == 0x80 ||uc_tp_fm_ver == FTS_REG_FW_VER ||uc_tp_fm_ver < uc_host_fm_ver ) { //add 0x80
+	if(uc_tp_fm_ver == 0x80 ||uc_tp_fm_ver == FTS_REG_FW_VER ||uc_tp_fm_ver < uc_host_fm_ver ) { 
 		msleep(100);
 		dev_dbg(&client->dev, "[FTS] uc_tp_fm_ver = 0x%x, uc_host_fm_ver = 0x%x\n",uc_tp_fm_ver, uc_host_fm_ver);
 		i_ret = fts_ctpm_fw_upgrade_with_i_file(client);

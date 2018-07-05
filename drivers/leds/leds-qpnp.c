@@ -910,7 +910,7 @@ static int qpnp_mpp_set(struct qpnp_led_data *led)
 				         led->mpp_cfg->pwm_cfg->pwm_dev,
 				         1000000,
 				         1000000);
-			}//<20160329><add for green led output high not wait 2s>wangyanhui add
+			}
 			else {
 			#endif
 				/*config pwm for brightness scaling*/
@@ -2625,10 +2625,10 @@ static void led_blink(struct qpnp_led_data *led,
 			struct pwm_config_data *pwm_cfg)
 {
 	#ifdef CONFIG_PLATFORM_TINNO
-	//int rc;
-//BEGIN<20160324><blinking use pwm>wangyanhui modify
+	
+
 	if(led->cdev.brightness>0)
-		led->cdev.brightness = 102;//LINE<HCABN-458><20161113><on-2s  off-3s>wangyanhui
+		led->cdev.brightness = 102;
 
 	qpnp_mpp_set(led);
 	#else
@@ -2676,7 +2676,7 @@ static void led_blink(struct qpnp_led_data *led,
 	}
 	mutex_unlock(&led->lock);
 	#endif
-//END<20160324><blinking use pwm>wangyanhui modify
+
 }
 
 static ssize_t blink_store(struct device *dev,
@@ -3454,7 +3454,7 @@ static int qpnp_get_config_pwm(struct pwm_config_data *pwm_cfg,
 		of_property_read_bool(node, "qcom,use-blink");
 
 	#ifdef CONFIG_PLATFORM_TINNO
-	if (pwm_cfg->mode == LPG_MODE) {//<20160324><blinking use pwm not LGP>wangyanhui modify
+	if (pwm_cfg->mode == LPG_MODE) {
 	#else
 	if (pwm_cfg->mode == LPG_MODE || pwm_cfg->use_blink) {
 	#endif

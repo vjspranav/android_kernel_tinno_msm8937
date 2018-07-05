@@ -173,7 +173,7 @@ static ssize_t fts_debug_read(struct file *filp, char __user *buff, size_t count
 
 	switch (proc_operate_mode) {
 	case PROC_UPGRADE:
-		//after calling fts_debug_write to upgrade
+		
 		regaddr = 0xA6;
 		ret = fts_read_reg(fts_i2c_client, regaddr, &regvalue);
 		if (ret < 0)
@@ -322,7 +322,7 @@ static int fts_debug_read( char *page, char **start,
 
 	switch (proc_operate_mode) {
 	case PROC_UPGRADE:
-		//after calling fts_debug_write to upgrade
+		
 		regaddr = 0xA6;
 		ret = fts_read_reg(fts_i2c_client, regaddr, &regvalue);
 		if (ret < 0)
@@ -497,7 +497,7 @@ static ssize_t fts_tprwreg_store(struct device *dev, struct device_attribute *at
 {
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
 	ssize_t num_read_chars = 0;
-	//int retval = 0;
+	
 	long unsigned int wmreg=0;
 	u8 regaddr=0xff,regvalue=0xff;
 	u8 valbuf[5]= {0};
@@ -513,11 +513,11 @@ static ssize_t fts_tprwreg_store(struct device *dev, struct device_attribute *at
 	}
 	memcpy(valbuf, buf, num_read_chars);
 	wmreg = simple_strtoul(valbuf, NULL, 16);
-	//if (0 != retval)
-	//{
-	//	dev_err(dev, "%s() - ERROR: Could not convert the given input to a number. The given input was: \"%s\"\n", __FUNCTION__, buf);
-	//	goto error_return;
-	//}
+	
+	
+	
+	
+	
 	if (2 == num_read_chars) {
 		/*read register*/
 		regaddr = wmreg;
@@ -575,11 +575,11 @@ static ssize_t fts_fwupdate_store(struct device *dev, struct device_attribute *a
 	if (i_ret == 0) {
 		msleep(300);
 		uc_host_fm_ver = fts_ctpm_get_i_file_ver();
-		//BEGIN<><20161228><update  dev info >wangyanhui
+		
 		if(fts_wq_data != NULL) {
 			fts_wq_data->fw_ver[0] = uc_host_fm_ver;
 		}
-		//END<><20161228><update  dev info >wangyanhui
+		
 		dev_dbg(dev, "%s [FTS] upgrade to new version 0x%x\n", __func__, uc_host_fm_ver);
 	} else {
 		dev_err(dev, "%s ERROR:[FTS] upgrade failed ret=%d.\n", __func__, i_ret);

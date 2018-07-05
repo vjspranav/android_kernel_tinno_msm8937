@@ -113,7 +113,7 @@ int32_t msm_sensor_free_sensor_data(struct msm_sensor_ctrl_t *s_ctrl)
 }
 
 #ifdef CONFIG_PLATFORM_TINNO
-//BEGIN<20150826><add for dual flash >wangyanhui
+
 /*this function only used in leds-msm-gpio-dual-flash.c ,if don't use dual flash,  pls keep below code*/
 int  is_front_camera = 0;
 void msm_sensor_set_front_camera_status(int  status)
@@ -124,7 +124,7 @@ int msm_sensor_is_front_camera(void)
 {
 	return is_front_camera;
 }
-//END<20150826><add for dual flash >wangyanhui
+
 
 /*this function only used in leds-msm-gpio-dual-flash.c ,if don't use dual flash,  pls keep below code*/
 int  is_mono_camera = 2;
@@ -136,7 +136,7 @@ int msm_sensor_is_mono_camera(void)
 {
 	return is_mono_camera;
 }
-//END<20150826><add for dual flash >wangyanhui
+
 #endif
 
 int msm_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
@@ -151,8 +151,8 @@ int msm_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 		return -EINVAL;
 	}
 	#ifdef CONFIG_PLATFORM_TINNO
-	msm_sensor_set_front_camera_status(0);//LINE<20150826><add for dual flash >wangyanhui
-	msm_sensor_set_mono_camera_status(2);//LINE<20150826><add for dual flash >wangyanhui
+	msm_sensor_set_front_camera_status(0);
+	msm_sensor_set_mono_camera_status(2);
 	#endif
 	if (s_ctrl->is_csid_tg_mode)
 		return 0;
@@ -271,19 +271,19 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	int rc = 0;
 	uint16_t chipid = 0;
-	//BEGIN<20160602><add camera otp>wangyanhui add
+	
 	#ifdef CONFIG_PROJECT_P7201
 	uint16_t mid = 0;
 	uint16_t flag = 0;
 	#endif
-	//END<20160602><add camera otp>wangyanhui add
-	//<BEGIN><make a distinction between ov5670_sunwin and ov5670_cmk ><20170407>;liaoshuang
+	
+	
 	#ifdef CONFIG_PLATFORM_TINNO
 	int addr_mid = 0;
 	uint16_t otp_flag = 0, _mid = 0;
 	uint16_t reg_5002 = 0;
 	#endif
-	//<END><make a distinction between ov5670_sunwin and ov5670_cmk ><20170407>;liaoshuang
+	
 	struct msm_camera_i2c_client *sensor_i2c_client;
 	struct msm_camera_slave_info *slave_info;
 	const char *sensor_name;
@@ -312,7 +312,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 		return rc;
 	}
 
-//BEGIN<20160602><add camera otp>wangyanhui add
+
 	#ifdef CONFIG_PROJECT_P7201
 	pr_err("%s: sensor_name is %s\n", __func__, sensor_name);
 	if((!strncmp(s_ctrl->sensordata->sensor_name, "imx258_guangbao_p7201", sizeof("imx258_guangbao_p7201")))) {
@@ -330,7 +330,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 		rc = sensor_i2c_client->i2c_func_tbl->i2c_read(
 			sensor_i2c_client, 0x0A01,
 			&flag, MSM_CAMERA_I2C_BYTE_DATA);*/
-		//pr_err("%s: flag is %d  LINE--%d\n", __func__, flag,__LINE__);
+		
 
 		rc = sensor_i2c_client->i2c_func_tbl->i2c_read(
 		         sensor_i2c_client, 0x03,
@@ -385,7 +385,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 	}
 	#endif
 
-//END<20160602><add camera otp>wangyanhui add
+
 
 
 	pr_err("%s: read id: 0x%x expected id 0x%x:\n",
@@ -394,20 +394,20 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 	#ifdef CONFIG_PLATFORM_TINNO
 	pr_err("%s: xiongdajun add %d\n",
 	       __func__, s_ctrl->id);
-	//BEGIN<20150826><add for dual flash >wangyanhui
+	
 	if(s_ctrl->id == 2)
 		msm_sensor_set_front_camera_status(1);
 	else
 		msm_sensor_set_front_camera_status(0);
-	//END<20150826><add for dual flash >wangyanhui
-	//BEGIN<20150826><add for dual flash >wangyanhui
+	
+	
 	if(s_ctrl->id == 0)
 		msm_sensor_set_mono_camera_status(0);
 	else  if(s_ctrl->id == 1)
 		msm_sensor_set_mono_camera_status(1);
 	else
 		msm_sensor_set_mono_camera_status(2);
-	//END<20150826><add for dual flash >wangyanhui
+	
 	#endif
 	if (msm_sensor_id_by_mask(s_ctrl, chipid) != slave_info->sensor_id) {
 		pr_err("%s chip id %x does not match %x\n",

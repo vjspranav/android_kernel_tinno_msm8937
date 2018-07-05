@@ -36,11 +36,11 @@
 #include <linux/alarmtimer.h>
 #include <linux/qpnp/qpnp-revid.h>
 
-//ADD<BUG><add estimate voltage detect><20161109>
+
 #ifdef CONFIG_TINNO_CHARGER_CONFIG
 #define TINNO_BAT_EST_DIFF_DETECT
 #define TINNO_BAT_EST_DETECT_TIMES  3
-#define TINNO_BAT_LOW_VOLTAGE_LIMIT 3450000  // 3.5V
+#define TINNO_BAT_LOW_VOLTAGE_LIMIT 3450000  
 #endif
 /* Register offsets */
 
@@ -644,14 +644,14 @@ struct fg_chip {
 	bool			batt_info_restore;
 	bool			*batt_range_ocv;
 	int			*batt_range_pct;
-//caizhifu add start for tinno battery info update for debug,2016-11-24
+
 	#ifdef CONFIG_TINNO_BATTERY_FG_HEART
 	struct delayed_work     update_heartbeat_work;
 	bool				resume_completed;
 	bool				update_heartbeat_waiting;
 	struct mutex			r_completed_lock;
 	#endif
-//caizhifu add end for tinno battery info update for debug,2016-11-24
+
 
 };
 
@@ -1977,14 +1977,14 @@ static void fg_handle_battery_insertion(struct fg_chip *chip)
 	schedule_delayed_work(&chip->update_sram_data, msecs_to_jiffies(0));
 }
 
-//BEGIN<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
+
 #ifndef CONFIG_PLATFORM_TINNO
 static int soc_to_setpoint(int soc)
 {
 	return DIV_ROUND_CLOSEST(soc * 255, 100);
 }
 #endif
-//END<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
+
 static void batt_to_setpoint_adc(int vbatt_mv, u8 *data)
 {
 	int val;
@@ -2206,7 +2206,7 @@ static int get_prop_capacity(struct fg_chip *chip)
 		if (chip->last_soc == FULL_SOC_RAW)
 			return FULL_CAPACITY;
 	
-//BEGIN<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
+
 		#ifdef CONFIG_PLATFORM_TINNO
 		return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1;
 		#else
@@ -2214,7 +2214,7 @@ static int get_prop_capacity(struct fg_chip *chip)
 		                         (FULL_CAPACITY - 2),
 		                         FULL_SOC_RAW - 2) + 1;
 		#endif
-//END<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
+
 	}
 
 	if (chip->battery_missing)
@@ -2256,14 +2256,14 @@ static int get_prop_capacity(struct fg_chip *chip)
 		return FULL_CAPACITY;
 	}
 
-//BEGIN<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
+
 	#ifdef CONFIG_PLATFORM_TINNO
 	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1;
 	#else
 	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 2),
 	                         FULL_SOC_RAW - 2) + 1;
 	#endif
-//END<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
+
 }
 
 #define HIGH_BIAS	3
@@ -6245,7 +6245,7 @@ static int fg_batt_profile_init(struct fg_chip *chip)
 	const char *data, *batt_type_str;
 	bool tried_again = false, vbat_in_range, profiles_same;
 	u8 reg = 0;
-	//ADD<BUG><add estimate voltage detect><20161109>
+	
 	#ifdef TINNO_BAT_EST_DIFF_DETECT
 	int detect_count=0;
 	union power_supply_propval tinno_system_level = {0, };
@@ -6392,11 +6392,11 @@ wait:
 	}
 
 
-//ADD<BUG><add estimate voltage detect><20161109>
+
 	#ifdef TINNO_BAT_EST_DIFF_DETECT
 	printk("FG_DATA_VOLTAGE =%d \n",fg_data[FG_DATA_VOLTAGE].value);
 	if(fg_data[FG_DATA_VOLTAGE].value>TINNO_BAT_LOW_VOLTAGE_LIMIT) {
-		//set input current 0.
+		
 		tinno_system_level.intval=3;
 		chip->batt_psy->set_property(chip->batt_psy,
 		                             POWER_SUPPLY_PROP_SYSTEM_TEMP_LEVEL,
@@ -6404,7 +6404,7 @@ wait:
 	} else {
 
 	}
-//update sram data
+
 	cancel_delayed_work(&chip->update_sram_data);
 	schedule_delayed_work(
 	    &chip->update_sram_data,
@@ -6413,9 +6413,9 @@ wait:
 	#endif
 	vbat_in_range = get_vbat_est_diff(chip)
 	                < settings[FG_MEM_VBAT_EST_DIFF].value * 1000;
-//ADD<BUG><add estimate voltage detect><20161109>
+
 	#ifdef TINNO_BAT_EST_DIFF_DETECT
-//set input current 3000
+
 	while((!vbat_in_range)&&(detect_count<TINNO_BAT_EST_DETECT_TIMES)) {
 		cancel_delayed_work(&chip->update_sram_data);
 		schedule_delayed_work(
@@ -6680,7 +6680,7 @@ static void charge_full_work(struct work_struct *work)
 		pr_err("Unable to read battery soc: %d\n", rc);
 		goto out;
 	}
-// modify by alik ,if the battery soc raw <resume soc raw ,it must in recharging  process.
+
 	#ifdef CONFIG_PLATFORM_TINNO
 	if (buffer[2] <= (resume_soc_raw-4)) {
 	#else
@@ -7492,11 +7492,11 @@ static int fg_remove(struct spmi_device *spmi)
 {
 	struct fg_chip *chip = dev_get_drvdata(&spmi->dev);
 
-//caizhifu add start for tinno battery info update for debug,2016-11-24
+
 	#ifdef CONFIG_TINNO_BATTERY_FG_HEART
 	mutex_destroy(&chip->r_completed_lock);
 	#endif
-//caizhifu add end for tinno battery info update for debug,2016-11-24
+
 	fg_cleanup(chip);
 	dev_set_drvdata(&spmi->dev, NULL);
 	return 0;
@@ -8019,7 +8019,7 @@ static int fg_common_hw_init(struct fg_chip *chip)
 	}
 
 	rc = fg_mem_masked_write(chip, settings[FG_MEM_DELTA_SOC].address, 0xFF,
-	                         //LINE<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
+	                         
 	                         #ifdef CONFIG_PLATFORM_TINNO
 	                         1,
 	                         #else
@@ -8654,7 +8654,7 @@ done:
 	fg_cleanup(chip);
 }
 
-//caizhifu add start for tinno battery info update for debug,2016-11-24
+
 #ifdef CONFIG_TINNO_BATTERY_FG_HEART
 #define UPDATE_HEART_PERIOD_FAST_MS      61000
 #define UPDATE_HEART_PERIOD_NORMAL_MS      21000
@@ -8699,7 +8699,7 @@ static void qpnp_fg_update_heartbeat_work(struct work_struct *work)
 	return;
 }
 #endif
-//caizhifu add start for tinno battery info update for debug,2016-11-24
+
 
 static int fg_probe(struct spmi_device *spmi)
 {
@@ -8789,7 +8789,7 @@ static int fg_probe(struct spmi_device *spmi)
 	INIT_WORK(&chip->dischg_gain_work, discharge_gain_work);
 	INIT_WORK(&chip->cc_soc_store_work, cc_soc_store_work);
 
-//caizhifu add start for tinno battery info update for debug,2016-11-24
+
 	#ifdef CONFIG_TINNO_BATTERY_FG_HEART
 	chip->resume_completed = true;
 	chip->update_heartbeat_waiting = false;
@@ -8797,7 +8797,7 @@ static int fg_probe(struct spmi_device *spmi)
 
 	INIT_DELAYED_WORK(&chip->update_heartbeat_work, qpnp_fg_update_heartbeat_work);
 	#endif
-//caizhifu add end for tinno battery info update for debug,2016-11-24
+
 
 	alarm_init(&chip->fg_cap_learning_alarm, ALARM_BOOTTIME,
 			fg_cap_learning_alarm_cb);
@@ -8955,13 +8955,13 @@ static int fg_probe(struct spmi_device *spmi)
 		chip->revision[ANA_MAJOR], chip->revision[ANA_MINOR],
 		chip->pmic_subtype);
 
-//caizhifu add start for tinno battery info update for debug,2016-11-24
+
 	#ifdef CONFIG_TINNO_BATTERY_FG_HEART
 	schedule_delayed_work(
 	    &chip->update_heartbeat_work,
 	    msecs_to_jiffies(20000));
 	#endif
-//caizhifu add start for tinno battery info update for debug,2016-11-24
+
 
 	return rc;
 
@@ -8976,11 +8976,11 @@ of_init_fail:
 	mutex_destroy(&chip->learning_data.learning_lock);
 	mutex_destroy(&chip->sysfs_restart_lock);
 	mutex_destroy(&chip->ima_recovery_lock);
-//caizhifu add start for tinno battery info update for debug,2016-11-24
+
 	#ifdef CONFIG_TINNO_BATTERY_FG_HEART
 	mutex_destroy(&chip->r_completed_lock);
 	#endif
-//caizhifu add end for tinno battery info update for debug,2016-11-24
+
 	wakeup_source_trash(&chip->resume_soc_wakeup_source.source);
 	wakeup_source_trash(&chip->empty_check_wakeup_source.source);
 	wakeup_source_trash(&chip->memif_wakeup_source.source);
@@ -9027,7 +9027,7 @@ static void check_and_update_sram_data(struct fg_chip *chip)
 		&chip->update_sram_data, msecs_to_jiffies(time_left * 1000));
 }
 
-//caizhifu add start for tinno battery info update for debug,2016-11-24
+
 #ifdef CONFIG_TINNO_BATTERY_FG_HEART
 static int fg_suspend_noirq(struct device *dev)
 {
@@ -9041,7 +9041,7 @@ static int fg_suspend_noirq(struct device *dev)
 	return rc;
 }
 #endif
-//caizhifu add end for tinno battery info update for debug,2016-11-24
+
 
 static int fg_suspend(struct device *dev)
 {
@@ -9050,14 +9050,14 @@ static int fg_suspend(struct device *dev)
 	if (!chip->sw_rbias_ctrl)
 		return 0;
 
-//caizhifu add start for tinno battery info update for debug,2016-11-24
+
 	#ifdef CONFIG_TINNO_BATTERY_FG_HEART
 	mutex_lock(&chip->r_completed_lock);
 	chip->resume_completed = false;
 	mutex_unlock(&chip->r_completed_lock);
 	cancel_delayed_work_sync(&chip->update_heartbeat_work);
 	#endif
-//caizhifu add end for tinno battery info update for debug,2016-11-24
+
 
 	cancel_delayed_work(&chip->update_temp_work);
 	cancel_delayed_work(&chip->update_sram_data);
@@ -9068,7 +9068,7 @@ static int fg_suspend(struct device *dev)
 static int fg_resume(struct device *dev)
 {
 	struct fg_chip *chip = dev_get_drvdata(dev);
-//caizhifu modified start for tinno battery info update for debug,2016-11-24
+
 	#ifdef CONFIG_TINNO_BATTERY_FG_HEART
 	bool update_heartbeat_again = false;
 
@@ -9090,7 +9090,7 @@ static int fg_resume(struct device *dev)
 	if (!chip->sw_rbias_ctrl)
 		return 0;
 	#endif
-//caizhifu modified end for tinno battery info update for debug,2016-11-24
+
 
 	check_and_update_sram_data(chip);
 	return 0;
@@ -9139,11 +9139,11 @@ static void fg_shutdown(struct spmi_device *spmi)
 
 static const struct dev_pm_ops qpnp_fg_pm_ops = {
 	.suspend	= fg_suspend,
-//caizhifu add start for tinno battery info update for debug,2016-11-24
+
 	#ifdef CONFIG_TINNO_BATTERY_FG_HEART
 	.suspend_noirq = fg_suspend_noirq,
 	#endif
-//caizhifu add end for tinno battery info update for debug,2016-11-24
+
 	.resume		= fg_resume,
 };
 

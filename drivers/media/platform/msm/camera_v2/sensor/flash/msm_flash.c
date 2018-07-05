@@ -501,7 +501,7 @@ static int32_t msm_flash_init(
 	return 0;
 }
 #ifdef CONFIG_PLATFORM_TINNO
-//xiongdajun add front/near flash
+
 extern int msm_sensor_is_front_camera(void);
 #endif
 static int32_t msm_flash_low(
@@ -531,7 +531,7 @@ static int32_t msm_flash_low(
 					curr);
 			}
 			CDBG("low_flash_current[%d] = %d", i, curr);
-			//begin xiongdajun add front/near flash
+			
 			#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 
 			if((msm_sensor_is_front_camera()||flash_data->camera_id == 1))
@@ -540,12 +540,12 @@ static int32_t msm_flash_low(
 			else if(i < 2)
 				led_trigger_event(flash_ctrl->torch_trigger[i],
 				                  curr);
-			//END<20160601>wangyanhui add for front flash
+			
 			#else
 			led_trigger_event(flash_ctrl->torch_trigger[i],
 			                  curr);
 			#endif
-			//endxiongdajun add front/near flash
+			
 		}
 	}
 	if (flash_ctrl->switch_trigger)
@@ -581,7 +581,7 @@ static int32_t msm_flash_high(
 					i, curr);
 			}
 			CDBG("high_flash_current[%d] = %d", i, curr);
-			//begin xiongdajun add front/near flash
+			
 			#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 			if((msm_sensor_is_front_camera()|| flash_data->camera_id == 1))
 				led_trigger_event(flash_ctrl->flash_trigger[2],
@@ -589,12 +589,12 @@ static int32_t msm_flash_high(
 			else if(i < 2)
 				led_trigger_event(flash_ctrl->flash_trigger[i],
 				                  curr);
-			//END<20160601>wangyanhui add for front flash
+			
 			#else
 			led_trigger_event(flash_ctrl->flash_trigger[i],
 			                  curr);
 			#endif
-			//end xiongdajun add front/near flash
+			
 		}
 	}
 	if (flash_ctrl->switch_trigger)
@@ -1006,19 +1006,19 @@ static long msm_flash_subdev_do_ioctl(
 
 	flash_data.cfg_type = u32->cfg_type;
 	#ifdef CONFIG_PLATFORM_TINNO
-	flash_data.camera_id = u32->camera_id;//LINE<20160601>wangyanhui add for cts test
+	flash_data.camera_id = u32->camera_id;
 	#endif
 	for (i = 0; i < MAX_LED_TRIGGERS; i++) {
 		flash_data.flash_current[i] = u32->flash_current[i];
 		flash_data.flash_duration[i] = u32->flash_duration[i];
 	}
 
-	//BEGIN<20160601>wangyanhui add for front flash
+	
 	#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 	flash_data.flash_current[MAX_LED_TRIGGERS - 1] = flash_data.flash_current[MAX_LED_TRIGGERS - 2];
 	flash_data.flash_duration[MAX_LED_TRIGGERS - 1] = flash_data.flash_duration[MAX_LED_TRIGGERS - 2];
 	#endif
-	//END<20160601>wangyanhui add for front flash
+	
 
 	switch (cmd) {
 	case VIDIOC_MSM_FLASH_CFG32:

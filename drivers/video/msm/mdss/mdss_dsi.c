@@ -285,7 +285,7 @@ static int mdss_dsi_panel_power_off(struct mdss_panel_data *pdata)
 
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 	                          panel_data);
-//BEGIN<20160622><sharp lcd  power timing>wangyanhui
+
 	#if defined(CONFIG_PROJECT_P7201) || defined(CONFIG_PROJECT_P6901)
 	ret = msm_dss_enable_vreg(
 	          ctrl_pdata->panel_power_data.vreg_config,
@@ -329,7 +329,7 @@ static int mdss_dsi_panel_power_off(struct mdss_panel_data *pdata)
 		pr_err("%s: failed to disable vregs for %s\n",
 		       __func__, __mdss_dsi_pm_name(DSI_PANEL_PM));
 	#endif
-//END<20160622><sharp lcd  power timing>wangyanhui
+
 
 end:
 	return ret;
@@ -348,7 +348,7 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
-//BEGIN<20160622><sharp lcd  power timing>wangyanhui
+
 	#if defined(CONFIG_PROJECT_P7201) || defined(CONFIG_PROJECT_P6901)
 	ret = mdss_dsi_panel_disp_en_gpio(pdata, 1);
 	if (ret)
@@ -357,7 +357,7 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 
 	msleep(5);
 	#endif
-//END<20160622><sharp lcd  power timing>wangyanhui
+
 
 	ret = msm_dss_enable_vreg(
 		ctrl_pdata->panel_power_data.vreg_config,
