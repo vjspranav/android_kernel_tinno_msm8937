@@ -812,6 +812,7 @@ void pm_wakeup_clear(void)
 bool pm_get_wakeup_count(unsigned int *count, bool block)
 {
 	unsigned int cnt, inpr;
+
 	if (block) {
 		DEFINE_WAIT(wait);
 
@@ -821,6 +822,7 @@ bool pm_get_wakeup_count(unsigned int *count, bool block)
 			split_counters(&cnt, &inpr);
 			if (inpr == 0 || signal_pending(current))
 				break;
+
 			schedule();
 		}
 		finish_wait(&wakeup_count_wait_queue, &wait);
