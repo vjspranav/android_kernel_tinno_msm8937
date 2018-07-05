@@ -597,8 +597,8 @@ qpnp_led_masked_write(struct spmi_device *spmi_dev, u16 addr, u8 mask, u8 val)
 	if (rc)
 		dev_err(&spmi_dev->dev,
 			"Unable to write to addr=%x, rc(%d)\n", addr, rc);
-
-	dev_dbg(&spmi_dev->dev, "Write 0x%02X to addr 0x%02X\n", val, addr);
+			
+    dev_dbg(&spmi_dev->dev, "Write 0x%02X to addr 0x%02X\n", val, addr);
 
 	return rc;
 }
@@ -1378,6 +1378,7 @@ static void qpnp_flash_led_work(struct work_struct *work)
 		}
 	}
 
+    
 	if (flash_node->type == TORCH) {
 		rc = qpnp_led_masked_write(led->spmi_dev,
 			FLASH_LED_UNLOCK_SECURE(led->base),
@@ -1398,6 +1399,12 @@ static void qpnp_flash_led_work(struct work_struct *work)
 		}
 
 		if (flash_node->id == FLASH_LED_SWITCH) {
+                    if(flash_node->prgm_current)
+                        flash_node->prgm_current = 150;
+           #if defined(CONFIG_PROJECT_V12bnlite)
+                    if(flash_node->prgm_current)
+                        flash_node->prgm_current = 150;
+           #endif
 			val = (u8)(flash_node->prgm_current *
 						FLASH_TORCH_MAX_LEVEL
 						/ flash_node->max_current);
@@ -1409,6 +1416,11 @@ static void qpnp_flash_led_work(struct work_struct *work)
 					"Torch reg write failed\n");
 				goto exit_flash_led_work;
 			}
+
+               #if defined(CONFIG_PROJECT_V12bnlite)
+                        if(flash_node->prgm_current2)
+	                        flash_node->prgm_current2 = 100;
+	           #endif
 
 			val = (u8)(flash_node->prgm_current2 *
 						FLASH_TORCH_MAX_LEVEL
@@ -1445,7 +1457,6 @@ static void qpnp_flash_led_work(struct work_struct *work)
 				}
 			}
 		}
-
 		rc = qpnp_led_masked_write(led->spmi_dev,
 			FLASH_MAX_CURRENT(led->base),
 			FLASH_CURRENT_MASK, FLASH_TORCH_MAX_LEVEL);
@@ -1595,6 +1606,11 @@ static void qpnp_flash_led_work(struct work_struct *work)
 					max_curr_avail_ma) / total_curr_ma;
 			}
 
+            #if defined(CONFIG_PROJECT_V12bnlite)
+            if(flash_node->prgm_current)
+                flash_node->prgm_current = 1000;
+            #endif
+
 			val = (u8)(flash_node->prgm_current *
 				FLASH_MAX_LEVEL / flash_node->max_current);
 			rc = qpnp_led_masked_write(led->spmi_dev,
@@ -1604,6 +1620,9 @@ static void qpnp_flash_led_work(struct work_struct *work)
 					"Current register write failed\n");
 				goto exit_flash_led_work;
 			}
+            #if defined(CONFIG_PROJECT_V12bnlite)
+			    flash_node->prgm_current2 = 150;
+		    #endif
 
 			val = (u8)(flash_node->prgm_current2 *
 				FLASH_MAX_LEVEL / flash_node->max_current);
@@ -2485,7 +2504,6 @@ static int qpnp_flash_led_parse_common_dt(
 			return PTR_ERR(led->gpio_state_suspend);
 		}
 	}
-
 	return 0;
 }
 

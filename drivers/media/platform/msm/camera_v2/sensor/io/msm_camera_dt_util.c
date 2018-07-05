@@ -1593,12 +1593,14 @@ int msm_camera_power_up(struct msm_camera_power_ctrl_t *ctrl,
 				goto power_up_failed;
 			}
 			if (power_setting->seq_val < ctrl->num_vreg)
+			{
 				msm_camera_config_single_vreg(ctrl->dev,
 					&ctrl->cam_vreg
 					[power_setting->seq_val],
 					(struct regulator **)
 					&power_setting->data[0],
 					1);
+			}
 			else
 				pr_err("%s: %d usr_idx:%d dts_idx:%d\n",
 					__func__, __LINE__,

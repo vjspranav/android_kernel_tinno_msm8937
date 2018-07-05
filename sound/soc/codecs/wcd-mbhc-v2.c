@@ -9,6 +9,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#define DEBUG
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -29,6 +30,8 @@
 #include <sound/jack.h>
 #include "wcd-mbhc-v2.h"
 #include "wcdcal-hwdep.h"
+
+#include <linux/switch.h>//yangliang add for ftm hph detect20150830
 
 #define WCD_MBHC_JACK_MASK (SND_JACK_HEADSET | SND_JACK_OC_HPHL | \
 			   SND_JACK_OC_HPHR | SND_JACK_LINEOUT | \
@@ -66,6 +69,11 @@ enum wcd_mbhc_cs_mb_en_flag {
 	WCD_MBHC_EN_PULLUP,
 	WCD_MBHC_EN_NONE,
 };
+
+#ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
+extern struct switch_dev wcd_mbhc_headset_switch ;
+extern struct switch_dev wcd_mbhc_button_switch ;
+#endif
 
 static void wcd_mbhc_jack_report(struct wcd_mbhc *mbhc,
 				struct snd_soc_jack *jack, int status, int mask)
@@ -175,6 +183,7 @@ static void wcd_enable_curr_micbias(const struct wcd_mbhc *mbhc,
 		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_MICB_CTRL, 2);
 		/* Program Button threshold registers as per MICBIAS */
 		wcd_program_btn_threshold(mbhc, true);
+
 		break;
 	case WCD_MBHC_EN_PULLUP:
 		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_BTN_ISRC_CTL, 3);
@@ -506,7 +515,21 @@ static void wcd_mbhc_set_and_turnoff_hph_padac(struct wcd_mbhc *mbhc)
 	} else {
 		pr_debug("%s PA is off\n", __func__);
 	}
-	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
+	//++ tinno_mba,external pa TN:peter
+	{
+		//feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink TN:peter
+		extern bool tinno_ext_spk_pa_current_state;
+		extern bool tinno_ext_spk_pa_support;
+
+		if(tinno_ext_spk_pa_support){		
+			if(tinno_ext_spk_pa_current_state == false)
+				WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);	
+		}
+		else {
+			WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
+		}
+	}
+	//-- tinno_mba,external pa 
 	usleep_range(wg_time * 1000, wg_time * 1000 + 50);
 }
 
@@ -560,6 +583,11 @@ static void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 
 	pr_debug("%s: enter insertion %d hph_status %x\n",
 		 __func__, insertion, mbhc->hph_status);
+	
+#ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
+	switch_set_state(&wcd_mbhc_headset_switch, insertion ? 1:0);
+#endif
+
 	if (!insertion) {
 		/* Report removal */
 		mbhc->hph_status &= ~jack_type;
@@ -835,6 +863,7 @@ static void wcd_mbhc_find_plug_and_report(struct wcd_mbhc *mbhc,
 			if (mbhc->current_plug == MBHC_PLUG_TYPE_HEADSET)
 				wcd_mbhc_report_plug(mbhc, 0, SND_JACK_HEADSET);
 		wcd_mbhc_report_plug(mbhc, 1, SND_JACK_UNSUPPORTED);
+	//-- camera selfie stick
 	} else if (plug_type == MBHC_PLUG_TYPE_HEADSET) {
 		if (mbhc->mbhc_cfg->enable_anc_mic_detect)
 			anc_mic_found = wcd_mbhc_detect_anc_plug_type(mbhc);
@@ -1182,6 +1211,7 @@ static void wcd_correct_swch_plug(struct work_struct *work)
 
 
 	/* Enable HW FSM */
+    WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_FSM_EN, 0); // add by zhihua.lu for IAAO-331 20171116
 	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_FSM_EN, 1);
 	/*
 	 * Check for any button press interrupts before starting 3-sec
@@ -1966,6 +1996,9 @@ static irqreturn_t wcd_mbhc_btn_press_handler(int irq, void *data)
 	}
 	mbhc->buttons_pressed |= mask;
 	mbhc->mbhc_cb->lock_sleep(mbhc, true);
+#ifdef CONFIG_SWITCH
+    switch_set_state(&wcd_mbhc_button_switch, mbhc->buttons_pressed ? 1:0);
+#endif
 	if (schedule_delayed_work(&mbhc->mbhc_btn_dwork,
 				msecs_to_jiffies(400)) == 0) {
 		WARN(1, "Button pressed twice without release event\n");
@@ -2032,6 +2065,9 @@ static irqreturn_t wcd_mbhc_release_handler(int irq, void *data)
 			}
 		}
 		mbhc->buttons_pressed &= ~WCD_MBHC_JACK_BUTTON_MASK;
+#ifdef CONFIG_SWITCH
+        switch_set_state(&wcd_mbhc_button_switch, mbhc->buttons_pressed ? 1:0);
+#endif
 	}
 exit:
 	pr_debug("%s: leave\n", __func__);
@@ -2131,7 +2167,7 @@ static int wcd_mbhc_initialise(struct wcd_mbhc *mbhc)
 	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_L_DET_EN, 1);
 
 	/* Insertion debounce set to 96ms */
-	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_INSREM_DBNC, 6);
+	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_INSREM_DBNC, 9);//yangliang modify 6 to 9 for 256ms debounce time for judgement by mistake 20160606;
 	/* Button Debounce set to 16ms */
 	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_BTN_DBNC, 2);
 
@@ -2239,12 +2275,45 @@ static void wcd_mbhc_fw_read(struct work_struct *work)
 	(void) wcd_mbhc_initialise(mbhc);
 }
 
+//++ tinno_mba,keycode TN:peter
+static void tinno_dt_parse_mbhc_keycode(struct wcd_mbhc *mbhc)
+{
+	const char *mbhc_keycode = "qcom,tinno_mbhc_keycode";
+	struct snd_soc_card *card = mbhc->codec->component.card;
+	struct property *prop;
+	unsigned int *keycode;
+	int ret,i;
+	prop = of_find_property(card->dev->of_node, mbhc_keycode, NULL);
+	if (prop && prop->length) {
+		keycode = devm_kzalloc(card->dev,prop->length,GFP_KERNEL);
+		if (!keycode){
+			printk("%s: zalloc fail \n",__func__);
+			return;
+		}
+		ret = of_property_read_u32_array(card->dev->of_node,mbhc_keycode,keycode,prop->length / sizeof(u32));
+		if (ret < 0) {
+			printk("%s: keycode of node fail(%d) \n",__func__,ret);
+			devm_kfree(card->dev,keycode);
+			keycode = NULL;		
+		} else {
+			for (i = 0 ; i < WCD_MBHC_KEYCODE_NUM ; i++){
+				mbhc->mbhc_cfg->key_code[i] = keycode[i];	
+			}
+			devm_kfree(card->dev,keycode);
+ 		  keycode = NULL;	
+		}
+	}
+}
+//-- tinno_mba,keycode
+
 int wcd_mbhc_set_keycode(struct wcd_mbhc *mbhc)
 {
 	enum snd_jack_types type;
 	int i, ret, result = 0;
 	int *btn_key_code;
 
+	tinno_dt_parse_mbhc_keycode(mbhc);// tinno_mba,keycode TN:peter
+	
 	btn_key_code = mbhc->mbhc_cfg->key_code;
 
 	for (i = 0 ; i < WCD_MBHC_KEYCODE_NUM ; i++) {
