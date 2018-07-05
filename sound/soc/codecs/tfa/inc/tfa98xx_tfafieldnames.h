@@ -1,7 +1,7 @@
 
 typedef struct TfaBfName {
-   unsigned short bfEnum;
-   char  *bfName;
+	unsigned short bfEnum;
+	char  *bfName;
 } tfaBfName_t;
 
 typedef struct TfaIrqName {

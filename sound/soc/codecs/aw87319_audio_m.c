@@ -1,9 +1,9 @@
 /**************************************************************************
 *  AW87319_Audio.c
-* 
-*  Create Date : 
-* 
-*  Modify Date : 
+*
+*  Create Date :
+*
+*  Modify Date :
 *
 *  Create by   : AWINIC Technology CO., LTD
 *
@@ -32,9 +32,9 @@
 #include <linux/wakelock.h>
 
 #include <linux/of_gpio.h>
- 
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define AW87319_I2C_NAME		"AW87319_PA" 
+#define AW87319_I2C_NAME		"AW87319_PA"
 #define AW87319_I2C_BUS		0
 #define AW87319_I2C_ADDR		0x58
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ static int AW87319_pinctrl_init(struct device *dev)
 		ret = PTR_ERR(aw87319ctrl);
 		printk("%s devm_pinctrl_get fail!\n", __func__);
 	}
-	
+
 	aw87319_rst_high = pinctrl_lookup_state(aw87319ctrl, "aw87319_rst_high");
 	if (IS_ERR(aw87319_rst_high)) {
 		ret = PTR_ERR(aw87319_rst_high);
@@ -96,14 +96,14 @@ static int AW87319_pinctrl_init(struct device *dev)
 #endif
 static void AW87319_pa_pwron(void)
 {
-    printk("%s enter\n", __func__);
+	printk("%s enter\n", __func__);
 	//pinctrl_select_state(aw87319ctrl, aw87319_rst_low);
-	gpio_set_value_cansleep(aw87319_rst, 0);		
-    msleep(1);
-    //pinctrl_select_state(aw87319ctrl, aw87319_rst_high);
-    gpio_set_value_cansleep(aw87319_rst, 1);
-    msleep(10);
-    printk("%s out\n", __func__);
+	gpio_set_value_cansleep(aw87319_rst, 0);
+	msleep(1);
+	//pinctrl_select_state(aw87319ctrl, aw87319_rst_high);
+	gpio_set_value_cansleep(aw87319_rst, 1);
+	msleep(10);
+	printk("%s out\n", __func__);
 }
 
 static void AW87319_pa_pwroff(void)
@@ -134,17 +134,16 @@ unsigned char I2C_write_reg(unsigned char addr, unsigned char reg_data)
 	wdbuf[0] = addr;
 	wdbuf[1] = reg_data;
 
-	if(NULL == AW87319_pa_client)
-	{
+	if(NULL == AW87319_pa_client) {
 		pr_err("msg %s AW87319_pa_client is NULL\n", __func__);
-		return -1;	
+		return -1;
 	}
 
 	ret = i2c_transfer(AW87319_pa_client->adapter, msgs, 1);
 	if (ret < 0)
 		pr_err("msg %s i2c read error: %d\n", __func__, ret);
 
-    return ret;
+	return ret;
 }
 
 unsigned char I2C_read_reg(unsigned char addr)
@@ -168,18 +167,17 @@ unsigned char I2C_read_reg(unsigned char addr)
 	};
 
 	rdbuf[0] = addr;
-	
-	if(NULL == AW87319_pa_client)
-	{
+
+	if(NULL == AW87319_pa_client) {
 		pr_err("msg %s AW87319_pa_client is NULL\n", __func__);
-		return -1;	
+		return -1;
 	}
 
 	ret = i2c_transfer(AW87319_pa_client->adapter, msgs, 2);
 	if (ret < 0)
 		pr_err("msg %s i2c read error: %d\n", __func__, ret);
 
-    return rdbuf[0];
+	return rdbuf[0];
 }
 
 
@@ -189,12 +187,12 @@ unsigned char I2C_read_reg(unsigned char addr)
 unsigned char AW87319_Audio_Reciver(void)
 {
 	AW87319_HW_ON();
-	
+
 	I2C_write_reg(0x05, 0x03);		// Gain
-	
+
 	I2C_write_reg(0x01, 0x02);		// Class D Enable; Boost Disable
 	I2C_write_reg(0x01, 0x06);		// CHIP Enable; Class D Enable; Boost Disable
-	
+
 	return 0;
 }
 
@@ -203,17 +201,17 @@ unsigned char AW87319_Audio_Speaker(void)
 	AW87319_HW_ON();
 
 	I2C_write_reg(0x02, 0x28);		// BATSAFE
-	I2C_write_reg(0x03, 0x05);		// BOV	
+	I2C_write_reg(0x03, 0x05);		// BOV
 	I2C_write_reg(0x04, 0x04);		// BP
 	I2C_write_reg(0x05, 0x0D);		// Gain
 	I2C_write_reg(0x06, 0x03);		// AGC3_Po
 	I2C_write_reg(0x07, 0x52);		// AGC3
 	I2C_write_reg(0x08, 0x28);		// AGC2
 	I2C_write_reg(0x09, 0x02);		// AGC1
-	
+
 	I2C_write_reg(0x01, 0x03);		// Class D Enable; Boost Enable
 	I2C_write_reg(0x01, 0x07);		// CHIP Enable; Class D Enable; Boost Enable
-	
+
 	return 0;
 }
 EXPORT_SYMBOL_GPL(AW87319_Audio_Speaker);
@@ -237,7 +235,7 @@ unsigned char AW87319_SW_ON(void)
 	reg = I2C_read_reg(0x01);
 	reg |= 0x04;
 	I2C_write_reg(0x01, reg);		// CHIP Enable; Class D Enable; Boost Enable
-	
+
 	return 0;
 }
 
@@ -247,7 +245,7 @@ unsigned char AW87319_SW_OFF(void)
 	reg = I2C_read_reg(0x01);
 	reg &= 0xFB;
 	I2C_write_reg(0x01, reg);		// CHIP Disable
-	
+
 	return 0;
 }
 
@@ -255,14 +253,14 @@ unsigned char AW87319_HW_ON(void)
 {
 	AW87319_pa_pwron();
 	I2C_write_reg(0x64, 0x2C);
-	
+
 	return 0;
 }
 
 unsigned char AW87319_HW_OFF(void)
 {
-	AW87319_pa_pwroff();	
-	
+	AW87319_pa_pwroff();
+
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,8 +271,7 @@ static ssize_t AW87319_get_reg(struct device* cd,struct device_attribute *attr, 
 	unsigned char reg_val;
 	ssize_t len = 0;
 	u8 i;
-	for(i=0;i<0x10;i++)
-	{
+	for(i=0; i<0x10; i++) {
 		reg_val = I2C_read_reg(i);
 		len += snprintf(buf+len, PAGE_SIZE-len, "reg%2X = 0x%2X, ", i,reg_val);
 	}
@@ -285,8 +282,7 @@ static ssize_t AW87319_get_reg(struct device* cd,struct device_attribute *attr, 
 static ssize_t AW87319_set_reg(struct device* cd, struct device_attribute *attr, const char* buf, size_t len)
 {
 	unsigned int databuf[2];
-	if(2 == sscanf(buf,"%x %x",&databuf[0], &databuf[1]))
-	{
+	if(2 == sscanf(buf,"%x %x",&databuf[0], &databuf[1])) {
 		I2C_write_reg(databuf[0],databuf[1]);
 	}
 	return len;
@@ -308,14 +304,14 @@ static ssize_t AW87319_get_swen(struct device* cd,struct device_attribute *attr,
 static ssize_t AW87319_set_swen(struct device* cd, struct device_attribute *attr, const char* buf, size_t len)
 {
 	unsigned int databuf[16];
-	
+
 	sscanf(buf,"%d",&databuf[0]);
 	if(databuf[0] == 0) {		// OFF
-		AW87319_SW_OFF();	
+		AW87319_SW_OFF();
 	} else {					// ON
-		AW87319_SW_ON();			
+		AW87319_SW_ON();
 	}
-	
+
 	return len;
 }
 
@@ -335,7 +331,7 @@ static ssize_t AW87319_get_hwen(struct device* cd,struct device_attribute *attr,
 static ssize_t AW87319_set_hwen(struct device* cd, struct device_attribute *attr, const char* buf, size_t len)
 {
 	unsigned int databuf[16];
-	
+
 	sscanf(buf,"%d",&databuf[0]);
 	if(databuf[0] == 0) {		// OFF
 		AW87319_HW_OFF();
@@ -378,14 +374,12 @@ static int AW87319_i2c_probe(struct i2c_client *client, const struct i2c_device_
 
 	// AW87319 RST Pin
 	aw87319_rst = of_get_named_gpio(client->dev.of_node, "awinic,ext_pa_spk_aw87319_rst", 0);
-	if(aw87319_rst < 0)
-	{
+	if(aw87319_rst < 0) {
 		err = -ENODEV;
 		goto exit_gpio_get_failed;
 	}
 	ret = gpio_request(aw87319_rst, "ext_pa_spk_aw87319_rst");
-	if(ret)
-	{
+	if(ret) {
 		printk("%s: gpio request failed for ext_pa_spk_aw87319_rst\n", __func__);
 		err = -ENODEV;
 		goto exit_gpio_request_failed;
@@ -400,20 +394,17 @@ static int AW87319_i2c_probe(struct i2c_client *client, const struct i2c_device_
 	AW87319_HW_ON();
 	msleep(10);
 
-	while(cnt>0)
-	{
+	while(cnt>0) {
 		I2C_write_reg(0x64, 0x2C);
 		reg_value = I2C_read_reg(0x00);
 		printk("AW87319 CHIPID=0x%2x\n", reg_value);
-		if(reg_value == 0x9B)
-		{
+		if(reg_value == 0x9B) {
 			break;
 		}
 		cnt --;
 		msleep(10);
 	}
-	if(!cnt)
-	{
+	if(!cnt) {
 		err = -ENODEV;
 		AW87319_HW_OFF();
 		goto exit_create_singlethread;
@@ -453,30 +444,32 @@ static const struct of_device_id extpa_of_match[] = {
 #endif
 
 static struct i2c_driver AW87319_i2c_driver = {
-		.driver = {
-			.name	= AW87319_I2C_NAME,
-#ifdef CONFIG_OF
-			.of_match_table = extpa_of_match,
-#endif
-},
-		.probe		= AW87319_i2c_probe,
-		.remove		= AW87319_i2c_remove,
-		.id_table	= AW87319_i2c_id,
+	.driver = {
+		.name	= AW87319_I2C_NAME,
+		#ifdef CONFIG_OF
+		.of_match_table = extpa_of_match,
+		#endif
+	},
+	.probe		= AW87319_i2c_probe,
+	.remove		= AW87319_i2c_remove,
+	.id_table	= AW87319_i2c_id,
 };
 
-static int __init AW87319_pa_init(void) {
+static int __init AW87319_pa_init(void)
+{
 	int ret;
 	printk("AW87319 PA Init\n");
-	
+
 	ret = i2c_add_driver(&AW87319_i2c_driver);
 	if (ret) {
 		printk("****[%s] Unable to register driver (%d)\n", __func__, ret);
 		return ret;
-	}		
+	}
 	return 0;
 }
 
-static void __exit AW87319_pa_exit(void) {
+static void __exit AW87319_pa_exit(void)
+{
 	printk("AW87319 PA Exit\n");
 	i2c_del_driver(&AW87319_i2c_driver);
 }

@@ -58,7 +58,7 @@
 #define WAKELOCK_HOLD_TIME 500 /* in ms */
 
 //#define GF_SPIDEV_NAME     "goodix,fingerprint"
-#define GF_SPIDEV_NAME     "qcom,fingerprint" 
+#define GF_SPIDEV_NAME     "qcom,fingerprint"
 /*device name after register in charater*/
 #define GF_DEV_NAME            "goodix_fp"
 #define	GF_INPUT_NAME	    "qwerty"	/*"goodix_fp" */
@@ -101,7 +101,7 @@ struct gf_key_map maps[] = {
 	{ EV_KEY, GF_KEY_INPUT_MENU },
 	{ EV_KEY, GF_KEY_INPUT_BACK },
 	{ EV_KEY, GF_KEY_INPUT_POWER },
-#if defined(SUPPORT_NAV_EVENT)
+	#if defined(SUPPORT_NAV_EVENT)
 	{ EV_KEY, GF_NAV_INPUT_UP },
 	{ EV_KEY, GF_NAV_INPUT_DOWN },
 	{ EV_KEY, GF_NAV_INPUT_RIGHT },
@@ -111,7 +111,7 @@ struct gf_key_map maps[] = {
 	{ EV_KEY, GF_NAV_INPUT_DOUBLE_CLICK },
 	{ EV_KEY, GF_NAV_INPUT_LONG_PRESS },
 	{ EV_KEY, GF_NAV_INPUT_HEAVY },
-#endif
+	#endif
 };
 
 static void gf_enable_irq(struct gf_dev *gf_dev)
@@ -169,7 +169,7 @@ static long spi_clk_max_rate(struct clk *clk, unsigned long rate)
 		 * direction with half the step size
 		 */
 		if (((cur > rate) && (step_direction > 0))
-				|| ((cur < rate) && (step_direction < 0))) {
+		    || ((cur < rate) && (step_direction < 0))) {
 			step_direction = -step_direction;
 			step_size >>= 1;
 		}
@@ -185,7 +185,7 @@ static void spi_clock_set(struct gf_dev *gf_dev, int speed)
 	rate = spi_clk_max_rate(gf_dev->core_clk, speed);
 	if (rate < 0) {
 		pr_info("%s: no match found for requested clock frequency:%d",
-				__func__, speed);
+		        __func__, speed);
 		return;
 	}
 
@@ -351,7 +351,7 @@ static void gf_kernel_key_input(struct gf_dev *gf_dev, struct gf_key *gf_key)
 	} else if (GF_KEY_CAMERA == gf_key->key) {
 		key_input = GF_KEY_INPUT_CAMERA;
 	} else {
-		// add special key define 
+		// add special key define
 		key_input = gf_key->key;
 	}
 	pr_info("%s: received key event[%d], key=%d, value=%d\n",
@@ -375,29 +375,27 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	struct gf_dev *gf_dev = &gf;
 	struct gf_key gf_key;
-#if defined(SUPPORT_NAV_EVENT)
+	#if defined(SUPPORT_NAV_EVENT)
 	gf_nav_event_t nav_event = GF_NAV_NONE;
-#endif
+	#endif
 	int retval = 0;
-        u32 tmp = 0;
+	u32 tmp = 0;
 	u8 netlink_route = NETLINK_TEST;
 	struct gf_ioc_chip_info info;
 	FUNC_ENTRY();
-        pr_info("%s gf_ioctl,cmd=%d,GFX1XM_IOC_FTM = %d\n", __func__ ,cmd,(int)GFX1XM_IOC_FTM);
-	if (_IOC_TYPE(cmd) != GF_IOC_MAGIC)
-        {
-                pr_info("%s IOC_TYPE(cmd) != GF_IOC_MAGIC\n", __func__);
+	pr_info("%s gf_ioctl,cmd=%d,GFX1XM_IOC_FTM = %d\n", __func__,cmd,(int)GFX1XM_IOC_FTM);
+	if (_IOC_TYPE(cmd) != GF_IOC_MAGIC) {
+		pr_info("%s IOC_TYPE(cmd) != GF_IOC_MAGIC\n", __func__);
 		return -ENODEV;
-        }
+	}
 	if (_IOC_DIR(cmd) & _IOC_READ)
 		retval = !access_ok(VERIFY_WRITE, (void __user *)arg, _IOC_SIZE(cmd));
 	else if (_IOC_DIR(cmd) & _IOC_WRITE)
 		retval = !access_ok(VERIFY_READ, (void __user *)arg, _IOC_SIZE(cmd));
-	if (retval)
-        {
-                pr_info("%s retval = %d,error.\n", __func__,retval);
+	if (retval) {
+		pr_info("%s retval = %d,error.\n", __func__,retval);
 		return -EFAULT;
-        }
+	}
 	if (gf_dev->device_available == 0) {
 		if ((cmd == GF_IOC_ENABLE_POWER) || (cmd == GF_IOC_DISABLE_POWER)) {
 			pr_info("power cmd\n");
@@ -431,8 +429,8 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		gf_hw_reset(gf_dev, 3);
 		break;
 	case GF_IOC_INPUT_KEY_EVENT:
-                
-                ftm_gfx_irq_state = 0;	
+
+		ftm_gfx_irq_state = 0;
 
 		if (copy_from_user(&gf_key, (struct gf_key *)arg, sizeof(struct gf_key))) {
 			pr_info("Failed to copy input key event from user to kernel\n");
@@ -440,33 +438,32 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			break;
 		}
 
-                if (gf_key.value  == 1) {
-		    ftm_gfx_irq_state = 0x1; //down.
+		if (gf_key.value  == 1) {
+			ftm_gfx_irq_state = 0x1; //down.
 		} else if(gf_key.value  == 0) {
-		    ftm_gfx_irq_state = 0x2; //up.
+			ftm_gfx_irq_state = 0x2; //up.
 		}
 		//gf_kernel_key_input(gf_dev, &gf_key);
-                pr_info("GF_IOC_INPUT_KEY_EVENT gf_key.value = %d\n",gf_key.value);
-                ftm_gfx_irq_send_key = 1;
-                wake_up(&gf_poll_wq);
+		pr_info("GF_IOC_INPUT_KEY_EVENT gf_key.value = %d\n",gf_key.value);
+		ftm_gfx_irq_send_key = 1;
+		wake_up(&gf_poll_wq);
 		break;
 
-        case GFX1XM_IOC_FTM:
-        {
-            int tmp1 = 0;
-           
-            retval = __get_user(tmp1, (u32 __user*)arg);
-            tmp = ftm_gfx_irq_state;
-            if(tmp1 == 0) {
-                ftm_gfx_irq_state = 0;
-            }
-            pr_info("%s: ftm_gfx_irq_state = %d.\n",__func__,
-			ftm_gfx_irq_state);
-            retval = __put_user(tmp, (__u32 __user *)arg);
-        }
-        
-        break;
-#if defined(SUPPORT_NAV_EVENT)
+	case GFX1XM_IOC_FTM: {
+		int tmp1 = 0;
+
+		retval = __get_user(tmp1, (u32 __user*)arg);
+		tmp = ftm_gfx_irq_state;
+		if(tmp1 == 0) {
+			ftm_gfx_irq_state = 0;
+		}
+		pr_info("%s: ftm_gfx_irq_state = %d.\n",__func__,
+		        ftm_gfx_irq_state);
+		retval = __put_user(tmp, (__u32 __user *)arg);
+	}
+
+	break;
+	#if defined(SUPPORT_NAV_EVENT)
 	case GF_IOC_NAV_EVENT:
 		pr_info("%s GF_IOC_NAV_EVENT\n", __func__);
 		if (copy_from_user(&nav_event, (gf_nav_event_t *)arg, sizeof(gf_nav_event_t))) {
@@ -477,23 +474,23 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 		nav_event_input(gf_dev, nav_event);
 		break;
-#endif
+		#endif
 
 	case GF_IOC_ENABLE_SPI_CLK:
 		pr_info("%s GF_IOC_ENABLE_SPI_CLK\n", __func__);
-#ifdef AP_CONTROL_CLK
+		#ifdef AP_CONTROL_CLK
 		gfspi_ioctl_clk_enable(gf_dev);
-#else
+		#else
 		pr_info("Doesn't support control clock.\n");
-#endif
+		#endif
 		break;
 	case GF_IOC_DISABLE_SPI_CLK:
 		pr_info("%s GF_IOC_DISABLE_SPI_CLK\n", __func__);
-#ifdef AP_CONTROL_CLK
+		#ifdef AP_CONTROL_CLK
 		gfspi_ioctl_clk_disable(gf_dev);
-#else
+		#else
 		pr_info("Doesn't support control clock\n");
-#endif
+		#endif
 		break;
 	case GF_IOC_ENABLE_POWER:
 		pr_info("%s GF_IOC_ENABLE_POWER\n", __func__);
@@ -517,27 +514,26 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case GF_IOC_GET_FW_INFO:
 		pr_info("%s GF_IOC_GET_FW_INFO\n", __func__);
 		break;
-#if 0
-	case GF_IOC_REQUEST_IRQ:
-        {
-             int irq_err = -1;
-             printk(KERN_ERR"mingliang.tan  GF_IOC_REQUEST_IRQ\n");
-             #if 1
-			irq_err = request_threaded_irq(gf_dev->irq, NULL, gf_irq,
-					   IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-					   "gf", gf_dev);
-             #else
-                irq_err = request_irq(gf_dev->irq, gf_irq,
-                            IRQ_TYPE_EDGE_RISING, /*IRQ_TYPE_LEVEL_HIGH,*/
-                            "gf", gf_dev);
-             #endif
-			if (!irq_err) {
-				enable_irq_wake(gf_dev->irq);
-				gf_disable_irq(gf_dev);
-			}
-        }
-        break;
-#endif
+		#if 0
+	case GF_IOC_REQUEST_IRQ: {
+		int irq_err = -1;
+		printk(KERN_ERR"mingliang.tan  GF_IOC_REQUEST_IRQ\n");
+		#if 1
+		irq_err = request_threaded_irq(gf_dev->irq, NULL, gf_irq,
+		                               IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+		                               "gf", gf_dev);
+		#else
+		irq_err = request_irq(gf_dev->irq, gf_irq,
+		                      IRQ_TYPE_EDGE_RISING, /*IRQ_TYPE_LEVEL_HIGH,*/
+		                      "gf", gf_dev);
+		#endif
+		if (!irq_err) {
+			enable_irq_wake(gf_dev->irq);
+			gf_disable_irq(gf_dev);
+		}
+	}
+	break;
+	#endif
 	case GF_IOC_REMOVE:
 		pr_info("%s GF_IOC_REMOVE\n", __func__);
 		break;
@@ -570,18 +566,18 @@ static long gf_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long a
 #endif /*CONFIG_COMPAT*/
 
 static irqreturn_t gf_irq(int irq, void *handle)
-{	
-#if defined(GF_NETLINK_ENABLE)
+{
+	#if defined(GF_NETLINK_ENABLE)
 	char temp = GF_NET_EVENT_IRQ;
 	FUNC_ENTRY();
 	wake_lock_timeout(&fp_wakelock, msecs_to_jiffies(WAKELOCK_HOLD_TIME));
 	sendnlmsg(&temp);
-#elif defined (GF_FASYNC)
+	#elif defined (GF_FASYNC)
 	struct gf_dev *gf_dev = &gf;
 	FUNC_ENTRY();
 	if (gf_dev->async)
 		kill_fasync(&gf_dev->async, SIGIO, POLL_IN);
-#endif
+	#endif
 	FUNC_EXIT();
 	return IRQ_HANDLED;
 }
@@ -603,13 +599,13 @@ static int gf_open(struct inode *inode, struct file *filp)
 	}
 
 	if (status == 0) {
-			gf_dev->users++;
-			filp->private_data = gf_dev;
-			nonseekable_open(inode, filp);
-			pr_info("Succeed to open device. irq = %d\n",
-					gf_dev->irq);
-			if (gf_dev->users == 1)
-				gf_enable_irq(gf_dev);
+		gf_dev->users++;
+		filp->private_data = gf_dev;
+		nonseekable_open(inode, filp);
+		pr_info("Succeed to open device. irq = %d\n",
+		        gf_dev->irq);
+		if (gf_dev->users == 1)
+			gf_enable_irq(gf_dev);
 	} else {
 		pr_info("No device for minor %d\n", iminor(inode));
 	}
@@ -659,13 +655,13 @@ static int gf_release(struct inode *inode, struct file *filp)
 static unsigned int gf_fp_poll(struct file *file, poll_table *wait)
 {
 	unsigned int mask = 0;
-	
+
 	poll_wait(file, &gf_poll_wq, wait);
-	
-	if(ftm_gfx_irq_send_key != 0){
+
+	if(ftm_gfx_irq_send_key != 0) {
 		mask = POLLIN | POLLRDNORM;
 	}
-	
+
 	ftm_gfx_irq_send_key = 0;
 	return mask;
 }
@@ -678,31 +674,31 @@ static const struct file_operations gf_fops = {
 	 * too, except for the locking.
 	 */
 	.unlocked_ioctl = gf_ioctl,
-#ifdef CONFIG_COMPAT
+	#ifdef CONFIG_COMPAT
 	.compat_ioctl = gf_compat_ioctl,
-#endif /*CONFIG_COMPAT*/
+	#endif /*CONFIG_COMPAT*/
 	.open = gf_open,
 	.release = gf_release,
-#ifdef GF_FASYNC
+	#ifdef GF_FASYNC
 	.fasync = gf_fasync,
-#endif
-        .poll = gf_fp_poll,
+	#endif
+	.poll = gf_fp_poll,
 };
 
 static int goodix_fb_state_chg_callback(struct notifier_block *nb,
-		unsigned long val, void *data)
+                                        unsigned long val, void *data)
 {
 	struct gf_dev *gf_dev;
 	struct fb_event *evdata = data;
 	unsigned int blank;
-#if defined(GF_NETLINK_ENABLE)
+	#if defined(GF_NETLINK_ENABLE)
 	char temp = 0;
-#endif
+	#endif
 
 	if (val != FB_EARLY_EVENT_BLANK)
 		return 0;
 	pr_info("[info] %s go to the goodix_fb_state_chg_callback value = %d\n",
-			__func__, (int)val);
+	        __func__, (int)val);
 	gf_dev = container_of(nb, struct gf_dev, notifier);
 	if (evdata && evdata->data && val == FB_EARLY_EVENT_BLANK && gf_dev) {
 		blank = *(int *)(evdata->data);
@@ -710,27 +706,27 @@ static int goodix_fb_state_chg_callback(struct notifier_block *nb,
 		case FB_BLANK_POWERDOWN:
 			if (gf_dev->device_available == 1) {
 				gf_dev->fb_black = 1;
-#if defined(GF_NETLINK_ENABLE)
+				#if defined(GF_NETLINK_ENABLE)
 				temp = GF_NET_EVENT_FB_BLACK;
 				sendnlmsg(&temp);
-#elif defined (GF_FASYNC)
+				#elif defined (GF_FASYNC)
 				if (gf_dev->async) {
 					kill_fasync(&gf_dev->async, SIGIO, POLL_IN);
 				}
-#endif
+				#endif
 			}
 			break;
 		case FB_BLANK_UNBLANK:
 			if (gf_dev->device_available == 1) {
 				gf_dev->fb_black = 0;
-#if defined(GF_NETLINK_ENABLE)
+				#if defined(GF_NETLINK_ENABLE)
 				temp = GF_NET_EVENT_FB_UNBLACK;
 				sendnlmsg(&temp);
-#elif defined (GF_FASYNC)
+				#elif defined (GF_FASYNC)
 				if (gf_dev->async) {
 					kill_fasync(&gf_dev->async, SIGIO, POLL_IN);
 				}
-#endif
+				#endif
 			}
 			break;
 		default:
@@ -762,27 +758,27 @@ static int gf_probe(struct platform_device *pdev)
 
 
 
-#if defined(USE_SPI_BUS)      
-        if (read_fpId_pin_value(&spi->dev, "qcom,fpid-gpio") == __HIGH_IMPEDANCE) {
-            pr_warn("%s,spi: detect goodix hw or hw null !\n", __func__);
-        }
-#elif defined(USE_PLATFORM_BUS)
-        if (read_fpId_pin_value(&pdev->dev, "qcom,fpid-gpio") == __HIGH_IMPEDANCE) {
-            pr_warn("%s,platform: detect goodix hw or hw null !\n", __func__);
-        }
-#endif
-        else {
-            pr_warn("%s, not detect goodix hw!\n", __func__);
-            return -1;
-        }
+	#if defined(USE_SPI_BUS)
+	if (read_fpId_pin_value(&spi->dev, "qcom,fpid-gpio") == __HIGH_IMPEDANCE) {
+		pr_warn("%s,spi: detect goodix hw or hw null !\n", __func__);
+	}
+	#elif defined(USE_PLATFORM_BUS)
+	if (read_fpId_pin_value(&pdev->dev, "qcom,fpid-gpio") == __HIGH_IMPEDANCE) {
+		pr_warn("%s,platform: detect goodix hw or hw null !\n", __func__);
+	}
+	#endif
+	else {
+		pr_warn("%s, not detect goodix hw!\n", __func__);
+		return -1;
+	}
 
 	/* Initialize the driver data */
 	INIT_LIST_HEAD(&gf_dev->device_entry);
-#if defined(USE_SPI_BUS)
+	#if defined(USE_SPI_BUS)
 	gf_dev->spi = spi;
-#elif defined(USE_PLATFORM_BUS)
+	#elif defined(USE_PLATFORM_BUS)
 	gf_dev->spi = pdev;
-#endif
+	#endif
 	gf_dev->irq_gpio = -EINVAL;
 	gf_dev->reset_gpio = -EINVAL;
 	gf_dev->pwr_gpio = -EINVAL;
@@ -792,7 +788,7 @@ static int gf_probe(struct platform_device *pdev)
 	if (gf_parse_dts(gf_dev))
 		goto error_hw;
 
-	 //<copy from 7701> add by yinglong.tang
+	//<copy from 7701> add by yinglong.tang
 	ret = gf_power_init(gf_dev);
 	if (ret) {
 		dev_err(&gf_dev->spi->dev, "Failed to init regulator\n");
@@ -805,7 +801,7 @@ static int gf_probe(struct platform_device *pdev)
 		goto err_deinit_regulator;
 	}
 	gf_dev->device_available = 1;
-       //<copy from 7701> add by yinglong.tang
+	//<copy from 7701> add by yinglong.tang
 
 	/* If we can allocate a minor number, hook up this device.
 	 * Reusing minors is fine so long as udev or mdev is working.
@@ -817,7 +813,7 @@ static int gf_probe(struct platform_device *pdev)
 
 		gf_dev->devt = MKDEV(SPIDEV_MAJOR, minor);
 		dev = device_create(gf_class, &gf_dev->spi->dev, gf_dev->devt,
-				gf_dev, GF_DEV_NAME);
+		                    gf_dev, GF_DEV_NAME);
 		status = IS_ERR(dev) ? PTR_ERR(dev) : 0;
 	} else {
 		dev_dbg(&gf_dev->spi->dev, "no minor number available!\n");
@@ -852,17 +848,17 @@ static int gf_probe(struct platform_device *pdev)
 			goto error_input;
 		}
 	}
-#ifdef AP_CONTROL_CLK
+	#ifdef AP_CONTROL_CLK
 	pr_info("Get the clk resource.\n");
 	/* Enable spi clock */
 	if (gfspi_ioctl_clk_init(gf_dev))
-		goto gfspi_probe_clk_init_failed:
+goto gfspi_probe_clk_init_failed:
 
-	if (gfspi_ioctl_clk_enable(gf_dev))
-		goto gfspi_probe_clk_enable_failed;
+		if (gfspi_ioctl_clk_enable(gf_dev))
+			goto gfspi_probe_clk_enable_failed;
 
 	spi_clock_set(gf_dev, 1000000);
-#endif
+	#endif
 
 	gf_dev->notifier = goodix_noti_block;
 	fb_register_client(&gf_dev->notifier);
@@ -870,10 +866,10 @@ static int gf_probe(struct platform_device *pdev)
 	gf_dev->irq = gf_irq_num(gf_dev);
 
 	wake_lock_init(&fp_wakelock, WAKE_LOCK_SUSPEND, "fp_wakelock");
-#if 1
+	#if 1
 	status = request_threaded_irq(gf_dev->irq, NULL, gf_irq,
-			IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-			"gf", gf_dev);
+	                              IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+	                              "gf", gf_dev);
 
 	if (status) {
 		pr_err("gf:failed to request IRQ:%d\n", gf_dev->irq);
@@ -882,22 +878,22 @@ static int gf_probe(struct platform_device *pdev)
 	enable_irq_wake(gf_dev->irq);
 	gf_dev->irq_enabled = 1;
 	gf_disable_irq(gf_dev);
-#endif
-        full_fp_chip_name(GF_DEV_NAME);//add by yinglong.tang.
+	#endif
+	full_fp_chip_name(GF_DEV_NAME);//add by yinglong.tang.
 	pr_info("version V%d.%d.%02d\n", VER_MAJOR, VER_MINOR, PATCH_LEVEL);
 	FUNC_EXIT();
 	return status;
 
 err_deinit_regulator:
-    gf_power_deinit(gf_dev);
+	gf_power_deinit(gf_dev);
 
 err_irq:
-		input_unregister_device(gf_dev->input);
-#ifdef AP_CONTROL_CLK
+	input_unregister_device(gf_dev->input);
+	#ifdef AP_CONTROL_CLK
 gfspi_probe_clk_enable_failed:
 	gfspi_ioctl_clk_uninit(gf_dev);
 gfspi_probe_clk_init_failed:
-#endif
+	#endif
 
 error_input:
 	if (gf_dev->input != NULL)
@@ -912,11 +908,11 @@ error:
 		device_destroy(gf_class, gf_dev->devt);
 		clear_bit(MINOR(gf_dev->devt), minors);
 		mutex_unlock(&device_list_lock);
-#ifdef AP_CONTROL_CLK
+		#ifdef AP_CONTROL_CLK
 gfspi_probe_clk_enable_failed:
 		gfspi_ioctl_clk_uninit(gf_dev);
 gfspi_probe_clk_init_failed:
-#endif
+		#endif
 		if (gf_dev->input != NULL)
 			input_unregister_device(gf_dev->input);
 	}
@@ -1002,10 +998,9 @@ static int __init gf_init(void)
 
 	BUILD_BUG_ON(N_SPI_MINORS > 256);
 
-	if(strstr(saved_command_line,CHARGER_MODE_BOOT))
-	{
-            pr_info("goodix gfx1xm  gf_init  --androidboot.mode=charger  return--- \n");
-            return -ENODEV;	
+	if(strstr(saved_command_line,CHARGER_MODE_BOOT)) {
+		pr_info("goodix gfx1xm  gf_init  --androidboot.mode=charger  return--- \n");
+		return -ENODEV;
 	}
 
 	status = register_chrdev(SPIDEV_MAJOR, CHRD_DRIVER_NAME, &gf_fops);
@@ -1023,23 +1018,23 @@ static int __init gf_init(void)
 		FUNC_EXIT();
 		return PTR_ERR(gf_class);
 	}
-#if defined(USE_PLATFORM_BUS)
+	#if defined(USE_PLATFORM_BUS)
 	status = platform_driver_register(&gf_driver);
 	printk("gf3208--platform_driver_register--status=%d\n",status);
-#elif defined(USE_SPI_BUS)
+	#elif defined(USE_SPI_BUS)
 	status = spi_register_driver(&gf_driver);
 	printk("gf3208--spi_register_driver--status=%d\n",status);
-#endif
-	
+	#endif
+
 	if (status < 0) {
 		class_destroy(gf_class);
 		unregister_chrdev(SPIDEV_MAJOR, gf_driver.driver.name);
 		pr_warn("Failed to register SPI driver.\n");
 	}
 
-#ifdef GF_NETLINK_ENABLE
+	#ifdef GF_NETLINK_ENABLE
 	netlink_init();
-#endif
+	#endif
 	pr_info("gf3208--status = 0x%x\n", status);
 	FUNC_EXIT();
 	return 0;
@@ -1049,14 +1044,14 @@ module_init(gf_init);
 static void __exit gf_exit(void)
 {
 	FUNC_ENTRY();
-#ifdef GF_NETLINK_ENABLE
+	#ifdef GF_NETLINK_ENABLE
 	netlink_exit();
-#endif
-#if defined(USE_PLATFORM_BUS)
+	#endif
+	#if defined(USE_PLATFORM_BUS)
 	platform_driver_unregister(&gf_driver);
-#elif defined(USE_SPI_BUS)
+	#elif defined(USE_SPI_BUS)
 	spi_unregister_driver(&gf_driver);
-#endif
+	#endif
 	class_destroy(gf_class);
 	unregister_chrdev(SPIDEV_MAJOR, gf_driver.driver.name);
 	FUNC_EXIT();

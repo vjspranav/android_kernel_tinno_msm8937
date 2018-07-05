@@ -1,4 +1,4 @@
-/* 
+/*
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
  * may be copied, distributed, and modified under those terms.
@@ -41,7 +41,7 @@
 #define APS_FUN(f)               printk(KERN_INFO APS_TAG"%s\n", __FUNCTION__)
 #define APS_ERR(fmt, args...)    printk(KERN_ERR  APS_TAG"%s %d : "fmt, __FUNCTION__, __LINE__, ##args)
 #define APS_LOG(fmt, args...)    printk(KERN_ERR APS_TAG fmt, ##args)
-#define APS_DBG(fmt, args...)    printk(KERN_INFO APS_TAG fmt, ##args)         
+#define APS_DBG(fmt, args...)    printk(KERN_INFO APS_TAG fmt, ##args)
 #define TGESTURE_DEBUG_FUNC(fmt, args...)                       do{\
                                          printk("<<-GTP-FUNC->> Func:%s@Line:%d\n",__func__,__LINE__);\
                                        }while(0)
@@ -56,7 +56,7 @@ static int enable_key = 1;
 //static s32 value_hall2_rev = 1;
 static s32 tgesture_state = 1; //open status
 int  bEnTGesture = 0;
-char Tg_buf[16]={"-1"};
+char Tg_buf[16]= {"-1"};
 static int TGesture_probe(struct platform_device *pdev);
 static int TGesture_remove(struct platform_device *pdev);
 static ssize_t TGesture_config_read_proc(struct file *file, char __user *page, size_t size, loff_t *ppos);
@@ -78,15 +78,15 @@ struct platform_device TGesture_sensor = {
 };
 static struct platform_driver TGesture_driver = {
 	.probe      = TGesture_probe,
-	.remove     = TGesture_remove,    
+	.remove     = TGesture_remove,
 	.driver     = {
 		.name  = "tgeseture",
 	}
 };
 static const struct file_operations config_proc_ops = {
-    .owner = THIS_MODULE,
-    .read = TGesture_config_read_proc,
-    .write = TGesture_config_write_proc,
+	.owner = THIS_MODULE,
+	.read = TGesture_config_read_proc,
+	.write = TGesture_config_write_proc,
 };
 
 #define TGesture_CONFIG_PROC_FILE     "tgeseture_config"
@@ -113,29 +113,26 @@ static ssize_t TGesture_show_key(struct device_driver *ddri, char *buf)
 /*----------------------------------------------------------------------------*/
 static ssize_t TGesture_store_key(struct device_driver *ddri, const char *buf, size_t count)
 {
-    int enable;//, res;
+	int enable;//, res;
 //    u8 databuf[1];
-	
-	if(1 == sscanf(buf, "%d", &enable))
-	{
+
+	if(1 == sscanf(buf, "%d", &enable)) {
 		enable_key = enable;
-	}
-	else 
-	{
-	   
+	} else {
+
 
 		APS_ERR("invalid enable content: '%s'\n", buf);
-	  
+
 	}
-	return count;    
+	return count;
 }
 /*---------------------------------------------------------------------------------------*/
 static DRIVER_ATTR(tgesture_state,     S_IWUSR | S_IRUGO, TGesture_show_state, NULL);
 static DRIVER_ATTR(key_tgesture_enable,    0660, TGesture_show_key, TGesture_store_key);
 /*----------------------------------------------------------------------------*/
 static struct driver_attribute *TGesture_attr_list[] = {
-    &driver_attr_tgesture_state,
-    &driver_attr_key_tgesture_enable,
+	&driver_attr_tgesture_state,
+	&driver_attr_key_tgesture_enable,
 };
 
 
@@ -144,93 +141,85 @@ static struct driver_attribute *TGesture_attr_list[] = {
 
 static ssize_t TGesture_config_read_proc(struct file *file, char __user *page, size_t size, loff_t *ppos)
 {
-    char *ptr = page;
+	char *ptr = page;
 //    char temp_data[2] = {'a','\0'};
 //    int i;
-    if (*ppos)  // CMD call again
-    {
-        return 0;
-    }
+	if (*ppos) { // CMD call again
+		return 0;
+	}
 	printk("TGesture1:%d\n",gTGesture);
-       ptr += sprintf(ptr, "0x%c,%s ", gTGesture,Tg_buf);
-      printk("TGesture2:%s\n",ptr);
-       *ppos += ptr - page;
-     return (ptr - page) ;
+	ptr += sprintf(ptr, "0x%c,%s ", gTGesture,Tg_buf);
+	printk("TGesture2:%s\n",ptr);
+	*ppos += ptr - page;
+	return (ptr - page) ;
 }
 static ssize_t TGesture_config_write_proc(struct file *filp, const char __user *buffer, size_t count, loff_t *off)
 {
-   // s32 ret = 0;
+	// s32 ret = 0;
 
-    TGESTURE_DEBUG_FUNC("====LGC=========TGesture_config_write_procwrite count %d\n", count);
+	TGESTURE_DEBUG_FUNC("====LGC=========TGesture_config_write_procwrite count %d\n", count);
 
-    if (count > TGesture_CONFIG_MAX_LENGTH  )
-    {
-        TGESTURE_DEBUG_FUNC("size not match [%d:%d]\n", TGesture_CONFIG_MAX_LENGTH, count);
-        return -EFAULT;
-    }
+	if (count > TGesture_CONFIG_MAX_LENGTH  ) {
+		TGESTURE_DEBUG_FUNC("size not match [%d:%d]\n", TGesture_CONFIG_MAX_LENGTH, count);
+		return -EFAULT;
+	}
 
-    if (copy_from_user(&config, buffer, count))
-    {
-        TGESTURE_DEBUG_FUNC("copy from user fail\n");
-        return -EFAULT;
-    }
-   //  tp__write_flag;
+	if (copy_from_user(&config, buffer, count)) {
+		TGESTURE_DEBUG_FUNC("copy from user fail\n");
+		return -EFAULT;
+	}
+	//  tp__write_flag;
 
-if(atomic_read(&tp_write_flag))
-{
-     atomic_set(&tp_write_flag,0);
-     bEnTGesture=config[0]-48;
-     printk("===== TGesture_config_write_proc%d=====",bEnTGesture);
-     atomic_set(&tp_write_flag,1);
-}
-    // printk("====LGC=TGesture_config_write_procwrite bEnTGesture==%d===\n",bEnTGesture);
- /*   ret = gtp_send_cfg(i2c_client_point);
-    abs_x_max = (config[RESOLUTION_LOC + 1] << 8) + config[RESOLUTION_LOC];
-    abs_y_max = (config[RESOLUTION_LOC + 3] << 8) + config[RESOLUTION_LOC + 2];
-    int_type = (config[TRIGGER_LOC]) & 0x03;
+	if(atomic_read(&tp_write_flag)) {
+		atomic_set(&tp_write_flag,0);
+		bEnTGesture=config[0]-48;
+		printk("===== TGesture_config_write_proc%d=====",bEnTGesture);
+		atomic_set(&tp_write_flag,1);
+	}
+	// printk("====LGC=TGesture_config_write_procwrite bEnTGesture==%d===\n",bEnTGesture);
+	/*   ret = gtp_send_cfg(i2c_client_point);
+	   abs_x_max = (config[RESOLUTION_LOC + 1] << 8) + config[RESOLUTION_LOC];
+	   abs_y_max = (config[RESOLUTION_LOC + 3] << 8) + config[RESOLUTION_LOC + 2];
+	   int_type = (config[TRIGGER_LOC]) & 0x03;
 
-    if (ret < 0)
-    {
-        TGESTURE_DEBUG_FUNC("send config failed.");
-    }
-*/
-    return count;
+	   if (ret < 0)
+	   {
+	       TGESTURE_DEBUG_FUNC("send config failed.");
+	   }
+	*/
+	return count;
 }
 
 /*----------------------------------------------------------------------------*/
-static int TGesture_create_attr(struct device_driver *driver) 
+static int TGesture_create_attr(struct device_driver *driver)
 {
 	int idx, err = 0;
 	int num = (int)(sizeof(TGesture_attr_list)/sizeof(TGesture_attr_list[0]));
-	if (driver == NULL)
-	{
+	if (driver == NULL) {
 		return -EINVAL;
 	}
 
-	for(idx = 0; idx < num; idx++)
-	{
-		if((err = driver_create_file(driver, TGesture_attr_list[idx])))
-		{            
+	for(idx = 0; idx < num; idx++) {
+		if((err = driver_create_file(driver, TGesture_attr_list[idx]))) {
 			APS_ERR("driver_create_file (%s) = %d\n", TGesture_attr_list[idx]->attr.name, err);
 			break;
 		}
-	}    
+	}
 	return err;
 }
 /*----------------------------------------------------------------------------*/
-	static int TGesture_delete_attr(struct device_driver *driver)
-	{
-	int idx ,err = 0;
+static int TGesture_delete_attr(struct device_driver *driver)
+{
+	int idx,err = 0;
 	int num = (int)(sizeof(TGesture_attr_list)/sizeof(TGesture_attr_list[0]));
 
 	if (!driver)
-	return -EINVAL;
+		return -EINVAL;
 
-	for (idx = 0; idx < num; idx++) 
-	{
+	for (idx = 0; idx < num; idx++) {
 		driver_remove_file(driver, TGesture_attr_list[idx]);
 	}
-	
+
 	return err;
 }
 
@@ -240,39 +229,34 @@ static int TGesture_create_attr(struct device_driver *driver)
 
 /*----------------------------------------------------------------------------*/
 
-static int TGesture_probe(struct platform_device *pdev) 
+static int TGesture_probe(struct platform_device *pdev)
 {
-        int err;
-	APS_FUN();  
-	
+	int err;
+	APS_FUN();
+
 	printk("==============TGesture==================\n");
-	if((err = TGesture_create_attr(&TGesture_driver.driver)))
-	{
+	if((err = TGesture_create_attr(&TGesture_driver.driver))) {
 		printk("create attribute err = %d\n", err);
 		return 0;
 	}
-    // Create proc file system
-       tgesture_config_proc = proc_create(TGesture_CONFIG_PROC_FILE, 0666, NULL, &config_proc_ops);
-     if (tgesture_config_proc == NULL)
-    {
-        TGESTURE_DEBUG_FUNC("create_proc_entry %s failed\n", TGesture_CONFIG_PROC_FILE);
-     }
-    else
-    {
-        TGESTURE_DEBUG_FUNC("create proc entry %s success", TGesture_CONFIG_PROC_FILE);
-    }
+	// Create proc file system
+	tgesture_config_proc = proc_create(TGesture_CONFIG_PROC_FILE, 0666, NULL, &config_proc_ops);
+	if (tgesture_config_proc == NULL) {
+		TGESTURE_DEBUG_FUNC("create_proc_entry %s failed\n", TGesture_CONFIG_PROC_FILE);
+	} else {
+		TGESTURE_DEBUG_FUNC("create proc entry %s success", TGesture_CONFIG_PROC_FILE);
+	}
 	return 0;
 }
 /*----------------------------------------------------------------------------*/
 static int TGesture_remove(struct platform_device *pdev)
 {
-	
 
-	int err;	
-		APS_FUN(); 
-         printk(KERN_ERR "==============TGesture_remove==================\n");		
-	if((err =  TGesture_delete_attr(&TGesture_driver.driver)))
-	{
+
+	int err;
+	APS_FUN();
+	printk(KERN_ERR "==============TGesture_remove==================\n");
+	if((err =  TGesture_delete_attr(&TGesture_driver.driver))) {
 		printk("ap3220_delete_attr fail: %d\n", err);
 	}
 	return 0;
@@ -284,13 +268,11 @@ static int TGesture_remove(struct platform_device *pdev)
 static int __init TGesture_init(void)
 {
 	APS_FUN();
-   if( platform_device_register(&TGesture_sensor))
-	{
+	if( platform_device_register(&TGesture_sensor)) {
 		printk("failed to register driver");
 		return 0;
 	}
-  if(platform_driver_register(&TGesture_driver))
-	{
+	if(platform_driver_register(&TGesture_driver)) {
 		APS_ERR("failed to register driver");
 		return -ENODEV;
 	}

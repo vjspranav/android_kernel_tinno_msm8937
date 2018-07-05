@@ -10,9 +10,9 @@
 #include "config.h"
 
 #if __GNUC__ >= 4
-  #define TFA_INTERNAL __attribute__ ((visibility ("hidden")))
+#define TFA_INTERNAL __attribute__ ((visibility ("hidden")))
 #else
-  #define TFA_INTERNAL
+#define TFA_INTERNAL
 #endif
 
 

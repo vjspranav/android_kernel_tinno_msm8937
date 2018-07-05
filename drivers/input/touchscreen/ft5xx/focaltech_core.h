@@ -1,7 +1,7 @@
 /*
  *
  * FocalTech fts TouchScreen driver.
- * 
+ *
  * Copyright (c) 2010-2015, Focaltech Ltd. All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
@@ -17,7 +17,7 @@
 
 #ifndef __LINUX_FTS_H__
 #define __LINUX_FTS_H__
- /*******************************************************************************
+/*******************************************************************************
 *
 * File Name: focaltech.c
 *
@@ -121,7 +121,7 @@
 				max_tch, FTS_DRIVER_INFO, group_id, \
 				fw_vkey_support, fw_name, fw_maj, fw_min, \
 				fw_sub_min)
-				
+
 
 #define FTS_DBG_EN 1
 #if FTS_DBG_EN
@@ -135,17 +135,16 @@
 * Private enumerations, structures and unions using typedef
 *******************************************************************************/
 
-struct fts_Upgrade_Info 
-{
-        u8 CHIP_ID;
-        u8 TPD_MAX_POINTS;
-        u8 AUTO_CLB;
-	 u16 delay_aa;						/*delay of write FT_UPGRADE_AA */
-	 u16 delay_55;						/*delay of write FT_UPGRADE_55 */
-	 u8 upgrade_id_1;					/*upgrade id 1 */
-	 u8 upgrade_id_2;					/*upgrade id 2 */
-	 u16 delay_readid;					/*delay of read id */
-	 u16 delay_erase_flash; 				/*delay of earse flash*/
+struct fts_Upgrade_Info {
+	u8 CHIP_ID;
+	u8 TPD_MAX_POINTS;
+	u8 AUTO_CLB;
+	u16 delay_aa;						/*delay of write FT_UPGRADE_AA */
+	u16 delay_55;						/*delay of write FT_UPGRADE_55 */
+	u8 upgrade_id_1;					/*upgrade id 1 */
+	u8 upgrade_id_2;					/*upgrade id 2 */
+	u16 delay_readid;					/*delay of read id */
+	u16 delay_erase_flash; 				/*delay of earse flash*/
 };
 
 struct fts_ts_platform_data {
@@ -215,17 +214,17 @@ struct fts_ts_data {
 	u8 fw_ver[3];
 	u8 fw_vendor_id;
 	int touchs;
-#if defined(CONFIG_FB)
+	#if defined(CONFIG_FB)
 	struct notifier_block fb_notif;
-#elif defined(CONFIG_HAS_EARLYSUSPEND)
+	#elif defined(CONFIG_HAS_EARLYSUSPEND)
 	struct early_suspend early_suspend;
-#endif
-#ifdef MSM_NEW_VER
+	#endif
+	#ifdef MSM_NEW_VER
 	struct pinctrl *ts_pinctrl;
 	struct pinctrl_state *pinctrl_state_active;
 	struct pinctrl_state *pinctrl_state_suspend;
 	struct pinctrl_state *pinctrl_state_release;
-#endif
+	#endif
 };
 
 #ifdef CONFIG_TOUCHSCREEN_FTS_PSENSOR

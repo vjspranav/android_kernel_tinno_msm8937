@@ -25,9 +25,9 @@
 #define PRINT_ASSERT(e)if ((e)) printk(KERN_ERR "PrintAssert:%s (%s:%d) error code:%d\n",__FUNCTION__,__FILE__,__LINE__, e)
 
 #if defined(CONFIG_TRACING) && defined(DEBUG)
-	#define tfa98xx_trace_printk(...) trace_printk(__VA_ARGS__)
+#define tfa98xx_trace_printk(...) trace_printk(__VA_ARGS__)
 #else
-	#define tfa98xx_trace_printk(...)
+#define tfa98xx_trace_printk(...)
 #endif
 
 #define TFA98XX_MAX_REGISTER              0xff
@@ -57,10 +57,10 @@ enum tfa98xx_dsp_init_state {
 };
 
 enum tfa98xx_dsp_fw_state {
-       TFA98XX_DSP_FW_NONE = 0,
-       TFA98XX_DSP_FW_PENDING,
-       TFA98XX_DSP_FW_FAIL,
-       TFA98XX_DSP_FW_OK,
+	TFA98XX_DSP_FW_NONE = 0,
+	TFA98XX_DSP_FW_PENDING,
+	TFA98XX_DSP_FW_FAIL,
+	TFA98XX_DSP_FW_OK,
 };
 
 struct tfa98xx_firmware {
@@ -118,9 +118,9 @@ struct tfa98xx {
 
 	int handle;
 
-#ifdef CONFIG_DEBUG_FS
+	#ifdef CONFIG_DEBUG_FS
 	struct dentry *dbg_dir;
-#endif
+	#endif
 	u8 reg;
 
 	unsigned int count_wait_for_source_state;

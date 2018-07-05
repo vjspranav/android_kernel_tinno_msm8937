@@ -25,13 +25,11 @@ void sendnlmsg(char *message)
 	int len = NLMSG_SPACE(MAX_MSGSIZE);
 	int slen = 0;
 	int ret = 0;
-	if(!message || !nl_sk || !pid)
-	{
+	if(!message || !nl_sk || !pid) {
 		return ;
 	}
 	skb_1 = alloc_skb(len,GFP_KERNEL);
-	if(!skb_1)
-	{
+	if(!skb_1) {
 		pr_err("alloc_skb error\n");
 		return;
 	}
@@ -59,8 +57,7 @@ void nl_data_ready(struct sk_buff *__skb)
 	struct nlmsghdr *nlh;
 	char str[100];
 	skb = skb_get (__skb);
-	if(skb->len >= NLMSG_SPACE(0))
-	{
+	if(skb->len >= NLMSG_SPACE(0)) {
 		nlh = nlmsg_hdr(skb);
 
 		memcpy(str, NLMSG_DATA(nlh), sizeof(str));
@@ -83,9 +80,9 @@ int netlink_init(void)
 	netlink_cfg.cb_mutex = NULL;
 
 	nl_sk = netlink_kernel_create(&init_net, NETLINK_TEST,
-			&netlink_cfg);
+	                              &netlink_cfg);
 
-	if(!nl_sk){
+	if(!nl_sk) {
 		pr_err("create netlink socket error\n");
 		return 1;
 	}
@@ -95,7 +92,7 @@ int netlink_init(void)
 
 void netlink_exit(void)
 {
-	if(nl_sk != NULL){
+	if(nl_sk != NULL) {
 		netlink_kernel_release(nl_sk);
 		nl_sk = NULL;
 	}

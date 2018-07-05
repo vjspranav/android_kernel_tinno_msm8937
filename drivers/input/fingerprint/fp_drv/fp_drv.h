@@ -31,14 +31,14 @@ extern int full_fp_chip_info(const char *name);
 extern int read_fpId_pin_value(struct device *dev, char *label);
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-#define LOG_TAG  "[fingerprint][fp_drv]:" 
+#define LOG_TAG  "[fingerprint][fp_drv]:"
 #define __FUN(f)   printk(KERN_ERR LOG_TAG "~~~~~~~~~~~~ %s ~~~~~~~~~\n", __FUNCTION__)
 #define klog(fmt, args...)    printk(KERN_ERR LOG_TAG fmt, ##args)
 
 
-#define __HIGH   (1) 
+#define __HIGH   (1)
 #define __LOW   (2)
-#define __HIGH_IMPEDANCE   (3) 
+#define __HIGH_IMPEDANCE   (3)
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 

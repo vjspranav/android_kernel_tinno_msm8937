@@ -9,7 +9,7 @@
 #include <linux/types.h>
 #include <linux/notifier.h>
 /**********************************************************/
-enum FP_MODE{
+enum FP_MODE {
 	GF_IMAGE_MODE = 0,
 	GF_KEY_MODE,
 	GF_SLEEP_MODE,
@@ -126,11 +126,11 @@ struct gf_ioc_chip_info {
 struct gf_dev {
 	dev_t devt;
 	struct list_head device_entry;
-#if defined(USE_SPI_BUS)
+	#if defined(USE_SPI_BUS)
 	struct spi_device *spi;
-#elif defined(USE_PLATFORM_BUS)
+	#elif defined(USE_PLATFORM_BUS)
 	struct platform_device *spi;
-#endif
+	#endif
 	struct clk *core_clk;
 	struct clk *iface_clk;
 
@@ -143,17 +143,17 @@ struct gf_dev {
 	int irq;
 	int irq_enabled;
 	int clk_enabled;
-#ifdef GF_FASYNC
+	#ifdef GF_FASYNC
 	struct fasync_struct *async;
-#endif
+	#endif
 	struct notifier_block notifier;
 	char device_available;
 	char fb_black;
-       //<copy from 7701> add by yinglong.tang
-       u8           isPowerOn;
-       struct regulator *vdd;
-       struct regulator *vio;
-       //<copy from 7701> add by yinglong.tang
+	//<copy from 7701> add by yinglong.tang
+	u8           isPowerOn;
+	struct regulator *vdd;
+	struct regulator *vio;
+	//<copy from 7701> add by yinglong.tang
 };
 
 int gf_parse_dts(struct gf_dev* gf_dev);

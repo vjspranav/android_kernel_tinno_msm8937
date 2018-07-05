@@ -8,57 +8,56 @@ static char latest_errorstr[64];
 
 const char* tfa98xx_get_error_string(enum Tfa98xx_Error error)
 {
-  const char* pErrStr;
+	const char* pErrStr;
 
-  switch (error)
-  {
-  case Tfa98xx_Error_Ok:
-    pErrStr = "Ok";
-    break;
-  case Tfa98xx_Error_DSP_not_running:
-    pErrStr = "DSP_not_running";
-    break;
-  case Tfa98xx_Error_Bad_Parameter:
-    pErrStr = "Bad_Parameter";
-    break;
-  case Tfa98xx_Error_NotOpen:
-    pErrStr = "NotOpen";
-    break;
-  case Tfa98xx_Error_InUse:
-    pErrStr = "InUse";
-    break;
-  case Tfa98xx_Error_RpcBusy:
-    pErrStr = "RpcBusy";
-    break;
-  case Tfa98xx_Error_RpcModId:
-    pErrStr = "RpcModId";
-    break;
-  case Tfa98xx_Error_RpcParamId:
-    pErrStr = "RpcParamId";
-    break;
-  case Tfa98xx_Error_RpcInfoId:
-    pErrStr = "RpcInfoId";
-    break;
-  case Tfa98xx_Error_RpcNotAllowedSpeaker:
-    pErrStr = "RpcNotAllowedSpeaker";
-    break;
-  case Tfa98xx_Error_Not_Supported:
-    pErrStr = "Not_Supported";
-    break;
-  case Tfa98xx_Error_I2C_Fatal:
-    pErrStr = "I2C_Fatal";
-    break;
-  case Tfa98xx_Error_I2C_NonFatal:
-    pErrStr = "I2C_NonFatal";
-    break;
-  case Tfa98xx_Error_StateTimedOut:
-	pErrStr = "WaitForState_TimedOut";
-	break;
-  default:
-    sprintf(latest_errorstr, "Unspecified error (%d)", (int)error);
-    pErrStr = latest_errorstr;
-  }
-  return pErrStr;
+	switch (error) {
+	case Tfa98xx_Error_Ok:
+		pErrStr = "Ok";
+		break;
+	case Tfa98xx_Error_DSP_not_running:
+		pErrStr = "DSP_not_running";
+		break;
+	case Tfa98xx_Error_Bad_Parameter:
+		pErrStr = "Bad_Parameter";
+		break;
+	case Tfa98xx_Error_NotOpen:
+		pErrStr = "NotOpen";
+		break;
+	case Tfa98xx_Error_InUse:
+		pErrStr = "InUse";
+		break;
+	case Tfa98xx_Error_RpcBusy:
+		pErrStr = "RpcBusy";
+		break;
+	case Tfa98xx_Error_RpcModId:
+		pErrStr = "RpcModId";
+		break;
+	case Tfa98xx_Error_RpcParamId:
+		pErrStr = "RpcParamId";
+		break;
+	case Tfa98xx_Error_RpcInfoId:
+		pErrStr = "RpcInfoId";
+		break;
+	case Tfa98xx_Error_RpcNotAllowedSpeaker:
+		pErrStr = "RpcNotAllowedSpeaker";
+		break;
+	case Tfa98xx_Error_Not_Supported:
+		pErrStr = "Not_Supported";
+		break;
+	case Tfa98xx_Error_I2C_Fatal:
+		pErrStr = "I2C_Fatal";
+		break;
+	case Tfa98xx_Error_I2C_NonFatal:
+		pErrStr = "I2C_NonFatal";
+		break;
+	case Tfa98xx_Error_StateTimedOut:
+		pErrStr = "WaitForState_TimedOut";
+		break;
+	default:
+		sprintf(latest_errorstr, "Unspecified error (%d)", (int)error);
+		pErrStr = latest_errorstr;
+	}
+	return pErrStr;
 }
 /*****************************************************************************/
 /*      bitfield lookups */
@@ -69,15 +68,15 @@ const char* tfa98xx_get_error_string(enum Tfa98xx_Error error)
  * lookup bf in table
  *   return 'unkown' if not found
  */
-static char *tfa_bf2name(tfaBfName_t *table, uint16_t bf) {
+static char *tfa_bf2name(tfaBfName_t *table, uint16_t bf)
+{
 	int n=0;
 
 	do {
 		if (table[n].bfEnum == bf) {
 			return table[n].bfName;
 		}
-	}
-	while( table[n++].bfEnum != 0xffff);
+	} while( table[n++].bfEnum != 0xffff);
 
 	return table[n-1].bfName; /* last name says unkown */
 }
@@ -85,17 +84,18 @@ static char *tfa_bf2name(tfaBfName_t *table, uint16_t bf) {
  * lookup name in table
  *   return 0xffff if not found
  */
-static uint16_t tfa_name2bf(tfaBfName_t *table,const  char *name) {
+static uint16_t tfa_name2bf(tfaBfName_t *table,const  char *name)
+{
 	int n = 0;
 
 	do {
-#if defined(WIN32) || defined(_X64)
+		#if defined(WIN32) || defined(_X64)
 		if(_stricmp(name, table[n].bfName)==0)
 			return table[n].bfEnum;
-#else
+		#else
 		if(strcasecmp(name, table[n].bfName)==0)
 			return table[n].bfEnum;
-#endif
+		#endif
 	} while (table[n++].bfEnum != 0xffff);
 
 	return 0xffff;
@@ -121,7 +121,7 @@ TFA9887_BITNAMETABLE
 char *tfaContBitName(uint16_t num, unsigned short rev)
 {
 	char *name;
-	 /* end of list for the unknown string */
+	/* end of list for the unknown string */
 	int tableLength = sizeof(Tfa1DatasheetNames)/sizeof(tfaBfName_t);
 	const char *unknown=Tfa1DatasheetNames[tableLength-1].bfName;
 
@@ -161,7 +161,7 @@ char *tfaContBitName(uint16_t num, unsigned short rev)
 char *tfaContBfName(uint16_t num, unsigned short rev)
 {
 	char *name;
-	 /* end of list for the unknown string */
+	/* end of list for the unknown string */
 	int tableLength = sizeof(Tfa1DatasheetNames)/sizeof(tfaBfName_t);
 	const char *unknown=Tfa1DatasheetNames[tableLength-1].bfName;
 
@@ -251,37 +251,37 @@ uint16_t tfaContBfEnumAny(const char *name)
 {
 	uint16_t bfnum;
 
-		/* datasheet names first */
-		bfnum =  tfa_name2bf(Tfa2DatasheetNames, name);
-		if (bfnum!=0xffff)
-			return bfnum;
-		bfnum =  tfa_name2bf(Tfa1DatasheetNames, name);
-		if (bfnum!=0xffff)
-			return bfnum;
-		bfnum =  tfa_name2bf(Tfa9891DatasheetNames, name);
-		if (bfnum!=0xffff)
-			return bfnum;
-		bfnum =  tfa_name2bf(Tfa9890DatasheetNames, name);
-		if (bfnum!=0xffff)
-			return bfnum;
-		bfnum =  tfa_name2bf(Tfa9887DatasheetNames, name);
-		if (bfnum!=0xffff)
-			return bfnum;
-		/* and then bitfield names */
-		bfnum =  tfa_name2bf(Tfa2BitNames, name);
-		if (bfnum!=0xffff)
-			return bfnum;
-		bfnum =  tfa_name2bf(Tfa1BitNames, name);
-		if (bfnum!=0xffff)
-			return bfnum;
-		bfnum =  tfa_name2bf(Tfa9891BitNames, name);
-		if (bfnum!=0xffff)
-			return bfnum;
-		bfnum =  tfa_name2bf(Tfa9890BitNames, name);
-		if (bfnum!=0xffff)
-			return bfnum;
-		bfnum =  tfa_name2bf(Tfa9887BitNames, name);
-
+	/* datasheet names first */
+	bfnum =  tfa_name2bf(Tfa2DatasheetNames, name);
+	if (bfnum!=0xffff)
 		return bfnum;
+	bfnum =  tfa_name2bf(Tfa1DatasheetNames, name);
+	if (bfnum!=0xffff)
+		return bfnum;
+	bfnum =  tfa_name2bf(Tfa9891DatasheetNames, name);
+	if (bfnum!=0xffff)
+		return bfnum;
+	bfnum =  tfa_name2bf(Tfa9890DatasheetNames, name);
+	if (bfnum!=0xffff)
+		return bfnum;
+	bfnum =  tfa_name2bf(Tfa9887DatasheetNames, name);
+	if (bfnum!=0xffff)
+		return bfnum;
+	/* and then bitfield names */
+	bfnum =  tfa_name2bf(Tfa2BitNames, name);
+	if (bfnum!=0xffff)
+		return bfnum;
+	bfnum =  tfa_name2bf(Tfa1BitNames, name);
+	if (bfnum!=0xffff)
+		return bfnum;
+	bfnum =  tfa_name2bf(Tfa9891BitNames, name);
+	if (bfnum!=0xffff)
+		return bfnum;
+	bfnum =  tfa_name2bf(Tfa9890BitNames, name);
+	if (bfnum!=0xffff)
+		return bfnum;
+	bfnum =  tfa_name2bf(Tfa9887BitNames, name);
+
+	return bfnum;
 
 }

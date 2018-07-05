@@ -32,7 +32,7 @@
 #define    MSG_ERR        5
 #define    MSG_MAX        6
 
-#define debug_level MSG_INFO 
+#define debug_level MSG_INFO
 #define DBG_MSG(level, msg, ...)\
 do {\
     if ((level < MSG_MAX) && (level >= debug_level)) \
@@ -106,24 +106,24 @@ do {\
  * last transfer might write some register values.
  */
 struct spi_ioc_transfer {
-    __u64           tx_buf;
-    __u64           rx_buf;
+	__u64           tx_buf;
+	__u64           rx_buf;
 
-    __u32           len;
-    __u32           speed_hz;
+	__u32           len;
+	__u32           speed_hz;
 
-    __u16           delay_usecs;
-    __u8            bits_per_word;
-    __u8            cs_change;
-    __u32           pad;
+	__u16           delay_usecs;
+	__u8            bits_per_word;
+	__u8            cs_change;
+	__u32           pad;
 
-    /* If the contents of 'struct spi_ioc_transfer' ever change
-     * incompatibly, then the ioctl number (currently 0) must change;
-     * ioctls with constant size fields get a bit more in the way of
-     * error checking than ones (like this) where that field varies.
-     *
-     * NOTE: struct layout is the same in 64bit and 32bit userspace.
-     */
+	/* If the contents of 'struct spi_ioc_transfer' ever change
+	 * incompatibly, then the ioctl number (currently 0) must change;
+	 * ioctls with constant size fields get a bit more in the way of
+	 * error checking than ones (like this) where that field varies.
+	 *
+	 * NOTE: struct layout is the same in 64bit and 32bit userspace.
+	 */
 };
 
 /* not all platforms use <asm-generic/ioctl.h> or _IOC_TYPECHECK() ... */
@@ -174,14 +174,14 @@ struct spi_ioc_transfer {
 
 
 #define SL_HEAD_SIZE 3
-#define SL_PAGE_SIZE 128 
+#define SL_PAGE_SIZE 128
 #define SL_ONE_FRAME_PAGES (110*118/SL_PAGE_SIZE)
 
 #define SPI_SPEED                       5000000
 #define SPI_BITS                        8
 #define SPI_DELAY                       100
 #define SPI_BUF_SIZE                    4096
-    
+
 #define IRQ_SVC_DEBOUNCE
 
 
@@ -189,66 +189,66 @@ struct spi_ioc_transfer {
 #define GSL6313_POWER_CTRL              1
 #define GSL6313_INTERRUPT_CTRL          1
 struct spidev_data {
-    dev_t devt;
-    spinlock_t  spi_lock;
-    struct platform_device  *spi;
-    struct list_head    device_entry;
+	dev_t devt;
+	spinlock_t  spi_lock;
+	struct platform_device  *spi;
+	struct list_head    device_entry;
 
-    /* buffer is NULL unless this device is open (users > 0) */
-    struct mutex        buf_lock;
-    unsigned        users;
-    u8            *buffer;
+	/* buffer is NULL unless this device is open (users > 0) */
+	struct mutex        buf_lock;
+	unsigned        users;
+	u8            *buffer;
 
-    struct work_struct work;
-    struct workqueue_struct *wqueue;
-    u8    *mmap_buf;
-    u8    *tx_mmap_buf;
-    u8    *u_mmap_buf;
-    u8    *k_mmap_buf;
+	struct work_struct work;
+	struct workqueue_struct *wqueue;
+	u8    *mmap_buf;
+	u8    *tx_mmap_buf;
+	u8    *u_mmap_buf;
+	u8    *k_mmap_buf;
 
-    atomic_t frame_num;
-    atomic_t is_opened;
-    unsigned int max_buf_size;
-    unsigned int max_frame_num;
+	atomic_t frame_num;
+	atomic_t is_opened;
+	unsigned int max_buf_size;
+	unsigned int max_frame_num;
 
 
-    struct wake_lock wake_lock;
-    unsigned int wake_up_gpio;
-    unsigned int irq;
+	struct wake_lock wake_lock;
+	unsigned int wake_up_gpio;
+	unsigned int irq;
 
-    unsigned int hw_reset_gpio;
-    atomic_t is_cal_mode;
-    atomic_t is_suspend;
-    u32 shutdown_gpio;
-    /*IRQ wake-up control */
-#ifdef GSL6313_INTERRUPT_CTRL
-    struct workqueue_struct *int_wq;
-    struct work_struct int_work;
-    u32 int_wakeup_gpio; 
-    int int_irq; 
-    bool wakeup;
-#endif
-    /*IRQ wake-up control */
-    /* power control */
-#if GSL6313_POWER_CTRL
-    struct regulator *vio;
-    struct regulator *vdd;
-#endif
-    /*shutdown active/suspend */
-    struct pinctrl *fp_pinctrl;
-    struct pinctrl_state *pinctrl_state_active;
-    struct pinctrl_state *pinctrl_state_suspend;
-    /*shutdown active/suspend */
-    /*IRQ wake-up control */
-#ifdef GSL6313_INTERRUPT_CTRL
-    struct pinctrl_state *pinctrl_state_interrupt;
-#endif
-    
-#ifdef IRQ_SVC_DEBOUNCE
-        atomic_t irq_svc_debounce;
-#endif
+	unsigned int hw_reset_gpio;
+	atomic_t is_cal_mode;
+	atomic_t is_suspend;
+	u32 shutdown_gpio;
+	/*IRQ wake-up control */
+	#ifdef GSL6313_INTERRUPT_CTRL
+	struct workqueue_struct *int_wq;
+	struct work_struct int_work;
+	u32 int_wakeup_gpio;
+	int int_irq;
+	bool wakeup;
+	#endif
+	/*IRQ wake-up control */
+	/* power control */
+	#if GSL6313_POWER_CTRL
+	struct regulator *vio;
+	struct regulator *vdd;
+	#endif
+	/*shutdown active/suspend */
+	struct pinctrl *fp_pinctrl;
+	struct pinctrl_state *pinctrl_state_active;
+	struct pinctrl_state *pinctrl_state_suspend;
+	/*shutdown active/suspend */
+	/*IRQ wake-up control */
+	#ifdef GSL6313_INTERRUPT_CTRL
+	struct pinctrl_state *pinctrl_state_interrupt;
+	#endif
 
-    /*IRQ wake-up control */
+	#ifdef IRQ_SVC_DEBOUNCE
+	atomic_t irq_svc_debounce;
+	#endif
+
+	/*IRQ wake-up control */
 };
 
 unsigned int spidev_read_reg(struct spidev_data *spidev, unsigned char reg);
@@ -257,18 +257,18 @@ int spidev_write_reg(struct spidev_data *spidev, unsigned int data, unsigned cha
 
 ssize_t spidev_sync(struct spidev_data *spidev, struct spi_message *message);
 
-typedef struct sl_page{
-    unsigned char head[SL_HEAD_SIZE];
-    unsigned char data[SL_PAGE_SIZE];
-}sl_page_t;
+typedef struct sl_page {
+	unsigned char head[SL_HEAD_SIZE];
+	unsigned char data[SL_PAGE_SIZE];
+} sl_page_t;
 
-typedef struct sl_frame{
-    sl_page_t pages[SL_ONE_FRAME_PAGES];
-}sl_frame_t;
+typedef struct sl_frame {
+	sl_page_t pages[SL_ONE_FRAME_PAGES];
+} sl_frame_t;
 
-typedef struct sl_frames{
-    struct sl_frame *frame;
-    int is_alloced;
-}sl_frames_t;
+typedef struct sl_frames {
+	struct sl_frame *frame;
+	int is_alloced;
+} sl_frames_t;
 
 #endif /* SPIDEV_H */

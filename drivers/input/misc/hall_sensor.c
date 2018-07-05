@@ -54,53 +54,50 @@ struct switch_dev hall_sensor_data = {
 static int g_hall_state = 0;
 //const int keycode = KEY_MEDIA;
 
-static  void sendevent(int status ,struct input_dev *dev_input)
+static  void sendevent(int status,struct input_dev *dev_input)
 {
-	if(status == 1)//LINE<20161101><just redefine event>wangyanhui
-    {
-        #ifdef CONFIG_SWITCH//yangliang add for ftm-hph switch;20150830
-        switch_set_state(&hall_sensor_data, 1);
-        #endif
-        input_report_key(dev_input, KEY_HALLOPEN, 1);
-        input_report_key(dev_input, KEY_HALLOPEN, 0);
-        pr_info("sendevent : KEY_HALLOPEN = %d,  set g_hall_state = 1 to ftm, meaning open \n", KEY_HALLOPEN);
+	if(status == 1) { //LINE<20161101><just redefine event>wangyanhui
+		#ifdef CONFIG_SWITCH//yangliang add for ftm-hph switch;20150830
+		switch_set_state(&hall_sensor_data, 1);
+		#endif
+		input_report_key(dev_input, KEY_HALLOPEN, 1);
+		input_report_key(dev_input, KEY_HALLOPEN, 0);
+		pr_info("sendevent : KEY_HALLOPEN = %d,  set g_hall_state = 1 to ftm, meaning open \n", KEY_HALLOPEN);
 
-        //LINE<JIRA_ID><DATE20160330><BUG_INFO>zenghaihui
-        g_hall_state = 1; // (0:cover;1:open)
-    }
-    else
-    {
-        #ifdef CONFIG_SWITCH//yangliang add for ftm-hph switch;20150830
-        switch_set_state(&hall_sensor_data, 0);
-        #endif
-        
-        pr_info("sendevent : KEY_HALLCLOSE = %d,  set g_hall_state = 0 to ftm, meaning cover  \n", KEY_HALLCLOSE);
-        input_report_key(dev_input, KEY_HALLCLOSE, 1);
-        input_report_key(dev_input, KEY_HALLCLOSE, 0);
-        //LINE<JIRA_ID><DATE20160330><BUG_INFO>zenghaihui
-        g_hall_state = 0; // (0:cover;1:open)
-    }
-    input_sync(dev_input);	
+		//LINE<JIRA_ID><DATE20160330><BUG_INFO>zenghaihui
+		g_hall_state = 1; // (0:cover;1:open)
+	} else {
+		#ifdef CONFIG_SWITCH//yangliang add for ftm-hph switch;20150830
+		switch_set_state(&hall_sensor_data, 0);
+		#endif
+
+		pr_info("sendevent : KEY_HALLCLOSE = %d,  set g_hall_state = 0 to ftm, meaning cover  \n", KEY_HALLCLOSE);
+		input_report_key(dev_input, KEY_HALLCLOSE, 1);
+		input_report_key(dev_input, KEY_HALLCLOSE, 0);
+		//LINE<JIRA_ID><DATE20160330><BUG_INFO>zenghaihui
+		g_hall_state = 0; // (0:cover;1:open)
+	}
+	input_sync(dev_input);
 }
 
 static irqreturn_t hall_interrupt_handler(int irq, void *dev)
 {
 //yangliang add for ftm read hall info including far and near;20150902
-#if 1
+	#if 1
 	int value;
 	struct hall_data *data = dev;
-	
+
 	value = gpio_get_value_cansleep(data->gpio);
 
 	sendevent(value,data->hall_dev);
 
 	return IRQ_HANDLED;
-#else
+	#else
 	int value;
 	struct hall_data *data = dev;
 
 	value = (gpio_get_value_cansleep(data->gpio) ? 1 : 0) ^
-		data->active_low;
+	        data->active_low;
 	if (value) {
 		input_report_switch(data->hall_dev, SW_LID, 0);
 		dev_dbg(&data->hall_dev->dev, "far\n");
@@ -111,34 +108,34 @@ static irqreturn_t hall_interrupt_handler(int irq, void *dev)
 	input_sync(data->hall_dev);
 
 	return IRQ_HANDLED;
-#endif
+	#endif
 }
 
 static int hall_input_init(struct platform_device *pdev,
-		struct hall_data *data)
+                           struct hall_data *data)
 {
 	int err = -1;
 
 	data->hall_dev = devm_input_allocate_device(&pdev->dev);
 	if (!data->hall_dev) {
 		dev_err(&data->hall_dev->dev,
-				"input device allocation failed\n");
+		        "input device allocation failed\n");
 		return -EINVAL;
 	}
 	data->hall_dev->name = LID_DEV_NAME;
 	data->hall_dev->phys = HALL_INPUT;
 	//__set_bit(EV_SW, data->hall_dev->evbit);
 	//__set_bit(SW_LID, data->hall_dev->swbit);
-	__set_bit(KEY_HALLOPEN , data->hall_dev->keybit);
-	__set_bit(KEY_HALLCLOSE , data->hall_dev->keybit);
+	__set_bit(KEY_HALLOPEN, data->hall_dev->keybit);
+	__set_bit(KEY_HALLCLOSE, data->hall_dev->keybit);
 	__set_bit(EV_KEY, data->hall_dev->evbit);
 	__set_bit(EV_SYN, data->hall_dev->evbit);
 
 	err = input_register_device(data->hall_dev);
 	if (err < 0) {
 		dev_err(&data->hall_dev->dev,
-				"unable to register input device %s\n",
-				LID_DEV_NAME);
+		        "unable to register input device %s\n",
+		        LID_DEV_NAME);
 		return err;
 	}
 
@@ -155,19 +152,19 @@ static int hall_config_regulator(struct platform_device *dev, bool on)
 		if (IS_ERR(data->vddio)) {
 			rc = PTR_ERR(data->vddio);
 			dev_err(&dev->dev, "Regulator vddio get failed rc=%d\n",
-					rc);
+			        rc);
 			data->vddio = NULL;
 			return rc;
 		}
 
 		if (regulator_count_voltages(data->vddio) > 0) {
 			rc = regulator_set_voltage(
-					data->vddio,
-					data->min_uv,
-					data->max_uv);
+			         data->vddio,
+			         data->min_uv,
+			         data->max_uv);
 			if (rc) {
 				dev_err(&dev->dev, "Regulator vddio Set voltage failed rc=%d\n",
-						rc);
+				        rc);
 				goto deinit_vregs;
 			}
 		}
@@ -193,7 +190,7 @@ static int hall_set_regulator(struct platform_device *dev, bool on)
 			rc = regulator_enable(data->vddio);
 			if (rc) {
 				dev_err(&dev->dev, "Enable regulator vddio failed rc=%d\n",
-					rc);
+				        rc);
 				goto disable_regulator;
 			}
 		}
@@ -203,7 +200,7 @@ static int hall_set_regulator(struct platform_device *dev, bool on)
 			rc = regulator_disable(data->vddio);
 			if (rc)
 				dev_err(&dev->dev, "Disable regulator vddio failed rc=%d\n",
-					rc);
+				        rc);
 		}
 		return 0;
 	}
@@ -223,7 +220,7 @@ static int hall_parse_dt(struct device *dev, struct hall_data *data)
 	struct device_node *np = dev->of_node;
 
 	data->gpio = of_get_named_gpio_flags(dev->of_node,
-			"linux,gpio-int", 0, &tmp);
+	                                     "linux,gpio-int", 0, &tmp);
 	if (!gpio_is_valid(data->gpio)) {
 		dev_err(dev, "hall gpio is not valid\n");
 		return -EINVAL;
@@ -258,7 +255,7 @@ static int hall_parse_dt(struct device *dev, struct hall_data *data)
 //LINE<JIRA_ID><DATE20160330><BUG_INFO>zenghaihui
 static ssize_t hall_info_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
-	return sprintf(buf, "%d", g_hall_state);    
+	return sprintf(buf, "%d", g_hall_state);
 }
 
 static DEVICE_ATTR(hall_state, 0444, hall_info_show, NULL);
@@ -285,7 +282,7 @@ static int hall_driver_probe(struct platform_device *dev)
 	if (data == NULL) {
 		err = -ENOMEM;
 		dev_err(&dev->dev,
-				"failed to allocate memory %d\n", err);
+		        "failed to allocate memory %d\n", err);
 		goto exit;
 	}
 	dev_set_drvdata(&dev->dev, data);
@@ -304,7 +301,7 @@ static int hall_driver_probe(struct platform_device *dev)
 	}
 
 	//yangliang add for ftm read hall info including far and near;20150902
-        #ifdef CONFIG_SWITCH
+	#ifdef CONFIG_SWITCH
 	ret = switch_dev_register(&hall_sensor_data);
 	if (ret < 0) {
 		dev_err(&dev->dev, "not able to register hall_sensor_data\n");
@@ -324,7 +321,7 @@ static int hall_driver_probe(struct platform_device *dev)
 	}
 
 	irq_flags = IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING
-		| IRQF_ONESHOT;
+	            | IRQF_ONESHOT;
 	err = gpio_request_one(data->gpio, GPIOF_DIR_IN, "hall_sensor_irq");
 	if (err) {
 		dev_err(&dev->dev, "unable to request gpio %d\n", data->gpio);
@@ -333,19 +330,18 @@ static int hall_driver_probe(struct platform_device *dev)
 
 	data->irq = gpio_to_irq(data->gpio);
 	err = devm_request_threaded_irq(&dev->dev, data->irq, NULL,
-			hall_interrupt_handler,
-			irq_flags, "hall_sensor", data);
+	                                hall_interrupt_handler,
+	                                irq_flags, "hall_sensor", data);
 	if (err < 0) {
 		dev_err(&dev->dev, "request irq failed : %d\n", data->irq);
 		goto free_gpio;
-	}
-	else
-	{//yangliang add for ftm read hall info including far and near;20150902
+	} else {
+		//yangliang add for ftm read hall info including far and near;20150902
 		int value;
 		enable_irq_wake(data->irq);
 		value = gpio_get_value_cansleep(data->gpio);
 		sendevent(value, data->hall_dev);
-	}	
+	}
 
 	device_init_wakeup(&dev->dev, data->wakeup);
 	enable_irq_wake(data->irq);
@@ -362,16 +358,16 @@ static int hall_driver_probe(struct platform_device *dev)
 		goto err_regulator_init;
 	}
 
-        //LINE<JIRA_ID><DATE20160330><BUG_INFO>zenghaihui
+	//LINE<JIRA_ID><DATE20160330><BUG_INFO>zenghaihui
 	device_create_file(&dev->dev, &dev_attr_hall_state);
 
-	//BEGIN<20160729><create hall node for wiko>wangyanhui	
-   	err = driver_create_file(&hall_driver.driver, &driver_attr_hall_state);
+	//BEGIN<20160729><create hall node for wiko>wangyanhui
+	err = driver_create_file(&hall_driver.driver, &driver_attr_hall_state);
 	if (err < 0) {
 		dev_err(&dev->dev, "driver_create_file  failed: %d\n", err);
 	}
 	//END<20160729><create hall node for wiko>wangyanhui
-	
+
 	return 0;
 
 err_regulator_init:
@@ -397,11 +393,11 @@ static int hall_driver_remove(struct platform_device *dev)
 	hall_config_regulator(dev, false);
 
 	//yangliang add for ftm read hall info including far and near;20150902
-        #ifdef CONFIG_SWITCH
+	#ifdef CONFIG_SWITCH
 	switch_dev_unregister(&hall_sensor_data);
-	#endif	
+	#endif
 
-        //LINE<JIRA_ID><DATE20160330><BUG_INFO>zenghaihui
+	//LINE<JIRA_ID><DATE20160330><BUG_INFO>zenghaihui
 	device_remove_file(&dev->dev, &dev_attr_hall_state);
 	driver_remove_file(&hall_driver.driver, &driver_attr_hall_state);//LINE<20160729><create hall node for wiko>wangyanhui
 	return 0;

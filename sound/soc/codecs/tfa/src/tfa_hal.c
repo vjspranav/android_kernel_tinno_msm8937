@@ -28,14 +28,14 @@
 static enum Tfa98xx_Error tfa98xx_classify_i2c_error(enum NXP_I2C_Error i2c_error)
 {
 	switch (i2c_error) {
-		case NXP_I2C_Ok:
-			return Tfa98xx_Error_Ok;
-		case NXP_I2C_NoAck:
-		case NXP_I2C_ArbLost:
-		case NXP_I2C_TimeOut:
-			return Tfa98xx_Error_I2C_NonFatal;
-		default:
-			return Tfa98xx_Error_I2C_Fatal;
+	case NXP_I2C_Ok:
+				return Tfa98xx_Error_Ok;
+	case NXP_I2C_NoAck:
+	case NXP_I2C_ArbLost:
+	case NXP_I2C_TimeOut:
+		return Tfa98xx_Error_I2C_NonFatal;
+	default:
+		return Tfa98xx_Error_I2C_Fatal;
 	}
 }
 /*
@@ -43,8 +43,7 @@ static enum Tfa98xx_Error tfa98xx_classify_i2c_error(enum NXP_I2C_Error i2c_erro
  */
 enum Tfa98xx_Error
 tfa98xx_write_register16(Tfa98xx_handle_t handle,
-			unsigned char subaddress, unsigned short value)
-{
+                         unsigned char subaddress, unsigned short value) {
 	enum NXP_I2C_Error i2c_error;
 	unsigned char write_data[3]; /* subaddress and 2 bytes of the value */
 	if (!tfa98xx_handle_is_open(handle))
@@ -61,8 +60,7 @@ tfa98xx_write_register16(Tfa98xx_handle_t handle,
 
 enum Tfa98xx_Error
 tfa98xx_read_register16(Tfa98xx_handle_t handle,
-		       unsigned char subaddress, unsigned short *pValue)
-{
+                        unsigned char subaddress, unsigned short *pValue) {
 	enum NXP_I2C_Error i2c_error;
 	unsigned char write_data[1]; /* subaddress */
 	unsigned char read_buffer[2]; /* 2 data bytes */
@@ -73,11 +71,13 @@ tfa98xx_read_register16(Tfa98xx_handle_t handle,
 	write_data[0] = subaddress;
 	read_buffer[0] = read_buffer[1] = 0;
 
-	i2c_error = NXP_I2C_WriteRead(handles_local[handle].slave_address, 
-			sizeof(write_data), write_data, sizeof(read_buffer), read_buffer);
-	if (tfa98xx_classify_i2c_error(i2c_error) != Tfa98xx_Error_Ok) {
+	i2c_error = NXP_I2C_WriteRead(handles_local[handle].slave_address,
+	                              sizeof(write_data), write_data, sizeof(read_buffer), read_buffer);
+	if (tfa98xx_classify_i2c_error(i2c_error) != Tfa98xx_Error_Ok)
+	{
 		return tfa98xx_classify_i2c_error(i2c_error);
-	} else {
+	} else
+	{
 		*pValue = (read_buffer[0] << 8) + read_buffer[1];
 		return Tfa98xx_Error_Ok;
 	}
@@ -85,8 +85,7 @@ tfa98xx_read_register16(Tfa98xx_handle_t handle,
 
 enum Tfa98xx_Error
 tfa98xx_read_data(Tfa98xx_handle_t handle,
-		 unsigned char subaddress, int num_bytes, unsigned char data[])
-{
+                  unsigned char subaddress, int num_bytes, unsigned char data[]) {
 	enum NXP_I2C_Error i2c_error;
 	unsigned char write_data[1]; /* subaddress */
 
@@ -97,8 +96,8 @@ tfa98xx_read_data(Tfa98xx_handle_t handle,
 
 	write_data[0] = subaddress;
 	i2c_error =
-	    NXP_I2C_WriteRead(handles_local[handle].slave_address, sizeof(write_data),
-			      write_data, num_bytes, data);
+	NXP_I2C_WriteRead(handles_local[handle].slave_address, sizeof(write_data),
+	                  write_data, num_bytes, data);
 	return tfa98xx_classify_i2c_error(i2c_error);
 }
 
@@ -107,9 +106,8 @@ tfa98xx_read_data(Tfa98xx_handle_t handle,
  */
 enum Tfa98xx_Error
 tfa98xx_write_raw(Tfa98xx_handle_t handle,
-		  int num_bytes,
-		  const unsigned char data[])
-{
+                  int num_bytes,
+                  const unsigned char data[]) {
 	enum NXP_I2C_Error i2c_error;
 
 	if (!tfa98xx_handle_is_open(handle))
@@ -117,7 +115,7 @@ tfa98xx_write_raw(Tfa98xx_handle_t handle,
 	if (num_bytes > handles_local[handle].buffer_size)
 		return Tfa98xx_Error_Bad_Parameter;
 	i2c_error =
-	    NXP_I2C_WriteRead(handles_local[handle].slave_address, num_bytes,
-			  data, 0, NULL);
+	NXP_I2C_WriteRead(handles_local[handle].slave_address, num_bytes,
+	                  data, 0, NULL);
 	return tfa98xx_classify_i2c_error(i2c_error);
 }

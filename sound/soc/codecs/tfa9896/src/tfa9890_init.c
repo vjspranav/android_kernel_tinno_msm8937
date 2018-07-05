@@ -4,16 +4,16 @@
  *Licensed under the Apache License, Version 2.0 (the "License");
  *you may not use this file except in compliance with the License.
  *You may obtain a copy of the License at
- *            
+ *
  *http://www.apache.org/licenses/LICENSE-2.0
- *             
+ *
  *Unless required by applicable law or agreed to in writing, software
  *distributed under the License is distributed on an "AS IS" BASIS,
  *WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *See the License for the specific language governing permissions and
  *limitations under the License.
  */
- 
+
 #include "tfa_dsp_fw.h"
 #include "tfa_service.h"
 #include "tfa_internal.h"
@@ -78,7 +78,7 @@ static enum Tfa98xx_Error tfa9890_dsp_system_stable(Tfa98xx_handle_t handle, int
 
 	/* check AREFS and CLKS: not ready if either is clear */
 	*ready = !((TFA_GET_BF_VALUE(handle, AREFS, status) == 0)
-		   || (TFA_GET_BF_VALUE(handle, CLKS, status) == 0));
+	           || (TFA_GET_BF_VALUE(handle, CLKS, status) == 0));
 	if (!*ready)		/* if not ready go back */
 		return error;	/* will be Tfa98xx_Error_Ok */
 
@@ -159,7 +159,7 @@ static enum Tfa98xx_Error tfa9890_dsp_reset(Tfa98xx_handle_t handle, int state)
 	   when dsp reset is used */
 	tfa9890_clockgating(handle, 0);
 
-        TFA_SET_BF(handle, RST, (uint16_t)state);
+	TFA_SET_BF(handle, RST, (uint16_t)state);
 
 	/* clock gating restore */
 	error = tfa9890_clockgating(handle, 1);
@@ -170,7 +170,8 @@ static enum Tfa98xx_Error tfa9890_dsp_reset(Tfa98xx_handle_t handle, int state)
 /*
  * register device specifics functions
  */
-void tfa9890_ops(struct tfa_device_ops *ops) {
+void tfa9890_ops(struct tfa_device_ops *ops)
+{
 	ops->tfa_init = tfa9890_specific;
 	ops->tfa_dsp_reset = tfa9890_dsp_reset;
 	ops->tfa_dsp_system_stable = tfa9890_dsp_system_stable;

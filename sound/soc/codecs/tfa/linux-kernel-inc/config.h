@@ -15,7 +15,7 @@
 #include <linux/ftrace.h>
 #include <sound/pcm.h>
 
-/* 
+/*
 	i2c transaction on Linux limited to 64k
 	(See Linux kernel documentation: Documentation/i2c/writing-clients)
 */
@@ -52,10 +52,10 @@ enum tfa98xx_dsp_init_state {
 };
 
 enum tfa98xx_dsp_fw_state {
-       TFA98XX_DSP_FW_NONE = 0,
-       TFA98XX_DSP_FW_PENDING,
-       TFA98XX_DSP_FW_FAIL,
-       TFA98XX_DSP_FW_OK,
+	TFA98XX_DSP_FW_NONE = 0,
+	TFA98XX_DSP_FW_PENDING,
+	TFA98XX_DSP_FW_FAIL,
+	TFA98XX_DSP_FW_OK,
 };
 
 struct tfa98xx_firmware {
@@ -113,9 +113,9 @@ struct tfa98xx {
 
 	int handle;
 
-#ifdef CONFIG_DEBUG_FS
+	#ifdef CONFIG_DEBUG_FS
 	struct dentry *dbg_dir;
-#endif
+	#endif
 	u8 reg;
 
 	unsigned int count_wait_for_source_state;
@@ -124,9 +124,9 @@ struct tfa98xx {
 };
 
 #if defined(CONFIG_TRACING) && defined(DEBUG)
-	#define tfa98xx_trace_printk(...) trace_printk(__VA_ARGS__)
+#define tfa98xx_trace_printk(...) trace_printk(__VA_ARGS__)
 #else
-	#define tfa98xx_trace_printk(...)
+#define tfa98xx_trace_printk(...)
 #endif
 
 /* In debug mode, printing log by using pr_info instead of pr_debug. */

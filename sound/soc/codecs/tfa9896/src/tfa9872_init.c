@@ -4,16 +4,16 @@
  *Licensed under the Apache License, Version 2.0 (the "License");
  *you may not use this file except in compliance with the License.
  *You may obtain a copy of the License at
- *            
+ *
  *http://www.apache.org/licenses/LICENSE-2.0
- *             
+ *
  *Unless required by applicable law or agreed to in writing, software
  *distributed under the License is distributed on an "AS IS" BASIS,
  *WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *See the License for the specific language governing permissions and
  *limitations under the License.
  */
- 
+
 
 #include "tfa_dsp_fw.h"
 #include "tfa_service.h"
@@ -35,7 +35,7 @@ static enum Tfa98xx_Error tfa9872_specific(Tfa98xx_handle_t handle)
 	error = reg_read(handle, 0xFB, &value);
 	xor = value ^ 0x005A;
 	error = reg_write(handle, 0xA0, xor);
-	tfa98xx_key2(handle, 0); 
+	tfa98xx_key2(handle, 0);
 
 	/* ----- generated code start ----- */
 	/* -----  version 25 ----- */
@@ -105,7 +105,8 @@ static enum Tfa98xx_Error tfa9872_tfa_adapt_boost_trigger_level(Tfa98xx_handle_t
 /*
  * register device specifics functions
  */
-void tfa9872_ops(struct tfa_device_ops *ops) {
+void tfa9872_ops(struct tfa_device_ops *ops)
+{
 	ops->tfa_init=tfa9872_specific;
 	ops->tfa_set_boost_trip_level=tfa9872_tfa_set_boost_trip_level;
 	ops->tfa_adapt_boost_trigger_level=tfa9872_tfa_adapt_boost_trigger_level;

@@ -4,7 +4,7 @@
 #include <linux/types.h>
 #include <linux/notifier.h>
 /**********************************************************/
-enum FP_MODE{
+enum FP_MODE {
 	GF_IMAGE_MODE = 0,
 	GF_KEY_MODE,
 	GF_SLEEP_MODE,
@@ -18,10 +18,9 @@ struct gf_key {
 };
 
 
-struct gf_key_map
-{
-    char *name;
-    unsigned short val;
+struct gf_key_map {
+	char *name;
+	unsigned short val;
 };
 
 #define  GF_IOC_MAGIC         'g'
@@ -51,7 +50,7 @@ struct gf_key_map
 #define  USE_SPI_BUS	1
 #define GF_FASYNC   1	/*If support fasync mechanism.*/
 #define GF_NET_EVENT_IRQ 0
-//#define GF_NETLINK_ENABLE 
+//#define GF_NETLINK_ENABLE
 #define GF_NET_EVENT_FB_BLACK 1
 #define GF_NET_EVENT_FB_UNBLACK 2
 
@@ -59,11 +58,11 @@ struct gf_key_map
 struct gf_dev {
 	dev_t devt;
 	struct list_head device_entry;
-#if defined(USE_SPI_BUS)
+	#if defined(USE_SPI_BUS)
 	struct spi_device *spi;
-#elif defined(USE_PLATFORM_BUS)
+	#elif defined(USE_PLATFORM_BUS)
 	struct platform_device *spi;
-#endif
+	#endif
 	struct clk *core_clk;
 	struct clk *iface_clk;
 
@@ -76,16 +75,16 @@ struct gf_dev {
 	int irq;
 	int irq_enabled;
 	int clk_enabled;
-#ifdef GF_FASYNC
+	#ifdef GF_FASYNC
 	struct fasync_struct *async;
-#endif
+	#endif
 	struct notifier_block notifier;
 	char device_available;
 	char fb_black;
 	//TINNO BEGIN
-       u8           isPowerOn;
-       struct regulator *vdd;
-       struct regulator *vio;
+	u8           isPowerOn;
+	struct regulator *vdd;
+	struct regulator *vio;
 	//signed fpid_gpio;
 	//TINNO END
 };

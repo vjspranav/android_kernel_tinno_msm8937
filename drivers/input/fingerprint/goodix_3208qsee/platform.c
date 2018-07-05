@@ -68,13 +68,11 @@ int gf_parse_dts(struct gf_dev* gf_dev)
 void gf_cleanup(struct gf_dev	* gf_dev)
 {
 	pr_info("gf:[info] %s\n",__func__);
-	if (gpio_is_valid(gf_dev->irq_gpio))
-	{
+	if (gpio_is_valid(gf_dev->irq_gpio)) {
 		gpio_free(gf_dev->irq_gpio);
 		pr_info("gf:remove irq_gpio success\n");
 	}
-	if (gpio_is_valid(gf_dev->reset_gpio))
-	{
+	if (gpio_is_valid(gf_dev->reset_gpio)) {
 		gpio_free(gf_dev->reset_gpio);
 		pr_info("gf:remove reset_gpio success\n");
 	}
@@ -88,19 +86,19 @@ int gf_power_ctl(struct gf_dev* gf_dev, bool on)
 		rc = regulator_enable(gf_dev->vdd);
 		if (rc) {
 			dev_err(&gf_dev->spi->dev,
-				"gf:Regulator vdd enable failed rc=%d\n", rc);
+			        "gf:Regulator vdd enable failed rc=%d\n", rc);
 			return rc;
 		}
 
-#if 0
+		#if 0
 		rc = regulator_enable(gf_dev->vio);
 		if (rc) {
 			dev_err(&gf_dev->spi->dev,
-				"Regulator vio enable failed rc=%d\n", rc);
+			        "Regulator vio enable failed rc=%d\n", rc);
 			regulator_disable(gf_dev->vdd);
 			return rc;
 		}
-#endif
+		#endif
 		msleep(10);
 
 		gf_dev->isPowerOn = 1;
@@ -109,23 +107,23 @@ int gf_power_ctl(struct gf_dev* gf_dev, bool on)
 		rc = regulator_disable(gf_dev->vdd);
 		if (rc) {
 			dev_err(&gf_dev->spi->dev,
-				"gf:Regulator vdd disable failed rc=%d\n", rc);
+			        "gf:Regulator vdd disable failed rc=%d\n", rc);
 			return rc;
 		}
 
-#if 0
+		#if 0
 		rc = regulator_disable(gf_dev->vio);
 		if (rc) {
 			dev_err(&gf_dev->spi->dev,
-				"Regulator vio disable failed rc=%d\n", rc);
+			        "Regulator vio disable failed rc=%d\n", rc);
 		}
-#endif
+		#endif
 
 		gf_dev->isPowerOn = 0;
 	} else {
 		dev_warn(&gf_dev->spi->dev,
-				"gf:Ignore power status change from %d to %d\n",
-				on, gf_dev->isPowerOn);
+		         "gf:Ignore power status change from %d to %d\n",
+		         on, gf_dev->isPowerOn);
 	}
 	return rc;
 }
@@ -181,50 +179,50 @@ int gf_power_init(struct gf_dev* gf_dev)
 	if (IS_ERR(gf_dev->vdd)) {
 		ret = PTR_ERR(gf_dev->vdd);
 		dev_err(&gf_dev->spi->dev,
-			"gf:Regulator get failed vdd ret=%d\n", ret);
+		        "gf:Regulator get failed vdd ret=%d\n", ret);
 		return ret;
 	}
 
 	if (regulator_count_voltages(gf_dev->vdd) > 0) {
 		ret = regulator_set_voltage(gf_dev->vdd, GF_VDD_MIN_UV,
-					   GF_VDD_MAX_UV);
+		                            GF_VDD_MAX_UV);
 		if (ret) {
 			dev_err(&gf_dev->spi->dev,
-				"gf:Regulator set_vtg failed vdd ret=%d\n", ret);
+			        "gf:Regulator set_vtg failed vdd ret=%d\n", ret);
 			goto reg_vdd_put;
 		}
 	}
 
-#if 0
+	#if 0
 	gf_dev->vio = regulator_get(&gf_dev->spi->dev, "vio");
 	if (IS_ERR(gf_dev->vio)) {
 		ret = PTR_ERR(gf_dev->vio);
 		dev_err(&gf_dev->spi->dev,
-			"Regulator get failed vio ret=%d\n", ret);
+		        "Regulator get failed vio ret=%d\n", ret);
 		goto reg_vdd_set_vtg;
 	}
 
 	if (regulator_count_voltages(gf_dev->vio) > 0) {
 		ret = regulator_set_voltage(gf_dev->vio,
-				GF_VIO_MIN_UV,
-				GF_VIO_MAX_UV);
+		                            GF_VIO_MIN_UV,
+		                            GF_VIO_MAX_UV);
 		if (ret) {
 			dev_err(&gf_dev->spi->dev,
-			"Regulator set_vtg failed vio ret=%d\n", ret);
+			        "Regulator set_vtg failed vio ret=%d\n", ret);
 			goto reg_vio_put;
 		}
 	}
-#endif
+	#endif
 
 	return 0;
 
-#if 0
+	#if 0
 reg_vio_put:
 	regulator_put(gf_dev->vio);
 reg_vdd_set_vtg:
 	if (regulator_count_voltages(gf_dev->vdd) > 0)
 		regulator_set_voltage(gf_dev->vdd, 0, GF_VDD_MAX_UV);
-#endif
+	#endif
 reg_vdd_put:
 	regulator_put(gf_dev->vdd);
 	return ret;
@@ -232,27 +230,25 @@ reg_vdd_put:
 
 int gf_power_deinit(struct gf_dev* gf_dev)
 {
-    int ret = 0;
+	int ret = 0;
 
-    if (gf_dev->vdd)
-    {   
-        if (regulator_count_voltages(gf_dev->vdd) > 0)
-            regulator_set_voltage(gf_dev->vdd, 0, GF_VDD_MAX_UV);
-        
-        regulator_disable(gf_dev->vdd);
-        regulator_put(gf_dev->vdd);
-    }
+	if (gf_dev->vdd) {
+		if (regulator_count_voltages(gf_dev->vdd) > 0)
+			regulator_set_voltage(gf_dev->vdd, 0, GF_VDD_MAX_UV);
 
-#if 0
-    if (gf_dev->vio)
-    {   
-        if (regulator_count_voltages(gf_dev->vio) > 0)
-            regulator_set_voltage(gf_dev->vio, 0, GF_VIO_MAX_UV);
-        
-        regulator_disable(gf_dev->vio);
-        regulator_put(gf_dev->vio);
-    }
-#endif    
+		regulator_disable(gf_dev->vdd);
+		regulator_put(gf_dev->vdd);
+	}
 
-    return ret;
+	#if 0
+	if (gf_dev->vio) {
+		if (regulator_count_voltages(gf_dev->vio) > 0)
+			regulator_set_voltage(gf_dev->vio, 0, GF_VIO_MAX_UV);
+
+		regulator_disable(gf_dev->vio);
+		regulator_put(gf_dev->vio);
+	}
+	#endif
+
+	return ret;
 }

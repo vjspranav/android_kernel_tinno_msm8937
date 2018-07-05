@@ -1,5 +1,5 @@
 /** Filename: Tfa9912_device_genregs.h
- *  This file was generated automatically on 04/25/16 at 14:22:11. 
+ *  This file was generated automatically on 04/25/16 at 14:22:11.
  *  Source file: TFA9912_N1A_I2C_regmap_V1.9.xlsx
  */
 

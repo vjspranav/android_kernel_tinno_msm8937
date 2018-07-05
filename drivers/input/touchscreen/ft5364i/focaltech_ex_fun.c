@@ -1,7 +1,7 @@
 /*
  *
  * FocalTech fts TouchScreen driver.
- * 
+ *
  * Copyright (c) 2010-2015, Focaltech Ltd. All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
@@ -15,14 +15,14 @@
  *
  */
 
- /*******************************************************************************
+/*******************************************************************************
 *
 * File Name: Focaltech_ex_fun.c
 *
 * Author: Xu YongFeng
 *
 * Created: 2015-01-29
-*   
+*
 * Modify by mshl on 2015-07-06
 *
 * Abstract:
@@ -88,7 +88,7 @@ static ssize_t fts_debug_write(struct file *filp, const char __user *buff, size_
 	int buflen = count;
 	int writelen = 0;
 	int ret = 0;
-	
+
 	if (copy_from_user(&writebuf, buff, buflen)) {
 		dev_err(&fts_i2c_client->dev, "%s:copy from user error\n", __func__);
 		return -EFAULT;
@@ -96,29 +96,28 @@ static ssize_t fts_debug_write(struct file *filp, const char __user *buff, size_
 	proc_operate_mode = writebuf[0];
 
 	switch (proc_operate_mode) {
-	case PROC_UPGRADE:
-		{
-			char upgrade_file_path[128];
-			memset(upgrade_file_path, 0, sizeof(upgrade_file_path));
-			sprintf(upgrade_file_path, "%s", writebuf + 1);
-			upgrade_file_path[buflen-1] = '\0';
-			FTS_DBG("%s\n", upgrade_file_path);
-			disable_irq(fts_i2c_client->irq);
-			#if GTP_ESD_PROTECT
-			apk_debug_flag = 1;
-			#endif
-			
-			ret = fts_ctpm_fw_upgrade_with_app_file(fts_i2c_client, upgrade_file_path);
-			#if GTP_ESD_PROTECT
-			apk_debug_flag = 0;
-			#endif
-			enable_irq(fts_i2c_client->irq);
-			if (ret < 0) {
-				dev_err(&fts_i2c_client->dev, "%s:upgrade failed.\n", __func__);
-				return ret;
-			}
+	case PROC_UPGRADE: {
+		char upgrade_file_path[128];
+		memset(upgrade_file_path, 0, sizeof(upgrade_file_path));
+		sprintf(upgrade_file_path, "%s", writebuf + 1);
+		upgrade_file_path[buflen-1] = '\0';
+		FTS_DBG("%s\n", upgrade_file_path);
+		disable_irq(fts_i2c_client->irq);
+		#if GTP_ESD_PROTECT
+		apk_debug_flag = 1;
+		#endif
+
+		ret = fts_ctpm_fw_upgrade_with_app_file(fts_i2c_client, upgrade_file_path);
+		#if GTP_ESD_PROTECT
+		apk_debug_flag = 0;
+		#endif
+		enable_irq(fts_i2c_client->irq);
+		if (ret < 0) {
+			dev_err(&fts_i2c_client->dev, "%s:upgrade failed.\n", __func__);
+			return ret;
 		}
-		break;
+	}
+	break;
 	case PROC_READ_REGISTER:
 		writelen = 1;
 		ret = fts_i2c_write(fts_i2c_client, writebuf + 1, writelen);
@@ -151,7 +150,7 @@ static ssize_t fts_debug_write(struct file *filp, const char __user *buff, size_
 	default:
 		break;
 	}
-	
+
 
 	return count;
 }
@@ -160,7 +159,7 @@ static ssize_t fts_debug_write(struct file *filp, const char __user *buff, size_
 /************************************************************************
 *   Name: fts_debug_read
 *  Brief:interface of read proc
-* Input: point to the data, no use, no use, read len, no use, no use 
+* Input: point to the data, no use, no use, read len, no use, no use
 * Output: page point to data
 * Return: read char number
 ***********************************************************************/
@@ -171,7 +170,7 @@ static ssize_t fts_debug_read(struct file *filp, char __user *buff, size_t count
 	int readlen = 0;
 	u8 regvalue = 0x00, regaddr = 0x00;
 	unsigned char buf[READ_BUF_SIZE];
-	
+
 	switch (proc_operate_mode) {
 	case PROC_UPGRADE:
 		//after calling fts_debug_write to upgrade
@@ -188,7 +187,7 @@ static ssize_t fts_debug_read(struct file *filp, char __user *buff, size_t count
 		if (ret < 0) {
 			dev_err(&fts_i2c_client->dev, "%s:read iic error\n", __func__);
 			return ret;
-		} 
+		}
 		num_read_chars = 1;
 		break;
 	case PROC_READ_DATA:
@@ -198,7 +197,7 @@ static ssize_t fts_debug_read(struct file *filp, char __user *buff, size_t count
 			dev_err(&fts_i2c_client->dev, "%s:read iic error\n", __func__);
 			return ret;
 		}
-		
+
 		num_read_chars = readlen;
 		break;
 	case PROC_WRITE_DATA:
@@ -206,7 +205,7 @@ static ssize_t fts_debug_read(struct file *filp, char __user *buff, size_t count
 	default:
 		break;
 	}
-	
+
 	if (copy_to_user(buff, buf, num_read_chars)) {
 		dev_err(&fts_i2c_client->dev, "%s:copy to user error\n", __func__);
 		return -EFAULT;
@@ -215,10 +214,10 @@ static ssize_t fts_debug_read(struct file *filp, char __user *buff, size_t count
 	return num_read_chars;
 }
 static const struct file_operations fts_proc_fops = {
-		.owner = THIS_MODULE,
-		.read = fts_debug_read,
-		.write = fts_debug_write,
-		
+	.owner = THIS_MODULE,
+	.read = fts_debug_read,
+	.write = fts_debug_write,
+
 };
 #else
 /*interface of write proc*/
@@ -229,15 +228,15 @@ static const struct file_operations fts_proc_fops = {
 * Output: no
 * Return: data len
 ***********************************************************************/
-static int fts_debug_write(struct file *filp, 
-	const char __user *buff, unsigned long len, void *data)
+static int fts_debug_write(struct file *filp,
+                           const char __user *buff, unsigned long len, void *data)
 {
 	unsigned char writebuf[WRITE_BUF_SIZE];
 	int buflen = len;
 	int writelen = 0;
 	int ret = 0;
-	
-	
+
+
 	if (copy_from_user(&writebuf, buff, buflen)) {
 		dev_err(&fts_i2c_client->dev, "%s:copy from user error\n", __func__);
 		return -EFAULT;
@@ -245,29 +244,28 @@ static int fts_debug_write(struct file *filp,
 	proc_operate_mode = writebuf[0];
 
 	switch (proc_operate_mode) {
-	
-	case PROC_UPGRADE:
-		{
-			char upgrade_file_path[128];
-			memset(upgrade_file_path, 0, sizeof(upgrade_file_path));
-			sprintf(upgrade_file_path, "%s", writebuf + 1);
-			upgrade_file_path[buflen-1] = '\0';
-			FTS_DBG("%s\n", upgrade_file_path);
-			disable_irq(fts_i2c_client->irq);
-			#if GTP_ESD_PROTECT
-				apk_debug_flag = 1;
-			#endif
-			ret = fts_ctpm_fw_upgrade_with_app_file(fts_i2c_client, upgrade_file_path);
-			#if GTP_ESD_PROTECT
-				apk_debug_flag = 0;
-			#endif
-			enable_irq(fts_i2c_client->irq);
-			if (ret < 0) {
-				dev_err(&fts_i2c_client->dev, "%s:upgrade failed.\n", __func__);
-				return ret;
-			}
+
+	case PROC_UPGRADE: {
+		char upgrade_file_path[128];
+		memset(upgrade_file_path, 0, sizeof(upgrade_file_path));
+		sprintf(upgrade_file_path, "%s", writebuf + 1);
+		upgrade_file_path[buflen-1] = '\0';
+		FTS_DBG("%s\n", upgrade_file_path);
+		disable_irq(fts_i2c_client->irq);
+		#if GTP_ESD_PROTECT
+		apk_debug_flag = 1;
+		#endif
+		ret = fts_ctpm_fw_upgrade_with_app_file(fts_i2c_client, upgrade_file_path);
+		#if GTP_ESD_PROTECT
+		apk_debug_flag = 0;
+		#endif
+		enable_irq(fts_i2c_client->irq);
+		if (ret < 0) {
+			dev_err(&fts_i2c_client->dev, "%s:upgrade failed.\n", __func__);
+			return ret;
 		}
-		break;
+	}
+	break;
 	case PROC_READ_REGISTER:
 		writelen = 1;
 		ret = fts_i2c_write(fts_i2c_client, writebuf + 1, writelen);
@@ -300,7 +298,7 @@ static int fts_debug_write(struct file *filp,
 	default:
 		break;
 	}
-	
+
 
 	return len;
 }
@@ -309,19 +307,19 @@ static int fts_debug_write(struct file *filp,
 /************************************************************************
 *   Name: fts_debug_read
 *  Brief:interface of read proc
-* Input: point to the data, no use, no use, read len, no use, no use 
+* Input: point to the data, no use, no use, read len, no use, no use
 * Output: page point to data
 * Return: read char number
 ***********************************************************************/
 static int fts_debug_read( char *page, char **start,
-	off_t off, int count, int *eof, void *data )
+                           off_t off, int count, int *eof, void *data )
 {
 	int ret = 0;
 	unsigned char buf[READ_BUF_SIZE];
 	int num_read_chars = 0;
 	int readlen = 0;
 	u8 regvalue = 0x00, regaddr = 0x00;
-	
+
 	switch (proc_operate_mode) {
 	case PROC_UPGRADE:
 		//after calling fts_debug_write to upgrade
@@ -338,7 +336,7 @@ static int fts_debug_read( char *page, char **start,
 		if (ret < 0) {
 			dev_err(&fts_i2c_client->dev, "%s:read iic error\n", __func__);
 			return ret;
-		} 
+		}
 		num_read_chars = 1;
 		break;
 	case PROC_READ_DATA:
@@ -348,7 +346,7 @@ static int fts_debug_read( char *page, char **start,
 			dev_err(&fts_i2c_client->dev, "%s:read iic error\n", __func__);
 			return ret;
 		}
-		
+
 		num_read_chars = readlen;
 		break;
 	case PROC_WRITE_DATA:
@@ -356,7 +354,7 @@ static int fts_debug_read( char *page, char **start,
 	default:
 		break;
 	}
-	
+
 	memcpy(page, buf, num_read_chars);
 	return num_read_chars;
 }
@@ -369,25 +367,22 @@ static int fts_debug_read( char *page, char **start,
 * Return: success =0
 ***********************************************************************/
 int fts_create_apk_debug_channel(struct i2c_client * client)
-{	
+{
 	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
-		fts_proc_entry = proc_create(PROC_NAME, 0777, NULL, &fts_proc_fops);		
+	fts_proc_entry = proc_create(PROC_NAME, 0777, NULL, &fts_proc_fops);
 	#else
-		fts_proc_entry = create_proc_entry(PROC_NAME, 0777, NULL);
+	fts_proc_entry = create_proc_entry(PROC_NAME, 0777, NULL);
 	#endif
-	if (NULL == fts_proc_entry) 
-	{
+	if (NULL == fts_proc_entry) {
 		dev_err(&client->dev, "Couldn't create proc entry!\n");
-		
+
 		return -ENOMEM;
-	} 
-	else 
-	{
+	} else {
 		dev_info(&client->dev, "Create proc entry success!\n");
-		
+
 		#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 10, 0))
-			fts_proc_entry->write_proc = fts_debug_write;
-			fts_proc_entry->read_proc = fts_debug_read;
+		fts_proc_entry->write_proc = fts_debug_write;
+		fts_proc_entry->read_proc = fts_debug_read;
 		#endif
 	}
 	return 0;
@@ -401,13 +396,13 @@ int fts_create_apk_debug_channel(struct i2c_client * client)
 ***********************************************************************/
 void fts_release_apk_debug_channel(void)
 {
-	
+
 	if (fts_proc_entry)
-		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
-			proc_remove(fts_proc_entry);
-		#else
-			remove_proc_entry(NULL, fts_proc_entry);
-		#endif
+	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
+		proc_remove(fts_proc_entry);
+	#else
+		remove_proc_entry(NULL, fts_proc_entry);
+	#endif
 }
 
 /************************************************************************
@@ -424,17 +419,16 @@ static ssize_t fts_tpfwver_show(struct device *dev, struct device_attribute *att
 	mutex_lock(&fts_input_dev->mutex);
 	if (fts_read_reg(fts_i2c_client, FTS_REG_FW_VER, &fwver) < 0)
 		return -1;
-	
-	
+
+
 	if (fwver == 255)
 		num_read_chars = snprintf(buf, 128,"get tp fw version fail!\n");
-	else
-	{
+	else {
 		num_read_chars = snprintf(buf, 128, "%02X\n", fwver);
 	}
-	
+
 	mutex_unlock(&fts_input_dev->mutex);
-	
+
 	return num_read_chars;
 }
 /************************************************************************
@@ -459,13 +453,13 @@ static ssize_t fts_tpfwver_store(struct device *dev, struct device_attribute *at
 static ssize_t fts_tpdriver_version_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	ssize_t num_read_chars = 0;
-	
+
 	mutex_lock(&fts_input_dev->mutex);
-	
+
 	num_read_chars = snprintf(buf, 128,"%s \n", FTS_DRIVER_INFO);
-	
+
 	mutex_unlock(&fts_input_dev->mutex);
-	
+
 	return num_read_chars;
 }
 /************************************************************************
@@ -506,28 +500,25 @@ static ssize_t fts_tprwreg_store(struct device *dev, struct device_attribute *at
 	//int retval = 0;
 	long unsigned int wmreg=0;
 	u8 regaddr=0xff,regvalue=0xff;
-	u8 valbuf[5]={0};
+	u8 valbuf[5]= {0};
 
 	memset(valbuf, 0, sizeof(valbuf));
-	mutex_lock(&fts_input_dev->mutex);	
+	mutex_lock(&fts_input_dev->mutex);
 	num_read_chars = count - 1;
-	if (num_read_chars != 2) 
-	{
-		if (num_read_chars != 4) 
-		{
+	if (num_read_chars != 2) {
+		if (num_read_chars != 4) {
 			dev_err(dev, "please input 2 or 4 character\n");
 			goto error_return;
 		}
 	}
 	memcpy(valbuf, buf, num_read_chars);
 	wmreg = simple_strtoul(valbuf, NULL, 16);
-	//if (0 != retval) 
+	//if (0 != retval)
 	//{
 	//	dev_err(dev, "%s() - ERROR: Could not convert the given input to a number. The given input was: \"%s\"\n", __FUNCTION__, buf);
 	//	goto error_return;
 	//}
-	if (2 == num_read_chars) 
-	{
+	if (2 == num_read_chars) {
 		/*read register*/
 		regaddr = wmreg;
 		printk("[focal][test](0x%02x)\n", regaddr);
@@ -535,9 +526,7 @@ static ssize_t fts_tprwreg_store(struct device *dev, struct device_attribute *at
 			printk("[Focal] %s : Could not read the register(0x%02x)\n", __func__, regaddr);
 		else
 			printk("[Focal] %s : the register(0x%02x) is 0x%02x\n", __func__, regaddr, regvalue);
-	} 
-	else 
-	{
+	} else {
 		regaddr = wmreg>>8;
 		regvalue = wmreg;
 		if (fts_write_reg(client, regaddr, regvalue)<0)
@@ -545,9 +534,9 @@ static ssize_t fts_tprwreg_store(struct device *dev, struct device_attribute *at
 		else
 			dev_dbg(dev, "[Focal] %s : Write 0x%02x into register(0x%02x) successful\n", __func__, regvalue, regaddr);
 	}
-	error_return:
+error_return:
 	mutex_unlock(&fts_input_dev->mutex);
-	
+
 	return count;
 }
 /************************************************************************
@@ -576,30 +565,27 @@ static ssize_t fts_fwupdate_store(struct device *dev, struct device_attribute *a
 	int i_ret;
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
 	mutex_lock(&fts_input_dev->mutex);
-	
+
 	disable_irq(client->irq);
 	#if GTP_ESD_PROTECT
-		apk_debug_flag = 1;
+	apk_debug_flag = 1;
 	#endif
-	
+
 	i_ret = fts_ctpm_fw_upgrade_with_i_file(client);
-	if (i_ret == 0)
-	{
+	if (i_ret == 0) {
 		msleep(300);
 		uc_host_fm_ver = fts_ctpm_get_i_file_ver();
 		dev_dbg(dev, "%s [FTS] upgrade to new version 0x%x\n", __func__, uc_host_fm_ver);
-	}
-	else
-	{
+	} else {
 		dev_err(dev, "%s ERROR:[FTS] upgrade failed ret=%d.\n", __func__, i_ret);
 	}
-	
+
 	#if GTP_ESD_PROTECT
-		apk_debug_flag = 0;
+	apk_debug_flag = 0;
 	#endif
 	enable_irq(client->irq);
 	mutex_unlock(&fts_input_dev->mutex);
-	
+
 	return count;
 }
 /************************************************************************
@@ -631,17 +617,17 @@ static ssize_t fts_fwupgradeapp_store(struct device *dev, struct device_attribut
 	fwname[count-1] = '\0';
 
 	mutex_lock(&fts_input_dev->mutex);
-	
+
 	disable_irq(client->irq);
 	#if GTP_ESD_PROTECT
-				apk_debug_flag = 1;
-			#endif
+	apk_debug_flag = 1;
+	#endif
 	fts_ctpm_fw_upgrade_with_app_file(client, fwname);
 	#if GTP_ESD_PROTECT
-				apk_debug_flag = 0;
-			#endif
+	apk_debug_flag = 0;
+	#endif
 	enable_irq(client->irq);
-	
+
 	mutex_unlock(&fts_input_dev->mutex);
 	return count;
 }
@@ -654,7 +640,7 @@ static ssize_t fts_fwupgradeapp_store(struct device *dev, struct device_attribut
 ***********************************************************************/
 static ssize_t fts_getprojectcode_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
-	
+
 	return -EPERM;
 }
 /************************************************************************
@@ -722,16 +708,13 @@ static struct attribute_group fts_attribute_group = {
 int fts_create_sysfs(struct i2c_client * client)
 {
 	int err;
-	
+
 	err = sysfs_create_group(&client->dev.kobj, &fts_attribute_group);
-	if (0 != err) 
-	{
+	if (0 != err) {
 		dev_err(&client->dev, "%s() - ERROR: sysfs_create_group() failed.\n", __func__);
 		sysfs_remove_group(&client->dev.kobj, &fts_attribute_group);
 		return -EIO;
-	} 
-	else 
-	{
+	} else {
 		pr_info("fts:%s() - sysfs_create_group() succeeded.\n",__func__);
 	}
 	return err;

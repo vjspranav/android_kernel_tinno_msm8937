@@ -49,32 +49,32 @@
 #define FPSENSOR_MAX_VER_BUF_LEN  64
 
 typedef struct {
-    dev_t devno;
-    struct class *class;
-    struct cdev cdev;
-    struct platform_device *spi;
+	dev_t devno;
+	struct class *class;
+	struct cdev cdev;
+	struct platform_device *spi;
 
-    unsigned int users;
-    u8 device_available;    /* changed during fingerprint chip sleep and wakeup phase */
-    // struct early_suspend early_suspend;
-    u8 probe_finish;
-    u8 irq_count;
-    /* bit24-bit32 of signal count */
-    /* bit16-bit23 of event type, 1: key down; 2: key up; 3: fp data ready; 4: home key */
-    /* bit0-bit15 of event type, buffer status register */
-    u32 event_type;
-    u8 sig_count;
-    u8 is_sleep_mode;
-    volatile unsigned int RcvIRQ;
-    //irq
-    int irq;
-    int irq_gpio;
-    int reset_gpio;
-    int power_gpio;
-    struct wake_lock ttw_wl;
-    //wait queue
-    wait_queue_head_t wq_irq_return;
-    int cancel; 
+	unsigned int users;
+	u8 device_available;    /* changed during fingerprint chip sleep and wakeup phase */
+	// struct early_suspend early_suspend;
+	u8 probe_finish;
+	u8 irq_count;
+	/* bit24-bit32 of signal count */
+	/* bit16-bit23 of event type, 1: key down; 2: key up; 3: fp data ready; 4: home key */
+	/* bit0-bit15 of event type, buffer status register */
+	u32 event_type;
+	u8 sig_count;
+	u8 is_sleep_mode;
+	volatile unsigned int RcvIRQ;
+	//irq
+	int irq;
+	int irq_gpio;
+	int reset_gpio;
+	int power_gpio;
+	struct wake_lock ttw_wl;
+	//wait queue
+	wait_queue_head_t wq_irq_return;
+	int cancel;
 } fpsensor_data_t;
 
 static void fpsensor_dev_cleanup(fpsensor_data_t *fpsensor);

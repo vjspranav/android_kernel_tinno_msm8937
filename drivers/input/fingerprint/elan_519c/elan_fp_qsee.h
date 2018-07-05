@@ -17,9 +17,9 @@
 #define ID_IOCTL_IOIRQ_STATUS           _IOW(ELAN_IOCTLID, 17, int) // Use INT to read buffer
 #define ID_IOCTL_SPI_STATUS             _IOW(ELAN_IOCTLID, 18, int) // UPdate SPI Speed & CS delay
 #define ID_IOCTL_SIG_PID                _IOW(ELAN_IOCTLID, 19, int) // WOE signal event to pid
-#define ID_IOCTL_POLL_INIT              _IOW(ELAN_IOCTLID, 20, int) 
+#define ID_IOCTL_POLL_INIT              _IOW(ELAN_IOCTLID, 20, int)
 #define ID_IOCTL_READ_ALL               _IOW(ELAN_IOCTLID, 21, int) // added v1.441 In IRQ, read all image data, not only one raw.
-#define ID_IOCTL_INPUT_KEYCODE          _IOW(ELAN_IOCTLID, 22, int) 
+#define ID_IOCTL_INPUT_KEYCODE          _IOW(ELAN_IOCTLID, 22, int)
 #define ID_IOCTL_POLL_EXIT              _IOW(ELAN_IOCTLID, 23, int)
 #define ID_IOCTL_READ_FACTORY_STATUS    _IOW(ELAN_IOCTLID, 26, int)
 #define ID_IOCTL_WRITE_FACTORY_STATUS   _IOW(ELAN_IOCTLID, 27, int)
@@ -32,10 +32,10 @@
 
 // release info.
 #define ID_IOCTL_SET_VERSION	_IOW(ELAN_IOCTLID, 100, int)
-#define ID_IOCTL_GET_VERSION	_IOW(ELAN_IOCTLID, 101, int) 
+#define ID_IOCTL_GET_VERSION	_IOW(ELAN_IOCTLID, 101, int)
 
 //read power status
-#define ID_IOCTL_GET_SCREEN_STATUS	_IOW(ELAN_IOCTLID, 102, int) 
+#define ID_IOCTL_GET_SCREEN_STATUS	_IOW(ELAN_IOCTLID, 102, int)
 
 
 #define CUSTOMER_IOCTLID                0xD0 //For customer define

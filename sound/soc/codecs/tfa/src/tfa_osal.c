@@ -13,28 +13,28 @@ void *kmalloc(size_t size, gfpt_t flags)
 	/* flags are not used outside the Linux kernel */
 	(void)flags;
 
-#if !defined(__REDLIB__)
+	#if !defined(__REDLIB__)
 	return malloc(size);
-#else
+	#else
 	// TODO !need malloc here
-#endif
+	#endif
 }
 
 void kfree(const void *ptr)
 {
-#if !defined(__REDLIB__)
+	#if !defined(__REDLIB__)
 	free((void *)ptr);
-#else
+	#else
 	// TODO !need free here
-#endif
+	#endif
 }
 
 unsigned long msleep_interruptible(unsigned int msecs)
 {
-#if (defined(WIN32) || defined(_X64))
+	#if (defined(WIN32) || defined(_X64))
 	Sleep(msecs);
-#else
+	#else
 	usleep(1000 * msecs);
-#endif
+	#endif
 	return 0;
 }

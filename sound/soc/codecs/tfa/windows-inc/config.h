@@ -54,9 +54,9 @@ void kfree(const void *ptr);
 /* tfa/src/tfa_osal.c */
 unsigned long msleep_interruptible(unsigned int msecs);
 
-/** 
+/**
  * Obtain the calculated crc.
- * tfa/src/tfa_container_crc32.c 
+ * tfa/src/tfa_container_crc32.c
  */
 uint32_t crc32_le(uint32_t crc, unsigned char const *buf, size_t len);
 

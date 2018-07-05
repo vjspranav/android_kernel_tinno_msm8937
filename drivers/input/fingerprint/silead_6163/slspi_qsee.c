@@ -57,7 +57,7 @@
 /*shutdown active/suspend */
 
 #ifdef GSL6313_INTERRUPT_CTRL
-#define PINCTRL_STATE_INTERRUPT "fp_interrupt" 
+#define PINCTRL_STATE_INTERRUPT "fp_interrupt"
 #endif
 
 #define SLFP_VIO_CTRL 1
@@ -71,7 +71,7 @@ static int finger_status = 0;
 1: tap 2: longpress 3 doubleclick....etc...
 typedef enum{
 VKEY_TBD = 0,
-VKEY_TAP,		
+VKEY_TAP,
 VKEY_LONGPRESS,
 VKEY_DOUBLECLICK,
 VKEY_SLIDEUP,
@@ -194,23 +194,21 @@ static struct wakelock * g_wakelock_list[10] = {
 static DEFINE_MUTEX(wakelocks_lock);
 
 static ssize_t fp_wake_lock_show(struct kobject *kobj,
-			      struct kobj_attribute *attr,
-			      char *buf)
+                                 struct kobj_attribute *attr,
+                                 char *buf)
 {
 	//return pm_show_wakelocks(buf, true);
 
 	char *str = buf;
 	char *end = buf + PAGE_SIZE;
-    int i;
+	int i;
 
 	mutex_lock(&wakelocks_lock);
-    
-	for(i=0;i<10;i++)
-    {
-        if(g_wakelock_list[i]!=NULL)
-		{
-	        str += scnprintf(str, end - str, "%s ", g_wakelock_list[i]->name);
-        }
+
+	for(i=0; i<10; i++) {
+		if(g_wakelock_list[i]!=NULL) {
+			str += scnprintf(str, end - str, "%s ", g_wakelock_list[i]->name);
+		}
 	}
 	if (str > buf)
 		str--;
@@ -222,16 +220,16 @@ static ssize_t fp_wake_lock_show(struct kobject *kobj,
 }
 
 static ssize_t fp_wake_lock_store(struct kobject *kobj,
-			       struct kobj_attribute *attr,
-			       const char *buf, size_t n)
+                                  struct kobj_attribute *attr,
+                                  const char *buf, size_t n)
 {
 //	int error = pm_wake_lock(buf);
 //	return error ? error : n;
 
 	int i, j;
 	int ret= -1;
-    char * wl_name;
-    struct wakelock *wl;
+	char * wl_name;
+	struct wakelock *wl;
 
 	wl_name = kstrndup(buf, n, GFP_KERNEL);
 	if (!wl_name) {
@@ -239,21 +237,17 @@ static ssize_t fp_wake_lock_store(struct kobject *kobj,
 	}
 
 	mutex_lock(&wakelocks_lock);
-	for(j=0; j<10; j++)
-	{
-		if(g_wakelock_list[j]!=NULL)
-		{
-			if(strcmp(g_wakelock_list[j]->name,buf) == 0)
-			{
-                wl = g_wakelock_list[j];
+	for(j=0; j<10; j++) {
+		if(g_wakelock_list[j]!=NULL) {
+			if(strcmp(g_wakelock_list[j]->name,buf) == 0) {
+				wl = g_wakelock_list[j];
 				ret = n;
 				break;
 			}
 		}
 	}
 
-    if (j == 10)
-    {
+	if (j == 10) {
 		wl = kzalloc(sizeof(*wl), GFP_KERNEL);
 		if (!wl)
 			return -ENOMEM;
@@ -262,42 +256,38 @@ static ssize_t fp_wake_lock_store(struct kobject *kobj,
 		wl->ws.name = wl_name;
 		wakeup_source_add(&wl->ws);
 
-       	for(i=0; i<10; i++)
-		{
-			if(g_wakelock_list[i]==NULL)
-			{
+		for(i=0; i<10; i++) {
+			if(g_wakelock_list[i]==NULL) {
 				g_wakelock_list[i] = wl;
 				ret = n;
 				break;
 			}
 		}
-    }
+	}
 
-    __pm_stay_awake(&wl->ws);
+	__pm_stay_awake(&wl->ws);
 	mutex_unlock(&wakelocks_lock);
 
-   // SL_LOGD("fp_wake_lock_store ret = %d\n", ret);
+	// SL_LOGD("fp_wake_lock_store ret = %d\n", ret);
 	return ret;
 }
 
 static ssize_t fp_wake_unlock_show(struct kobject *kobj,
-				struct kobj_attribute *attr,
-				char *buf)
+                                   struct kobj_attribute *attr,
+                                   char *buf)
 {
 	//return pm_show_wakelocks(buf, fasle);
 
 	char *str = buf;
 	char *end = buf + PAGE_SIZE;
-    int i;
+	int i;
 
 	mutex_lock(&wakelocks_lock);
-    
-	for(i=0;i<10;i++)
-    {
-        if(g_wakelock_list[i]!=NULL)
-		{
-	        str += scnprintf(str, end - str, "%s ", g_wakelock_list[i]->name);
-        }
+
+	for(i=0; i<10; i++) {
+		if(g_wakelock_list[i]!=NULL) {
+			str += scnprintf(str, end - str, "%s ", g_wakelock_list[i]->name);
+		}
 	}
 	if (str > buf)
 		str--;
@@ -309,8 +299,8 @@ static ssize_t fp_wake_unlock_show(struct kobject *kobj,
 }
 
 static ssize_t fp_wake_unlock_store(struct kobject *kobj,
-				 struct kobj_attribute *attr,
-				 const char *buf, size_t n)
+                                    struct kobj_attribute *attr,
+                                    const char *buf, size_t n)
 {
 //	int error = pm_wake_unlock(buf);
 //	return error ? error : n;
@@ -319,14 +309,11 @@ static ssize_t fp_wake_unlock_store(struct kobject *kobj,
 	int i;
 
 	mutex_lock(&wakelocks_lock);
-	for(i=0;i<10;i++)
-	{
-		if(g_wakelock_list[i]!=NULL)
-		{
-			if(strcmp(g_wakelock_list[i]->name,buf)==0)
-			{
+	for(i=0; i<10; i++) {
+		if(g_wakelock_list[i]!=NULL) {
+			if(strcmp(g_wakelock_list[i]->name,buf)==0) {
 				wl = g_wakelock_list[i];
-                __pm_relax(&wl->ws);
+				__pm_relax(&wl->ws);
 				wakeup_source_remove(&wl->ws);
 				kfree(wl->name);
 				kfree(wl);
@@ -338,37 +325,34 @@ static ssize_t fp_wake_unlock_store(struct kobject *kobj,
 	}
 
 	mutex_unlock(&wakelocks_lock);
-    //SL_LOGD("fp_wake_unlock_store ret = %d\n", ret);
+	//SL_LOGD("fp_wake_unlock_store ret = %d\n", ret);
 	return ret;
 }
 //add by bacon for fp_wake_unlock
 
 void silead_irq_enable(struct spidev_data *pdata)
-{	
+{
 	unsigned long irqflags = 0;
 	printk("[guomingyi] IRQ Enable = %d.\n", pdata->int_irq);
-	
-	if(irq_requested == 0)
-	{
-	      // printk("[guomingyi] %s, silead_request_irq\n", __func__);
+
+	if(irq_requested == 0) {
+		// printk("[guomingyi] %s, silead_request_irq\n", __func__);
 		silead_request_irq(pdata);
 	}
-  
+
 	spin_lock_irqsave(&pdata->spi_lock, irqflags);
-	if (irq_enabled == 0 && irq_counter == 0) 
-	{
+	if (irq_enabled == 0 && irq_counter == 0) {
 		irq_counter = 1;
 		enable_irq(pdata->int_irq);
 		irq_enabled = 1;
 		printk("[guomingyi] enable_irq, irq_enabled = %d\n", irq_enabled);
 		//#ifndef REDUCE_REPEAT_IRQ
 		g_irq_svc_debounce = 1;
-                mdelay(5);
+		mdelay(5);
 		g_irq_svc_debounce = 0;
-                //#endif
-	}
-	else {
-           printk("[guomingyi] %s, irq has enabled!\n", __func__);
+		//#endif
+	} else {
+		printk("[guomingyi] %s, irq has enabled!\n", __func__);
 	}
 	spin_unlock_irqrestore(&pdata->spi_lock, irqflags);
 }
@@ -378,57 +362,53 @@ void silead_irq_disable(struct spidev_data *pdata)
 	unsigned long irqflags;
 	printk("[guomingyi] IRQ Disable = %d.\n", pdata->int_irq);
 
-	if(irq_requested == 0)
-	{
+	if(irq_requested == 0) {
 		return;
 	}
-	
+
 	spin_lock_irqsave(&pdata->spi_lock, irqflags);
-	if (irq_enabled && irq_counter>0)
-	{
+	if (irq_enabled && irq_counter>0) {
 		irq_counter = 0;
 		disable_irq(pdata->int_irq);
-		irq_enabled = 0; 
+		irq_enabled = 0;
 		printk("[guomingyi] %s, disable_irq\n", __func__);
-	}
-	else {
-           printk("[guomingyi] %s, irq has disabled\n", __func__);
+	} else {
+		printk("[guomingyi] %s, irq has disabled\n", __func__);
 	}
 	spin_unlock_irqrestore(&pdata->spi_lock, irqflags);
 }
 
 int silead_request_irq(struct spidev_data *pdata)
-{    
-    int err;
-    int irq_flags;
-    
-    if(irq_requested)
-   	{
-   		return 0;
-    }
-    
-    irq_requested = 1;
-    irq_enabled = 0;
-    irq_counter = 0;
-    spin_lock_init(&pdata->spi_lock);
+{
+	int err;
+	int irq_flags;
 
-    irq_flags = /*IRQF_NO_SUSPEND | */ IRQF_TRIGGER_RISING | IRQF_ONESHOT;
-    DBG_MSG(MSG_INFO, "%s  Interrupt  %d  wake up is %d" 
-					"irq flag is 0x%X\n", 
-					__func__,pdata->int_irq, pdata->wakeup,irq_flags);
-					
-    err = request_irq(pdata->int_irq, finger_interrupt_handler,
-    		irq_flags, "silead_fp", pdata);
-	
-    if (err) {
-        printk("Failed to request IRQ %d.\n", err);
-        irq_requested = 0;
-        return -1;
-    }
-    
-    enable_irq_wake(pdata->int_irq);
-    disable_irq(pdata->int_irq);
-    return 0;
+	if(irq_requested) {
+		return 0;
+	}
+
+	irq_requested = 1;
+	irq_enabled = 0;
+	irq_counter = 0;
+	spin_lock_init(&pdata->spi_lock);
+
+	irq_flags = /*IRQF_NO_SUSPEND | */ IRQF_TRIGGER_RISING | IRQF_ONESHOT;
+	DBG_MSG(MSG_INFO, "%s  Interrupt  %d  wake up is %d"
+	        "irq flag is 0x%X\n",
+	        __func__,pdata->int_irq, pdata->wakeup,irq_flags);
+
+	err = request_irq(pdata->int_irq, finger_interrupt_handler,
+	                  irq_flags, "silead_fp", pdata);
+
+	if (err) {
+		printk("Failed to request IRQ %d.\n", err);
+		irq_requested = 0;
+		return -1;
+	}
+
+	enable_irq_wake(pdata->int_irq);
+	disable_irq(pdata->int_irq);
+	return 0;
 }
 
 static int spidev_reset_hw(struct spidev_data *spidev)
@@ -436,7 +416,7 @@ static int spidev_reset_hw(struct spidev_data *spidev)
 	gpio_direction_output(spidev->shutdown_gpio, 0);
 	mdelay(3);
 	gpio_direction_output(spidev->shutdown_gpio, 1);
-	mdelay(3);	
+	mdelay(3);
 	return 0;
 }
 
@@ -466,14 +446,13 @@ static void finger_interrupt_work(struct work_struct *work)
 	//#endif
 	DBG_MSG(MSG_TRK, "irq bottom half spidev_irq_work enter \n");
 	//#ifndef REDUCE_REPEAT_IRQ
-        if(g_irq_svc_debounce)
-        {
-            kobject_uevent_env(&spidev->spi->dev.kobj, KOBJ_CHANGE, env_ext_forged);
-            return;
-        }
-        g_irq_svc_debounce = 1;
+	if(g_irq_svc_debounce) {
+		kobject_uevent_env(&spidev->spi->dev.kobj, KOBJ_CHANGE, env_ext_forged);
+		return;
+	}
+	g_irq_svc_debounce = 1;
 	//#endif
-	kobject_uevent_env(&spidev->spi->dev.kobj, KOBJ_CHANGE, env_ext ); 
+	kobject_uevent_env(&spidev->spi->dev.kobj, KOBJ_CHANGE, env_ext );
 }
 #endif
 
@@ -483,38 +462,36 @@ static irqreturn_t finger_interrupt_handler(int irq, void *dev)
 	//struct timex txc;
 	struct spidev_data *spidev = dev;
 	//add by matthew start
-	if(chip_power_off)
-	{
+	if(chip_power_off) {
 		return IRQ_HANDLED;
 	}
 	//add by matthew end
-	
+
 	#ifdef REDUCE_REPEAT_IRQ
-		spidev_shutdown_hw(spidev);
+	spidev_shutdown_hw(spidev);
 	#endif
 
 	//do_gettimeofday(&(txc.time));
 	//DBG_MSG(MSG_TRK, "txc.time.tv_sec=%ld,txc.time.tv_usec=%ld \n",txc.time.tv_sec,txc.time.tv_usec);
 	DBG_MSG(MSG_TRK, "S interrupt top half has entered!\n");
-	
+
 	wake_lock_timeout(&spidev->wake_lock, 10*HZ);
-	
+
 	value = gpio_get_value_cansleep(spidev->int_wakeup_gpio);
-	DBG_MSG(MSG_TRK, "S IRQ %d , GPIO %d state is %d\n", 
-					irq,spidev->int_wakeup_gpio,value);
+	DBG_MSG(MSG_TRK, "S IRQ %d , GPIO %d state is %d\n",
+	        irq,spidev->int_wakeup_gpio,value);
 	DBG_MSG(MSG_TRK, "state is %d\n", value);
-#ifdef IRQ_SVC_DEBOUNCE
-	if(!atomic_read(&spidev->irq_svc_debounce))
-	{
+	#ifdef IRQ_SVC_DEBOUNCE
+	if(!atomic_read(&spidev->irq_svc_debounce)) {
 		atomic_set(&spidev->irq_svc_debounce, 1);
-#endif
+	#endif
 
 		queue_work(spidev->int_wq,&spidev->int_work);
-	irq_counter = 0;
-	irq_enabled = 0;
-#ifdef IRQ_SVC_DEBOUNCE
+		irq_counter = 0;
+		irq_enabled = 0;
+		#ifdef IRQ_SVC_DEBOUNCE
 	}
-#endif
+		#endif
 
 	return IRQ_HANDLED;
 }
@@ -532,8 +509,7 @@ static int silead_fp_remove(struct platform_device *spi)
 	spin_lock_irq(&spidev->spi_lock);
 	spidev->spi = NULL;
 
-	if (spidev->int_irq)
-	{
+	if (spidev->int_irq) {
 		free_irq(spidev->int_irq, spidev);
 		irq_enabled = 0;
 		irq_requested = 0;
@@ -542,7 +518,7 @@ static int silead_fp_remove(struct platform_device *spi)
 
 	gpio_free(spidev->int_wakeup_gpio);
 	gpio_free(spidev->shutdown_gpio);
-	
+
 	silead_power_deinit(spidev);
 
 	platform_set_drvdata(spi, NULL);
@@ -593,150 +569,143 @@ static long spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	/* Check type and command number */
 	if (_IOC_TYPE(cmd) != SPI_IOC_MAGIC)
 		return -ENOTTY;
-	
+
 	spidev = (struct spidev_data *)filp->private_data;
-     
+
 	mutex_lock(&spidev->buf_lock);
 	switch (cmd) {
-		case SPI_HW_RESET :
-			DBG_MSG(MSG_INFO, "SPI_HW_RESET called\n");
-			spidev_reset_hw(spidev);
-			//add by matthew start
-			if(chip_power_off)
-			{
-				mdelay(1);
-				chip_power_off = 0;
-			}
-			//add by matthew end
-        	break;
-			 
-	    case SPI_HW_SHUTDOWN:
-			DBG_MSG(MSG_INFO, "SPI_HW_SHUTDOWN called\n");
-			//add by matthew start
-			chip_power_off = 1;
-			//add by matthew end
-			spidev_shutdown_hw(spidev);
-			//add by matthew start
+	case SPI_HW_RESET :
+		DBG_MSG(MSG_INFO, "SPI_HW_RESET called\n");
+		spidev_reset_hw(spidev);
+		//add by matthew start
+		if(chip_power_off) {
+			mdelay(1);
+			chip_power_off = 0;
+		}
+		//add by matthew end
+		break;
+
+	case SPI_HW_SHUTDOWN:
+		DBG_MSG(MSG_INFO, "SPI_HW_SHUTDOWN called\n");
+		//add by matthew start
+		chip_power_off = 1;
+		//add by matthew end
+		spidev_shutdown_hw(spidev);
+		//add by matthew start
+		silead_irq_enable(spidev);
+		//add by matthew end
+		break;
+
+	case SPI_OPEN_CLOCK:
+		DBG_MSG(MSG_INFO, "SPI_OPEN_CLOCK called\n");
+		break;
+
+	case SPI_HW_POWEROFF:
+		DBG_MSG(MSG_INFO, "SPI_HW_POWEROFF called\n");
+		silead_power_ctl(spidev, 0);
+		break;
+
+	case SPI_HW_POWERON:
+		DBG_MSG(MSG_INFO, "SPI_HW_POWERON called\n");
+		silead_power_ctl(spidev, 1);
+		break;
+
+	case SPI_HW_SET_APP_VER: {
+		int ret = copy_from_user(sl_lib_ver_buf, (char *)arg, SL_MAX_LIB_BUF);
+		if (!ret) {
+			sl_lib_ver_buf[SL_MAX_LIB_BUF-1] = '\0';
+			full_fp_chip_info(sl_lib_ver_buf);
+		}
+		full_fp_chip_name(SILEAD_FP_NAME);
+	}
+	break;
+
+	case SPI_HW_IRQ_ENABLE:
+		DBG_MSG(MSG_INFO,"[guomingyi]--SPI_HW_IRQ_ENABLE:%d\n", (int)arg);
+		if(arg) {
+			#ifdef IRQ_SVC_DEBOUNCE
+			atomic_set(&spidev->irq_svc_debounce, 0);
+			#endif
 			silead_irq_enable(spidev);
-			//add by matthew end
-			break; 
-			
-		case SPI_OPEN_CLOCK:
-			DBG_MSG(MSG_INFO, "SPI_OPEN_CLOCK called\n");
-			break;
+		} else {
+			silead_irq_disable(spidev);
+		}
+		break;
 
-		case SPI_HW_POWEROFF:
-			DBG_MSG(MSG_INFO, "SPI_HW_POWEROFF called\n");
-			silead_power_ctl(spidev, 0);
-			break;
+	case SPI_HW_IRQ_REQUEST:
+		DBG_MSG(MSG_INFO,"[guomingyi]--SPI_HW_IRQ_REQUEST \n");
+		silead_request_irq(spidev);
+		break;
 
-		case SPI_HW_POWERON:
-			DBG_MSG(MSG_INFO, "SPI_HW_POWERON called\n");
-			silead_power_ctl(spidev, 1);
-			break;
-            
-		case SPI_HW_SET_APP_VER:
-			{
-				int ret = copy_from_user(sl_lib_ver_buf, (char *)arg, SL_MAX_LIB_BUF);
-				if (!ret) {
-					sl_lib_ver_buf[SL_MAX_LIB_BUF-1] = '\0';
-					full_fp_chip_info(sl_lib_ver_buf);
-				}
-				full_fp_chip_name(SILEAD_FP_NAME);
-			}
-			break;
+	case SPI_HW_FINGER_STATE_INFO:
 
-		case SPI_HW_IRQ_ENABLE:
-			DBG_MSG(MSG_INFO,"[guomingyi]--SPI_HW_IRQ_ENABLE:%d\n", (int)arg);
-			if(arg)
-			{
-		#ifdef IRQ_SVC_DEBOUNCE
-		  	atomic_set(&spidev->irq_svc_debounce, 0);
-		#endif
-				silead_irq_enable(spidev);
-			}
-			else
-			{
-				silead_irq_disable(spidev);
-			}
+		finger_status = (int)arg;
+		printk("[guomingyi]--finger_status:%d\n", (int)arg);
+		if(fasync_queue) {
+			kill_fasync(&fasync_queue, SIGIO, POLL_IN);
+			printk("[guomingyi]-----kill_fasync to user(finger_status) !-----\n");
+		} else {
+			printk("[guomingyi]-----fasync_queue-is null(finger_status)!----\n");
+		}
+
+		break;
+
+	case IOCTL_FINGER_STATE_INFO:
+		retval = __put_user(finger_status, (__u32 __user *)arg);
+		if(retval) {
+			printk("[guomingyi]__put_user(finger_status) err: %d\n", retval);
+		}
+		break;
+
+	case IOCTL_HW_GPIO_REQUEST:
+		DBG_MSG(MSG_INFO,"silead:--IOCTL_HW_GPIO_REQUEST\n");
+
+		if(silead_power_init(spidev) < 0) {
+			DBG_MSG(MSG_INFO,"silead:silead_power_init failed\n");
 			break;
-			
-		case SPI_HW_IRQ_REQUEST:
-			DBG_MSG(MSG_INFO,"[guomingyi]--SPI_HW_IRQ_REQUEST \n");
-			silead_request_irq(spidev);
+		}
+		silead_power_ctl(spidev, 1);
+		if(silead_parse_dt(spidev) < 0) {
+			DBG_MSG(MSG_INFO,"silead_parse_dt failed\n");
 			break;
+		}
 
-		case SPI_HW_FINGER_STATE_INFO:
+		silead_gpio_config(spidev);
+		break;
 
-			finger_status = (int)arg;
-			printk("[guomingyi]--finger_status:%d\n", (int)arg);
-			if(fasync_queue) {
-				kill_fasync(&fasync_queue, SIGIO, POLL_IN);
-				printk("[guomingyi]-----kill_fasync to user(finger_status) !-----\n");
-			}
-			else {
-				printk("[guomingyi]-----fasync_queue-is null(finger_status)!----\n");
-			}
+	case IOCTL_HW_GPIO_FREE:
+		DBG_MSG(MSG_INFO,"silead:--IOCTL_HW_GPIO_FREE\n");
+		silead_power_ctl(spidev, 0);
+		silead_power_deinit(spidev);
+		silead_gpio_free(spidev);
+		break;
 
-			break;
-			
-		case IOCTL_FINGER_STATE_INFO:
- 			retval = __put_user(finger_status, (__u32 __user *)arg);
-			if(retval) {
-				printk("[guomingyi]__put_user(finger_status) err: %d\n", retval);
-			}
-			break;
 
-		case IOCTL_HW_GPIO_REQUEST:
-			DBG_MSG(MSG_INFO,"silead:--IOCTL_HW_GPIO_REQUEST\n");     
+	case SPI_HW_FINGER_VKEY_RESULT:
+		finger_vkey_result = (int)arg;
+		printk("[guomingyi]--SPI_HW_FINGER_VKEY_RESULT:%d\n", finger_vkey_result);
+		retval = __put_user(finger_vkey_result, (__u32 __user *)arg);
+		if(retval) {
+			printk("[guomingyi]__put_user err: %d\n", retval);
+		}
 
-            if(silead_power_init(spidev) < 0) {
-                   DBG_MSG(MSG_INFO,"silead:silead_power_init failed\n");
-			      break;
-             }
-             silead_power_ctl(spidev, 1);
-             if(silead_parse_dt(spidev) < 0) {
-                  DBG_MSG(MSG_INFO,"silead_parse_dt failed\n");
-                  break;
-             }
+		break;
 
-            silead_gpio_config(spidev);
-            break;
-			
-		case IOCTL_HW_GPIO_FREE:			
-			DBG_MSG(MSG_INFO,"silead:--IOCTL_HW_GPIO_FREE\n");     
-			silead_power_ctl(spidev, 0);
-			silead_power_deinit(spidev);
-			silead_gpio_free(spidev);			
-			break;
-			
+	case IOCTL_FINGER_VKEY_RESULT:
+		retval = __put_user(finger_vkey_result, (__u32 __user *)arg);
+		if(retval) {
+			printk("[guomingyi]__put_user err: %d\n", retval);
+		}
+		if(fasync_queue) {
+			kill_fasync(&fasync_queue, SIGIO, POLL_IN);
+			printk("[guomingyi]-----kill_fasync to user(finger_vkey_result) !-----\n");
+		} else {
+			printk("[guomingyi]-----fasync_queue-is null(finger_vkey_result)!----\n");
+		}
+		break;
 
-		case SPI_HW_FINGER_VKEY_RESULT:
-			finger_vkey_result = (int)arg;
-			printk("[guomingyi]--SPI_HW_FINGER_VKEY_RESULT:%d\n", finger_vkey_result);
-			retval = __put_user(finger_vkey_result, (__u32 __user *)arg);
-			if(retval) {
-				printk("[guomingyi]__put_user err: %d\n", retval);
-			}
-			
-			break;
-
-		case IOCTL_FINGER_VKEY_RESULT:
-			retval = __put_user(finger_vkey_result, (__u32 __user *)arg);
-			if(retval) {
-				printk("[guomingyi]__put_user err: %d\n", retval);
-			}
-			if(fasync_queue) {
-				kill_fasync(&fasync_queue, SIGIO, POLL_IN);
-				printk("[guomingyi]-----kill_fasync to user(finger_vkey_result) !-----\n");
-			}
-			else {
-				printk("[guomingyi]-----fasync_queue-is null(finger_vkey_result)!----\n");
-			}
-			break;
-
-		default:
-			break;
+	default:
+		break;
 	}
 
 	mutex_unlock(&spidev->buf_lock);
@@ -745,7 +714,7 @@ static long spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 static unsigned int spidev_poll(struct file *file, poll_table *wait)
 {
-	int mask=0; 
+	int mask=0;
 	poll_wait(file, &silead_poll_wq, wait);
 
 	return mask;
@@ -762,7 +731,7 @@ int silead_power_ctl(struct spidev_data *pdata, bool on)
 	int rc = 0;
 
 
-         DBG_MSG(MSG_INFO,"silead:--silead_power_ctl\n");   
+	DBG_MSG(MSG_INFO,"silead:--silead_power_ctl\n");
 
 	if (on && (!isPowerOn)) {
 		rc = regulator_enable(pdata->vdd);
@@ -770,15 +739,15 @@ int silead_power_ctl(struct spidev_data *pdata, bool on)
 			printk("SLCODE Regulator vdd enable failed rc=%d\n", rc);
 			return rc;
 		}
-		
-#ifdef SLFP_VIO_CTRL
+
+		#ifdef SLFP_VIO_CTRL
 		rc = regulator_enable(pdata->vio);
 		if (rc) {
 			printk("SLCODE Regulator vio enable failed rc=%d\n", rc);
 			regulator_disable(pdata->vdd);
 			return rc;
 		}
-#endif
+		#endif
 		msleep(10);
 
 		isPowerOn = 1;
@@ -791,18 +760,18 @@ int silead_power_ctl(struct spidev_data *pdata, bool on)
 			return rc;
 		}
 
-#ifdef SLFP_VIO_CTRL
+		#ifdef SLFP_VIO_CTRL
 		rc = regulator_disable(pdata->vio);
 		if (rc) {
 			printk("SLCODE Regulator vio disable failed rc=%d\n", rc);
 		}
-#endif
+		#endif
 
 		isPowerOn = 0;
 		printk(" set PowerDown !ok \n");
 	} else {
 		printk(	"SLCODE Ignore power status change from %d to %d\n",
-				on, isPowerOn);
+		        on, isPowerOn);
 	}
 	return rc;
 }
@@ -817,17 +786,17 @@ int silead_power_init(struct spidev_data *pdata)
 		printk("SLCODE Regulator get failed vdd ret=%d\n", ret);
 		return ret;
 	}
-	
+
 	if (regulator_count_voltages(pdata->vdd) > 0) {
 		ret = regulator_set_voltage(pdata->vdd, SL_VDD_MIN_UV,
-					   SL_VDD_MAX_UV);
+		                            SL_VDD_MAX_UV);
 		if (ret) {
 			printk("SLCODE Regulator set_vtg failed vdd ret=%d\n", ret);
 			goto reg_vdd_put;
 		}
 	}
-	
-#ifdef SLFP_VIO_CTRL
+
+	#ifdef SLFP_VIO_CTRL
 	pdata->vio = regulator_get(&pdata->spi->dev, "vio");
 	if (IS_ERR(pdata->vio)) {
 		ret = PTR_ERR(pdata->vio);
@@ -837,25 +806,25 @@ int silead_power_init(struct spidev_data *pdata)
 
 	if (regulator_count_voltages(pdata->vio) > 0) {
 		ret = regulator_set_voltage(pdata->vio,
-				SL_VIO_MIN_UV,
-				SL_VIO_MAX_UV);
+		                            SL_VIO_MIN_UV,
+		                            SL_VIO_MAX_UV);
 		if (ret) {
 			printk("SLCODE Regulator set_vtg failed vio ret=%d\n", ret);
 			goto reg_vio_put;
 		}
 	}
-#endif
-	
+	#endif
+
 	DBG_MSG(MSG_INFO,"SLCODE Regulator set_vtg OK vdd ret=%d \n", ret);
 	return 0;
-	
-#ifdef SLFP_VIO_CTRL
+
+	#ifdef SLFP_VIO_CTRL
 reg_vio_put:
 	regulator_put(pdata->vio);
 reg_vdd_set_vtg:
 	if (regulator_count_voltages(pdata->vdd) > 0)
 		regulator_set_voltage(pdata->vdd, 0, SL_VDD_MAX_UV);
-#endif
+	#endif
 reg_vdd_put:
 	regulator_put(pdata->vdd);
 	return ret;
@@ -863,62 +832,60 @@ reg_vdd_put:
 
 int silead_power_deinit(struct spidev_data *pdata)
 {
-    int ret = 0;
+	int ret = 0;
 
-    DBG_MSG(MSG_INFO,"silead:--silead_power_deinit\n");    
+	DBG_MSG(MSG_INFO,"silead:--silead_power_deinit\n");
 
-    if (pdata->vdd)
-    {   
-        if (regulator_count_voltages(pdata->vdd) > 0)
-            regulator_set_voltage(pdata->vdd, 0, SL_VDD_MAX_UV);
-        
-        regulator_disable(pdata->vdd);
-        isPowerOn = 0;
-        
-        regulator_put(pdata->vdd);
-    }
-    
-#ifdef SLFP_VIO_CTRL
-    if (pdata->vio)
-    {   
-        if (regulator_count_voltages(pdata->vio) > 0)
-            regulator_set_voltage(pdata->vio, 0, SL_VIO_MAX_UV);
-        
-        regulator_disable(pdata->vio);
-        regulator_put(pdata->vio);
-    }
-#endif 
-	
-    return ret;
+	if (pdata->vdd) {
+		if (regulator_count_voltages(pdata->vdd) > 0)
+			regulator_set_voltage(pdata->vdd, 0, SL_VDD_MAX_UV);
+
+		regulator_disable(pdata->vdd);
+		isPowerOn = 0;
+
+		regulator_put(pdata->vdd);
+	}
+
+	#ifdef SLFP_VIO_CTRL
+	if (pdata->vio) {
+		if (regulator_count_voltages(pdata->vio) > 0)
+			regulator_set_voltage(pdata->vio, 0, SL_VIO_MAX_UV);
+
+		regulator_disable(pdata->vio);
+		regulator_put(pdata->vio);
+	}
+	#endif
+
+	return ret;
 }
 
-#ifdef POWER_NOTIFY 
+#ifdef POWER_NOTIFY
 static int silead_fb_state_chg_callback(struct notifier_block *nb,
-	unsigned long val, void *data)
+                                        unsigned long val, void *data)
 {
 	struct fb_event *evdata = data;
 	unsigned int blank;
 	struct spidev_data *fp = container_of(nb, struct spidev_data, notifier);
-	
-	if (val != FB_EARLY_EVENT_BLANK){
+
+	if (val != FB_EARLY_EVENT_BLANK) {
 		return 0;
-	}	
-	
+	}
+
 	if (evdata && evdata->data && val == FB_EARLY_EVENT_BLANK && fp) {
 		blank = *(int *)(evdata->data);
 		switch (blank) {
-			case FB_BLANK_POWERDOWN:
-				is_screen_poweroff = 1;
-				complete(&cmd_done_irq);
-				//is_interrupt |= 2;
-				//wake_up(&fp->slfp_wait);
-				break;
-			case FB_BLANK_UNBLANK:
-				is_screen_poweroff = 0;
-				break;
-			default:
-				printk("%s defalut\n", __func__);
-				break;
+		case FB_BLANK_POWERDOWN:
+			is_screen_poweroff = 1;
+			complete(&cmd_done_irq);
+			//is_interrupt |= 2;
+			//wake_up(&fp->slfp_wait);
+			break;
+		case FB_BLANK_UNBLANK:
+			is_screen_poweroff = 0;
+			break;
+		default:
+			printk("%s defalut\n", __func__);
+			break;
 		}
 	}
 	return NOTIFY_OK;
@@ -930,41 +897,40 @@ static struct notifier_block silead_noti_block = {
 #endif
 
 
-static int silead_gpio_free(struct spidev_data* spidev) 
+static int silead_gpio_free(struct spidev_data* spidev)
 {
-    if(irq_requested == 1){
-        free_irq(spidev->int_irq, spidev);
-        printk("silead:free irq success\n");
-        irq_requested = 0;
-	spidev->int_irq = 0;
-    } 
-    if (gpio_is_valid(spidev->shutdown_gpio)) {
-        gpio_free(spidev->shutdown_gpio);        
-	spidev->shutdown_gpio = 0;
-        printk("silead:remove shutdown_gpio success\n");    
-    }	    
-	
-    if (gpio_is_valid(spidev->int_wakeup_gpio)) { 
-        gpio_free(spidev->int_wakeup_gpio);       
-	spidev->int_wakeup_gpio = 0;
-        printk("silead:remove int_wakeup_gpio success\n");    
-    }    
-    DBG_MSG(MSG_INFO,"silead:%s free res success\n",__func__);    
-    return 0;
+	if(irq_requested == 1) {
+		free_irq(spidev->int_irq, spidev);
+		printk("silead:free irq success\n");
+		irq_requested = 0;
+		spidev->int_irq = 0;
+	}
+	if (gpio_is_valid(spidev->shutdown_gpio)) {
+		gpio_free(spidev->shutdown_gpio);
+		spidev->shutdown_gpio = 0;
+		printk("silead:remove shutdown_gpio success\n");
+	}
+
+	if (gpio_is_valid(spidev->int_wakeup_gpio)) {
+		gpio_free(spidev->int_wakeup_gpio);
+		spidev->int_wakeup_gpio = 0;
+		printk("silead:remove int_wakeup_gpio success\n");
+	}
+	DBG_MSG(MSG_INFO,"silead:%s free res success\n",__func__);
+	return 0;
 }
 
 
 static char silead_gpio_config(struct spidev_data* spidev)
-{	
+{
 	int ret = -1;
 
 	ret =  gpio_request(spidev->shutdown_gpio, "reset-gpio");//spidev->shutdown_gpio
-	if(ret < 0)
-	{
+	if(ret < 0) {
 		printk("silead:reset gpio_request failed ret = %d", ret);
-		ret = -ENODEV;	
+		ret = -ENODEV;
 		return ret;
-	}	
+	}
 	{
 		printk("silead:%s() RST%d request success, err=0x%x.\n", __func__, spidev->shutdown_gpio, ret);
 		gpio_direction_output(spidev->shutdown_gpio, 0);
@@ -975,10 +941,9 @@ static char silead_gpio_config(struct spidev_data* spidev)
 	}
 
 	ret = gpio_request(spidev->int_wakeup_gpio, "irq-gpio");
-	if(ret < 0)
-	{
+	if(ret < 0) {
 		printk("silead:irq gpio_request failed ret = %d", ret);
-		ret = -ENODEV;	
+		ret = -ENODEV;
 		return ret;
 	}
 
@@ -994,8 +959,8 @@ static char silead_gpio_config(struct spidev_data* spidev)
 
 static int silead_parse_dt(struct spidev_data *pdata)
 {
-         struct device *dev = &pdata->spi->dev;
-         struct device_node *np = dev->of_node;
+	struct device *dev = &pdata->spi->dev;
+	struct device_node *np = dev->of_node;
 
 	/* +++reset, irq gpio info+++ */
 	pdata->shutdown_gpio = of_get_named_gpio(np, "qcom,reset-gpio", 0);
@@ -1028,7 +993,7 @@ static int spidev_open(struct inode *inode, struct file *filp)
 	filp->private_data = fp_spidev;
 	return 0;
 }
-	
+
 static int spidev_release(struct inode *inode, struct file *filp)
 {
 	filp->private_data = NULL;
@@ -1046,29 +1011,28 @@ static const struct file_operations spidev_fops = {
 	.unlocked_ioctl = spidev_ioctl,
 	.compat_ioctl = spidev_compat_ioctl,
 	.open =		spidev_open,
-	.release =	spidev_release,	
+	.release =	spidev_release,
 	.poll			= spidev_poll,
 	.fasync 		= spidev_fp_fasync,
 };
 
 static int silead_fp_probe(struct platform_device *spi)
-{	
-        struct spidev_data	*spidev;
-        int			status;
-        int         error;
-        unsigned long		minor;
-        //int ret;
-        dev_t devno;
-        
-        DBG_MSG(MSG_INFO, "S1\n");
+{
+	struct spidev_data	*spidev;
+	int			status;
+	int         error;
+	unsigned long		minor;
+	//int ret;
+	dev_t devno;
 
-        if (read_fpId_pin_value(&spi->dev, "qcom,fpid-gpio") == 1 /*HIGH*/) {
-           // full_fp_chip_name(SILEAD_FP_NAME);
-        }
-        else {
-            DBG_MSG(MSG_ERR, "%s, not detect silead hw!\n", __func__);
-            return -1;
-        }
+	DBG_MSG(MSG_INFO, "S1\n");
+
+	if (read_fpId_pin_value(&spi->dev, "qcom,fpid-gpio") == 1 /*HIGH*/) {
+		// full_fp_chip_name(SILEAD_FP_NAME);
+	} else {
+		DBG_MSG(MSG_ERR, "%s, not detect silead hw!\n", __func__);
+		return -1;
+	}
 
 	/* Claim our 256 reserved device numbers.  Then register a class
 	 * that will key udev/mdev to add/remove /dev nodes.  Last, register
@@ -1101,8 +1065,7 @@ static int silead_fp_probe(struct platform_device *spi)
 
 	/* Allocate driver data */
 	spidev = kzalloc(sizeof(*spidev), GFP_KERNEL);
-	if (!spidev)
-	{
+	if (!spidev) {
 		class_destroy(spidev_class);
 		unregister_chrdev(spidev_major, silead_fp_driver.driver.name);
 		return -ENOMEM;
@@ -1117,7 +1080,7 @@ static int silead_fp_probe(struct platform_device *spi)
 
 		spidev->devt = MKDEV(spidev_major, minor);
 		dev = device_create(spidev_class, &spi->dev, spidev->devt,
-				spidev, "silead_fp_dev");
+		                    spidev, "silead_fp_dev");
 		status = IS_ERR(dev) ? PTR_ERR(dev) : 0;
 	} else {
 		DBG_MSG(MSG_ERR, "no minor number available!\n");
@@ -1127,21 +1090,21 @@ static int silead_fp_probe(struct platform_device *spi)
 		set_bit(minor, minors);
 	}
 
-/*
-	ret = silead_power_init(spidev);
-	if(ret < 0)
-	{
-		printk("silead_power_init failed ret = %d\n", ret);
-		ret = -ENODEV;	
-	}
-	silead_power_ctl(spidev, 1);
+	/*
+		ret = silead_power_init(spidev);
+		if(ret < 0)
+		{
+			printk("silead_power_init failed ret = %d\n", ret);
+			ret = -ENODEV;
+		}
+		silead_power_ctl(spidev, 1);
 
-	ret = silead_parse_dt(spidev);
-	if(ret < 0) {
-		printk("silead_parse_dt failed ret = %d\n", ret);
-		ret = -ENODEV;	
-	}	
-*/	
+		ret = silead_parse_dt(spidev);
+		if(ret < 0) {
+			printk("silead_parse_dt failed ret = %d\n", ret);
+			ret = -ENODEV;
+		}
+	*/
 	DBG_MSG(MSG_INFO, "S2\n");
 
 	/* Init Poll Wait */
@@ -1155,24 +1118,22 @@ static int silead_fp_probe(struct platform_device *spi)
 
 
 	//silead_request_irq(spidev);
-	
-#ifdef POWER_NOTIFY
+
+	#ifdef POWER_NOTIFY
 	spidev->notifier = silead_noti_block;
 	fb_register_client(&spidev->notifier);
-#endif
+	#endif
 
 	//add by bacon for fp_wake_lock
 	power_kobj = kobject_create_and_add("silead", NULL);
-	if (!power_kobj)
-	{
+	if (!power_kobj) {
 		class_destroy(spidev_class);
 		unregister_chrdev(spidev_major, silead_fp_driver.driver.name);
 		kfree(spidev);
 		return -ENOMEM;
 	}
 	error = sysfs_create_group(power_kobj, &attr_group);
-	if (error)
-	{
+	if (error) {
 		class_destroy(spidev_class);
 		unregister_chrdev(spidev_major, silead_fp_driver.driver.name);
 		kfree(spidev);
@@ -1180,13 +1141,10 @@ static int silead_fp_probe(struct platform_device *spi)
 	}
 	//add by bacon for fp_wake_lock
 
-	if (status == 0)
-	{
+	if (status == 0) {
 		platform_set_drvdata(spi, spidev);
 		fp_spidev = spidev;
-	}
-	else
-	{
+	} else {
 		class_destroy(spidev_class);
 		unregister_chrdev(spidev_major, silead_fp_driver.driver.name);
 		kfree(spidev);
@@ -1200,23 +1158,22 @@ static int __init silead_fp_init(void)
 {
 	int status = 0;
 	//dev_t devno;
-	
+
 	DBG_MSG(MSG_INFO, "S\n");
 
 	status = platform_driver_register(&silead_fp_driver);
 	if (status < 0) {
-	  printk("platform_driver_register error\n");
+		printk("platform_driver_register error\n");
 	}
 
 	return status;
 }
 
 static void __exit silead_fp_exist(void)
-{	
+{
 	cdev_del(&spicdev);
 	platform_driver_unregister(&silead_fp_driver);
-	if(fp_spidev != NULL)
-	{
+	if(fp_spidev != NULL) {
 		class_destroy(spidev_class);
 		unregister_chrdev(spidev_major, silead_fp_driver.driver.name);
 	}
