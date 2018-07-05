@@ -226,9 +226,9 @@ struct wcd_imped_i_ref {
 struct msm8916_asoc_mach_data {
 	int codec_type;
 	int ext_pa;
-#ifdef CONFIG_PROJECT_P7201
+	#ifdef CONFIG_PROJECT_P7201
 	int ext_pa_mode;
-#endif
+	#endif
 	int us_euro_gpio;
 	int spk_ext_pa_gpio;
 	int mclk_freq;

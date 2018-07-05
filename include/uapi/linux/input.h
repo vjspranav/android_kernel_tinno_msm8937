@@ -483,7 +483,7 @@ struct input_keymap_entry {
 
 //wangyanhui add for hall ic
 #ifdef CONFIG_HALL_SENSOR
-#define KEY_HALLOPEN	249	
+#define KEY_HALLOPEN	249
 #define KEY_HALLCLOSE	250
 #endif
 

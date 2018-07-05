@@ -874,7 +874,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.probe = fe_dai_probe,
 	},
 	#endif
-			
+
 	/* TDM Hostless */
 	{
 		.capture = {

@@ -905,34 +905,33 @@ static int qpnp_mpp_set(struct qpnp_led_data *led)
 		}
 		if (led->mpp_cfg->pwm_mode == PWM_MODE) {
 			#ifdef CONFIG_PLATFORM_TINNO
-			if(led->cdev.brightness > 250){
+			if(led->cdev.brightness > 250) {
 				rc = pwm_config(
-						led->mpp_cfg->pwm_cfg->pwm_dev,
-						1000000,
-						1000000);
-			}//<20160329><add for green led output high not wait 2s>wangyanhui add 
-			else
-			{
+				         led->mpp_cfg->pwm_cfg->pwm_dev,
+				         1000000,
+				         1000000);
+			}//<20160329><add for green led output high not wait 2s>wangyanhui add
+			else {
 			#endif
-			/*config pwm for brightness scaling*/
-			period_us = led->mpp_cfg->pwm_cfg->pwm_period_us;
-			if (period_us > INT_MAX / NSEC_PER_USEC) {
-				duty_us = (period_us * led->cdev.brightness) /
-					LED_FULL;
-				rc = pwm_config_us(
-					led->mpp_cfg->pwm_cfg->pwm_dev,
-					duty_us,
-					period_us);
-			} else {
-				duty_ns = ((period_us * NSEC_PER_USEC) /
-					LED_FULL) * led->cdev.brightness;
-				rc = pwm_config(
-					led->mpp_cfg->pwm_cfg->pwm_dev,
-					duty_ns,
-					period_us * NSEC_PER_USEC);
-			#ifdef CONFIG_PLATFORM_TINNO
+				/*config pwm for brightness scaling*/
+				period_us = led->mpp_cfg->pwm_cfg->pwm_period_us;
+				if (period_us > INT_MAX / NSEC_PER_USEC) {
+					duty_us = (period_us * led->cdev.brightness) /
+					          LED_FULL;
+					rc = pwm_config_us(
+					         led->mpp_cfg->pwm_cfg->pwm_dev,
+					         duty_us,
+					         period_us);
+				} else {
+					duty_ns = ((period_us * NSEC_PER_USEC) /
+					           LED_FULL) * led->cdev.brightness;
+					rc = pwm_config(
+					         led->mpp_cfg->pwm_cfg->pwm_dev,
+					         duty_ns,
+					         period_us * NSEC_PER_USEC);
+					#ifdef CONFIG_PLATFORM_TINNO
 				}
-			#endif
+					#endif
 			}
 			if (rc < 0) {
 				dev_err(&led->spmi_dev->dev, "Failed to " \
@@ -2625,17 +2624,17 @@ restore:
 static void led_blink(struct qpnp_led_data *led,
 			struct pwm_config_data *pwm_cfg)
 {
-#ifdef CONFIG_PLATFORM_TINNO
+	#ifdef CONFIG_PLATFORM_TINNO
 	//int rc;
 //BEGIN<20160324><blinking use pwm>wangyanhui modify
 	if(led->cdev.brightness>0)
 		led->cdev.brightness = 102;//LINE<HCABN-458><20161113><on-2s  off-3s>wangyanhui
-	
+
 	qpnp_mpp_set(led);
-#else
+	#else
 	int rc;
-#endif
-#if 0
+	#endif
+	#if 0
 	flush_work(&led->work);
 	mutex_lock(&led->lock);
 	if (pwm_cfg->use_blink) {
@@ -2653,30 +2652,30 @@ static void led_blink(struct qpnp_led_data *led,
 				led->mpp_cfg->pwm_mode = pwm_cfg->default_mode;
 			else if (led->id == QPNP_ID_KPDBL)
 				led->kpdbl_cfg->pwm_mode =
-						pwm_cfg->default_mode;
+				    pwm_cfg->default_mode;
 		}
 		pwm_free(pwm_cfg->pwm_dev);
 		qpnp_pwm_init(pwm_cfg, led->spmi_dev, led->cdev.name);
 		if (led->id == QPNP_ID_RGB_RED || led->id == QPNP_ID_RGB_GREEN
-				|| led->id == QPNP_ID_RGB_BLUE) {
+		    || led->id == QPNP_ID_RGB_BLUE) {
 			rc = qpnp_rgb_set(led);
 			if (rc < 0)
 				dev_err(&led->spmi_dev->dev,
-				"RGB set brightness failed (%d)\n", rc);
+				        "RGB set brightness failed (%d)\n", rc);
 		} else if (led->id == QPNP_ID_LED_MPP) {
 			rc = qpnp_mpp_set(led);
 			if (rc < 0)
 				dev_err(&led->spmi_dev->dev,
-				"MPP set brightness failed (%d)\n", rc);
+				        "MPP set brightness failed (%d)\n", rc);
 		} else if (led->id == QPNP_ID_KPDBL) {
 			rc = qpnp_kpdbl_set(led);
 			if (rc < 0)
 				dev_err(&led->spmi_dev->dev,
-				"KPDBL set brightness failed (%d)\n", rc);
+				        "KPDBL set brightness failed (%d)\n", rc);
 		}
 	}
 	mutex_unlock(&led->lock);
-#endif	
+	#endif
 //END<20160324><blinking use pwm>wangyanhui modify
 }
 
@@ -3454,11 +3453,11 @@ static int qpnp_get_config_pwm(struct pwm_config_data *pwm_cfg,
 	pwm_cfg->use_blink =
 		of_property_read_bool(node, "qcom,use-blink");
 
-#ifdef CONFIG_PLATFORM_TINNO
+	#ifdef CONFIG_PLATFORM_TINNO
 	if (pwm_cfg->mode == LPG_MODE) {//<20160324><blinking use pwm not LGP>wangyanhui modify
-#else
+	#else
 	if (pwm_cfg->mode == LPG_MODE || pwm_cfg->use_blink) {
-#endif
+	#endif
 		pwm_cfg->duty_cycles =
 			devm_kzalloc(&spmi_dev->dev,
 			sizeof(struct pwm_duty_cycles), GFP_KERNEL);

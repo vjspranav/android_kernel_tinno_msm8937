@@ -266,16 +266,16 @@ done:
 int is_ext_spk_gpio_support(struct platform_device *pdev,
 			struct msm8916_asoc_mach_data *pdata)
 {
-	//int ret = 0; 
+	//int ret = 0;
 	const char *spk_ext_pa = "qcom,msm-spk-ext-pa";
-	//static bool ext_pa_gpio_requested = false;//yangliang add for pa mode-2;20150901	
+	//static bool ext_pa_gpio_requested = false;//yangliang add for pa mode-2;20150901
 
 	pr_debug("%s:Enter\n", __func__);
 
 	pdata->spk_ext_pa_gpio = of_get_named_gpio(pdev->dev.of_node,
 				spk_ext_pa, 0);
 	#ifdef CONFIG_PROJECT_P7201
-		ext_spk_pa_gpio = pdata->spk_ext_pa_gpio;//yangliang add 
+	ext_spk_pa_gpio = pdata->spk_ext_pa_gpio;//yangliang add
 	#endif
 	#ifdef CONFIG_PLATFORM_TINNO
 	of_property_read_u32(pdev->dev.of_node, "qcom,spk-ext-pa_mode", &pdata->ext_pa_mode);//ext pa mode number added by liuweiwei
@@ -321,11 +321,11 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 	//yangliang add for enable pa mode-2;20150901 requested gpio before any operations to avoid gpio_ensure_requested warning in gpiolib.c.
 	pr_info("ext_pa_gpio_requested=%d\n", ext_pa_gpio_requested);
 	if(!ext_pa_gpio_requested) {
-		ret = gpio_request(pdata->spk_ext_pa_gpio, "spk_ext_pa_gpio"); 
+		ret = gpio_request(pdata->spk_ext_pa_gpio, "spk_ext_pa_gpio");
 		if (ret) {
-			pr_info("%s: gpio_request failed for spk_ext_pa_gpio.\n", 
-				__func__); 
-			goto err; 
+			pr_info("%s: gpio_request failed for spk_ext_pa_gpio.\n",
+			        __func__);
+			goto err;
 		}
 
 		ext_pa_gpio_requested = true;
@@ -343,19 +343,19 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 		}
 		#endif
 		#ifdef CONFIG_PROJECT_P7201
-			printk(KERN_ERR"goto mode-2");
-			ext_spk_pa_current_state = true;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
-			//gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 0);		
-			//udelay(2);
-			gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 1);		
-			udelay(2);
-			gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 0);			
-			udelay(2);
-			gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 1);
+		printk(KERN_ERR"goto mode-2");
+		ext_spk_pa_current_state = true;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
+		//gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 0);
+		//udelay(2);
+		gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 1);
+		udelay(2);
+		gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 0);
+		udelay(2);
+		gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 1);
 		#else
-			ext_spk_pa_current_state = true;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
-			//gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, enable);
-			gpio_direction_output(pdata->spk_ext_pa_gpio, enable);
+		ext_spk_pa_current_state = true;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
+		//gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, enable);
+		gpio_direction_output(pdata->spk_ext_pa_gpio, enable);
 		#endif
 	} else {
 		#ifdef CONFIG_PLATFORM_TINNO
@@ -376,9 +376,9 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 		}
 		#endif
 	}
-#ifdef CONFIG_PLATFORM_TINNO
+	#ifdef CONFIG_PLATFORM_TINNO
 err:
-#endif
+	#endif
 	return 0;
 }
 
@@ -1625,8 +1625,8 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	 * 210-290 == Button 2
 	 * 360-680 == Button 3
 	 */
-	#ifdef CONFIG_PLATFORM_TINNO //TN:peter  //<use same para>wangyanhui 
- 	btn_low[0] = 120;
+	#ifdef CONFIG_PLATFORM_TINNO //TN:peter  //<use same para>wangyanhui
+	btn_low[0] = 120;
 	btn_high[0] = 600;
 	btn_low[1] = 200;
 	btn_high[1] = 700;
@@ -1637,7 +1637,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_low[4] = 200;
 	btn_high[4] = 700;
 	#else
-       //<20160310>wangyanhui for headset btn  
+	//<20160310>wangyanhui for headset btn
 	btn_low[0] = 75;
 	btn_high[0] = 75;
 	btn_low[1] = 150;
@@ -1647,8 +1647,8 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_low[3] = 450;
 	btn_high[3] = 450;
 	#endif
-	
-	//bt2 ==> camera selfie stick TN:peter 
+
+	//bt2 ==> camera selfie stick TN:peter
 	#ifdef CONFIG_PROJECT_P6901 //TN:peter
 	btn_low[0] = 75;
 	btn_high[0] = 75;
@@ -1660,11 +1660,11 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_high[3] = 480;
 	btn_low[4] = 500;
 	btn_high[4] = 500;
-	#endif 
+	#endif
 
 	//yangliang mask and add for p7201 linear hph20160729
 	#ifdef CONFIG_PROJECT_P7201
- 	btn_low[0] = 100;
+	btn_low[0] = 100;
 	btn_high[0] = 100;
 	btn_low[1] = 250;
 	btn_high[1] = 250;
@@ -2703,7 +2703,7 @@ static struct snd_soc_dai_link msm8952_hdmi_dba_dai_link[] = {
 
 static struct snd_soc_dai_link msm8952_quin_dai_link[] = {
 	#ifdef CONFIG_PROJECT_P6901 //yangliang add for smartpa 20161008
-		#if 1
+	#if 1
 	{
 		.name = LPASS_BE_QUIN_MI2S_RX,
 		.stream_name = "Quinary MI2S Playback",
@@ -2714,7 +2714,7 @@ static struct snd_soc_dai_link msm8952_quin_dai_link[] = {
 		.codec_dai_name = "tfa98xx-aif-2-34",//"tfa98xx_codec",yangliang change old name to new name;20161026
 		.codec_name = "tfa98xx.2-0034",//it is from tfa98xx.c tfa98xx_i2c_driver`s  .name = "tfa98xx",  ;yangliang
 		#endif
-		
+
 		.no_pcm = 1,
 		.dpcm_playback = 1,//yangliang add for test from qualcomm songjingping20161025
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_CBS_CFS,
@@ -2724,7 +2724,7 @@ static struct snd_soc_dai_link msm8952_quin_dai_link[] = {
 		.ignore_pmdown_time = 1, /* dai link has playback support */
 		.ignore_suspend = 1,
 	},
-		#endif
+	#endif
 	#else
 	{
 		.name = LPASS_BE_QUIN_MI2S_RX,

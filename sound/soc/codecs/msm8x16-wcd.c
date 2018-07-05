@@ -2161,65 +2161,65 @@ static int msm8x16_wcd_hph_mode_set(struct snd_kcontrol *kcontrol,
 
 //yangliang add for external padac for spk;20150708
 #ifdef CONFIG_PROJECT_P7201
-static int msm8x16_wcd_ext_spk_get(struct snd_kcontrol *kcontrol, 
- struct snd_ctl_elem_value *ucontrol) 
-{ 
- 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol); //HHAFMCNA-710 kernel panic TN:peter
- 
-	if (current_ext_spk_pa_state == false) { 
- 		ucontrol->value.integer.value[0] = 0; 
- 	} else if (current_ext_spk_pa_state == true) { 
- 		ucontrol->value.integer.value[0] = 1; 
- 	} else { 
- 		dev_err(codec->dev, "%s: ERROR: Unsupported Speaker ext = %d\n", 
- 				__func__, current_ext_spk_pa_state); 
- 		return -EINVAL; 
- 	} 
- 
- 	dev_dbg(codec->dev, "%s: current_ext_spk_pa_state = %d\n", __func__, 
- 			current_ext_spk_pa_state); 
- 	return 0; 
-} 
- 
-static int msm8x16_wcd_ext_spk_set(struct snd_kcontrol *kcontrol, 
- struct snd_ctl_elem_value *ucontrol) 
-{ 
-	 struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol); //HHAFMCNA-710 kernel panic TN:peter
-	 
-	 dev_dbg(codec->dev, "%s: ucontrol->value.integer.value[0] = %ld\n", 
-	 __func__, ucontrol->value.integer.value[0]); 
-	 
-	 switch (ucontrol->value.integer.value[0]) { 
-	 	case 0: 
-	 		if(gpio_is_valid(ext_spk_pa_gpio)) 
-	 			gpio_direction_output(ext_spk_pa_gpio, 0); 
-	 			gpio_set_value_cansleep(ext_spk_pa_gpio, 0);
-	 			current_ext_spk_pa_state = false; 
-	 	break; 
-	 	case 1: 
-	 		if(gpio_is_valid(ext_spk_pa_gpio)){
-	 			gpio_direction_output(ext_spk_pa_gpio, 0); 
-	 			gpio_set_value_cansleep(ext_spk_pa_gpio, 0);
-				udelay(2);
-				//gpio_direction_output(ext_spk_pa_gpio, 0);
-				gpio_set_value(ext_spk_pa_gpio, 1);
-				udelay(2);
-				//gpio_direction_output(ext_spk_pa_gpio, 1);
-				gpio_set_value(ext_spk_pa_gpio, 0);
-				udelay(2);
-				gpio_set_value(ext_spk_pa_gpio, 1);
-	 			current_ext_spk_pa_state = true; 
-	 		} 
-	 		break;
-	 	default: 
-	 		return -EINVAL; 
-	 }
-	 
-	 dev_dbg(codec->dev, "%s: current_ext_spk_pa_state = %d\n", 
-	 	__func__, current_ext_spk_pa_state); 
+static int msm8x16_wcd_ext_spk_get(struct snd_kcontrol *kcontrol,
+                                   struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol); //HHAFMCNA-710 kernel panic TN:peter
 
-	 return 0; 
-} 
+	if (current_ext_spk_pa_state == false) {
+		ucontrol->value.integer.value[0] = 0;
+	} else if (current_ext_spk_pa_state == true) {
+		ucontrol->value.integer.value[0] = 1;
+	} else {
+		dev_err(codec->dev, "%s: ERROR: Unsupported Speaker ext = %d\n",
+		        __func__, current_ext_spk_pa_state);
+		return -EINVAL;
+	}
+
+	dev_dbg(codec->dev, "%s: current_ext_spk_pa_state = %d\n", __func__,
+	        current_ext_spk_pa_state);
+	return 0;
+}
+
+static int msm8x16_wcd_ext_spk_set(struct snd_kcontrol *kcontrol,
+                                   struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol); //HHAFMCNA-710 kernel panic TN:peter
+
+	dev_dbg(codec->dev, "%s: ucontrol->value.integer.value[0] = %ld\n",
+	        __func__, ucontrol->value.integer.value[0]);
+
+	switch (ucontrol->value.integer.value[0]) {
+	case 0:
+		if(gpio_is_valid(ext_spk_pa_gpio))
+			gpio_direction_output(ext_spk_pa_gpio, 0);
+		gpio_set_value_cansleep(ext_spk_pa_gpio, 0);
+		current_ext_spk_pa_state = false;
+		break;
+	case 1:
+		if(gpio_is_valid(ext_spk_pa_gpio)) {
+			gpio_direction_output(ext_spk_pa_gpio, 0);
+			gpio_set_value_cansleep(ext_spk_pa_gpio, 0);
+			udelay(2);
+			//gpio_direction_output(ext_spk_pa_gpio, 0);
+			gpio_set_value(ext_spk_pa_gpio, 1);
+			udelay(2);
+			//gpio_direction_output(ext_spk_pa_gpio, 1);
+			gpio_set_value(ext_spk_pa_gpio, 0);
+			udelay(2);
+			gpio_set_value(ext_spk_pa_gpio, 1);
+			current_ext_spk_pa_state = true;
+		}
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	dev_dbg(codec->dev, "%s: current_ext_spk_pa_state = %d\n",
+	        __func__, current_ext_spk_pa_state);
+
+	return 0;
+}
 #endif
 
 static int msm8x16_wcd_boost_option_get(struct snd_kcontrol *kcontrol,
@@ -2658,10 +2658,11 @@ static const struct soc_enum msm8x16_wcd_hph_mode_ctl_enum[] = {
 
 //yangliang add for external padac for spk;20150708
 #ifdef CONFIG_PROJECT_P7201
-static const char * const msm8x16_wcd_ext_spk_ctrl_text[] = { 
-	"DISABLE", "ENABLE"};
-static const struct soc_enum msm8x16_wcd_ext_spk_ctl_enum[] = { 
-	SOC_ENUM_SINGLE_EXT(2, msm8x16_wcd_ext_spk_ctrl_text), 
+static const char * const msm8x16_wcd_ext_spk_ctrl_text[] = {
+	"DISABLE", "ENABLE"
+};
+static const struct soc_enum msm8x16_wcd_ext_spk_ctl_enum[] = {
+	SOC_ENUM_SINGLE_EXT(2, msm8x16_wcd_ext_spk_ctrl_text),
 };
 #endif
 
@@ -5970,9 +5971,9 @@ static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 	}
 
 	wcd_mbhc_init(&msm8x16_wcd_priv->mbhc, codec, &mbhc_cb, &intr_ids,
-		      wcd_mbhc_registers, true);
-				#ifdef CONFIG_PLATFORM_TINNO
-        #ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
+	              wcd_mbhc_registers, true);
+	#ifdef CONFIG_PLATFORM_TINNO
+	#ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
 	ret = switch_dev_register(&wcd_mbhc_headset_switch);
 	if (ret < 0) {
 		dev_err(codec->dev, "not able to register switch device h2w\n");
@@ -5981,8 +5982,8 @@ static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 	if (ret < 0) {
 		dev_err(codec->dev, "not able to register switch device linebtn\n");
 	}
-        #endif
-				#endif
+	#endif
+	#endif
 	msm8x16_wcd_priv->mclk_enabled = false;
 	msm8x16_wcd_priv->clock_active = false;
 	msm8x16_wcd_priv->config_mode_active = false;
@@ -6023,12 +6024,12 @@ static int msm8x16_wcd_codec_remove(struct snd_soc_codec *codec)
 	msm8x16_wcd_priv->on_demand_list[ON_DEMAND_MICBIAS].supply = NULL;
 	atomic_set(&msm8x16_wcd_priv->on_demand_list[ON_DEMAND_MICBIAS].ref, 0);
 	iounmap(msm8x16_wcd->dig_base);
-				#ifdef CONFIG_PLATFORM_TINNO
-        #ifdef CONFIG_SWITCH//yangliang add for ftm hph detect20150830
-        switch_dev_unregister(&wcd_mbhc_headset_switch);
-        switch_dev_unregister(&wcd_mbhc_button_switch);
-        #endif
-				#endif
+	#ifdef CONFIG_PLATFORM_TINNO
+	#ifdef CONFIG_SWITCH//yangliang add for ftm hph detect20150830
+	switch_dev_unregister(&wcd_mbhc_headset_switch);
+	switch_dev_unregister(&wcd_mbhc_button_switch);
+	#endif
+	#endif
 	kfree(msm8x16_wcd_priv->fw_data);
 	kfree(msm8x16_wcd_priv);
 

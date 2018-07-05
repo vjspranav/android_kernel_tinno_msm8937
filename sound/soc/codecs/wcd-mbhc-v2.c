@@ -523,14 +523,14 @@ static void wcd_mbhc_set_and_turnoff_hph_padac(struct wcd_mbhc *mbhc)
 
 	//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
 	#ifdef CONFIG_PROJECT_P7201
-	if(ext_spk_pa_current_state == false){
+	if(ext_spk_pa_current_state == false) {
 		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
 	}
 	#else
-		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
+	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
 	#endif
 	//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
-		
+
 	usleep_range(wg_time * 1000, wg_time * 1000 + 50);
 }
 
@@ -742,11 +742,11 @@ static void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 		wcd_mbhc_clr_and_turnon_hph_padac(mbhc);
 	}
 	pr_debug("%s: leave hph_status %x\n", __func__, mbhc->hph_status);
-#ifdef CONFIG_PLATFORM_TINNO
-#ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
-        switch_set_state(&wcd_mbhc_headset_switch, insertion ? 1:0);
-#endif
-#endif
+	#ifdef CONFIG_PLATFORM_TINNO
+	#ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
+	switch_set_state(&wcd_mbhc_headset_switch, insertion ? 1:0);
+	#endif
+	#endif
 }
 
 static bool wcd_mbhc_detect_anc_plug_type(struct wcd_mbhc *mbhc)
@@ -1990,11 +1990,11 @@ static irqreturn_t wcd_mbhc_btn_press_handler(int irq, void *data)
 	}
 	mbhc->buttons_pressed |= mask;
 	mbhc->mbhc_cb->lock_sleep(mbhc, true);
-#ifdef CONFIG_PLATFORM_TINNO
-#ifdef CONFIG_SWITCH
-    switch_set_state(&wcd_mbhc_button_switch, mbhc->buttons_pressed ? 1:0);
-#endif
-#endif
+	#ifdef CONFIG_PLATFORM_TINNO
+	#ifdef CONFIG_SWITCH
+	switch_set_state(&wcd_mbhc_button_switch, mbhc->buttons_pressed ? 1:0);
+	#endif
+	#endif
 	if (schedule_delayed_work(&mbhc->mbhc_btn_dwork,
 				msecs_to_jiffies(400)) == 0) {
 		WARN(1, "Button pressed twice without release event\n");
@@ -2061,11 +2061,11 @@ static irqreturn_t wcd_mbhc_release_handler(int irq, void *data)
 			}
 		}
 		mbhc->buttons_pressed &= ~WCD_MBHC_JACK_BUTTON_MASK;
-#ifdef CONFIG_PLATFORM_TINNO
-#ifdef CONFIG_SWITCH
-        switch_set_state(&wcd_mbhc_button_switch, mbhc->buttons_pressed ? 1:0);
-#endif
-#endif
+		#ifdef CONFIG_PLATFORM_TINNO
+		#ifdef CONFIG_SWITCH
+		switch_set_state(&wcd_mbhc_button_switch, mbhc->buttons_pressed ? 1:0);
+		#endif
+		#endif
 	}
 exit:
 	pr_debug("%s: leave\n", __func__);

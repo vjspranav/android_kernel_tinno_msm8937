@@ -2838,7 +2838,7 @@ static void msm_otg_sm_work(struct work_struct *w)
 					msleep(100);
 					msm_otg_notify_charger(motg,500);
 					#endif
-					//caizhifu add end for sdp chager report and charger current setting, 2016-12-14					
+					//caizhifu add end for sdp chager report and charger current setting, 2016-12-14
 					pm_runtime_get_sync(otg->phy->dev);
 					msm_otg_start_peripheral(otg, 1);
 					otg->phy->state =
