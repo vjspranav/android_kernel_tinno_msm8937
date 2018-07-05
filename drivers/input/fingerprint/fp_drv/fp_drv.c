@@ -31,7 +31,8 @@
 #include <linux/workqueue.h>
 #include <linux/kobject.h>
 #include <linux/platform_device.h>
-
+#include <linux/gpio.h>
+#include <linux/of_gpio.h>
 #include "fp_drv.h"
 
 ///////////////////////////////////////////////////////////////////
@@ -63,10 +64,144 @@ static int has_exist = 0;
 // so & TA info.
 static char m_dev_info[64];
 static int all_info_exist = 0;
+static int fp_id_pin_value = -1;
 
 static DECLARE_WAIT_QUEUE_HEAD(waiter);
 
+struct fp_gpio_data  {
+    struct pinctrl *pinctrl1;
+    struct pinctrl_state *id_default;
+};
+struct fp_gpio_data *fp_gpio_id = NULL;
+
+int fp_id_parse_dt(struct device *dev, struct fp_gpio_data *pdata)
+{
+    struct device_node *node;
+    //int ret;
+    int dt_error = 1;
+    int rc = 0;
+
+    node = dev->of_node;
+    if (node) {		
+        klog("[fp_id_parse_dt] +++++++++++++++++\n");
+
+        if (fp_gpio_id == NULL) {
+            fp_gpio_id = kzalloc(sizeof(struct fp_gpio_data), GFP_KERNEL);
+        }
+		
+        if(!fp_gpio_id) {
+            klog("alloc fp_gpio_data fail.\n");
+            return dt_error;
+        }
+
+	fp_gpio_id->pinctrl1 = devm_pinctrl_get(dev);
+	if (IS_ERR_OR_NULL(fp_gpio_id->pinctrl1)) {
+		rc = PTR_ERR(fp_gpio_id->pinctrl1);
+		klog("Target does not use pinctrl %d\n", rc);
+		kfree(fp_gpio_id);
+		return rc;
+	}
+
+
+	fp_gpio_id->id_default
+		= pinctrl_lookup_state(fp_gpio_id->pinctrl1,
+				"tlmm_gpio_fpid_active");
+	if (IS_ERR_OR_NULL(fp_gpio_id->id_default)) {
+		rc = PTR_ERR(fp_gpio_id->id_default);
+		klog("default state err: %d\n", rc);
+		kfree(fp_gpio_id);
+		return rc;
+	}
+
+	rc = pinctrl_select_state(fp_gpio_id->pinctrl1,fp_gpio_id->id_default);
+	if (rc){
+		klog("set state err: %d\n", rc);
+		kfree(fp_gpio_id);
+		return rc;
+	}
+
+	kfree(fp_gpio_id);		
+    } else {
+        klog("[fp_id_parse_dt] Can't find node qcom,fingerprint----------\n");
+        return dt_error;
+    }
+
+    return 0;
+}
+
 ///////////////////////////////////////////////////////////////////
+int read_fpId_pin_value(struct device *dev, char *label) {
+    struct device_node *np = dev->of_node;
+    int fp_pin = 0;
+    int ret = -1;
+    int val1 = -1, val2 = -1;
+    int i = 0;
+
+    if (fp_id_pin_value > 0) {
+	 klog("%s: fingerprint id pin value :%d\n", __func__, fp_id_pin_value);
+        return fp_id_pin_value;
+    }
+    
+    fp_pin = of_get_named_gpio(np, label, 0);
+    if (fp_pin <= 0) {
+        klog("%s:fp pin gpio config err!\n", __func__);
+        return -1;
+    }
+
+// Give a HIGH
+    gpio_direction_input(fp_pin);
+    gpio_direction_output(fp_pin, 1);
+
+    for (i = 0; i < 5; i++) {
+        val1 = gpio_get_value(fp_pin);
+        klog("%s: val1(%d)\n", __func__, val1);
+        mdelay(10);
+    }
+   
+    mdelay(20);
+    
+// Give a LOW
+    gpio_direction_input(fp_pin);
+    gpio_direction_output(fp_pin, 0);
+
+    for (i = 0; i < 5; i++) {
+        val2 = gpio_get_value(fp_pin);
+        klog("%s: val2(%d)\n", __func__, val2);
+        mdelay(10);
+    }
+    
+    klog("%s: (%d, %d, %d)\n", __func__, fp_pin, val1, val2);
+    
+    if (val1 == 1 && val2 == 0) {
+        klog("#~~~~ High impedance!~~~~ \n");
+        ret = __HIGH_IMPEDANCE;
+    }
+    else if (val1 == 0 && val2 == 0) {
+        klog("#~~~~ LOW~~~~ \n");
+        ret = __LOW;
+    }
+    else if (val1 == 1 && val2 == 1) {
+        klog("~~~~ HIGH ~~~~ \n");
+        ret = __HIGH;
+        gpio_direction_input(fp_pin);
+        gpio_direction_output(fp_pin, 1);
+    }
+    else {
+        klog("Err -what the fuck ??? \n");
+        return -1;
+    }
+
+    gpio_direction_input(fp_pin);
+    fp_id_pin_value = ret;
+
+    //<BEGIN>set fp_id to high impedance status .add by yinglong.tang
+    fp_id_parse_dt(dev, NULL);
+    //<END>set fp_id to high impedance status .add by yinglong.tang
+    
+    return ret;
+}
+
+
 int full_fp_chip_name(const char *name)
 {
 	__FUN();
