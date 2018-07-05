@@ -764,6 +764,9 @@ static enum flash_area fwu_go_nogo(void)
 
 	imagePR = kzalloc(sizeof(MAX_FIRMWARE_ID_LEN), GFP_KERNEL);
 	if (!imagePR) {
+		dev_err(&i2c_client->dev,
+			"%s: Failed to alloc mem for image pointer\n",
+			__func__);
 		flash_area = NONE;
 		return flash_area;
 	}
@@ -771,8 +774,30 @@ static enum flash_area fwu_go_nogo(void)
 	if (fwu->force_update) {
 		flash_area = UI_FIRMWARE;
 		goto exit;
+	} else {
+		// TINNO: don't upgrade fw in FTM mode
+		#define STRING_BOOT_FTM_MODE "androidboot.mode=ffbm-01"
+		if (strstr(saved_command_line, STRING_BOOT_FTM_MODE)) {
+			flash_area = NONE;
+			goto exit;
+		}
+	}
+//Begin<REQ><20150409><TP update if in flash prog mode>;xiongdajun
+	retval = fwu_read_f01_device_status(&f01_device_status);
+	if (retval < 0) {
+		flash_area = NONE;
+		goto exit;
 	}
 
+	/* Force update firmware when device is in bootloader mode */
+	if (f01_device_status.flash_prog) {
+		dev_info(&i2c_client->dev,
+			"%s: In flash prog mode\n",
+			__func__);
+		flash_area = UI_FIRMWARE;
+		goto exit;
+	}
+//end<REQ><20150409><TP update if in flash prog mode>;xiongdajun
 	if (img->is_contain_build_info) {
 		/* if package id does not match, do not update firmware */
 		fwu->fn_ptr->read(fwu->rmi4_data,
@@ -810,21 +835,6 @@ static enum flash_area fwu_go_nogo(void)
 			fwu->config_block_count * fwu->block_size,
 			img->config_size);
 		flash_area = NONE;
-		goto exit;
-	}
-
-	retval = fwu_read_f01_device_status(&f01_device_status);
-	if (retval < 0) {
-		flash_area = NONE;
-		goto exit;
-	}
-
-	/* Force update firmware when device is in bootloader mode */
-	if (f01_device_status.flash_prog) {
-		dev_info(&i2c_client->dev,
-			"%s: In flash prog mode\n",
-			__func__);
-		flash_area = UI_FIRMWARE;
 		goto exit;
 	}
 
@@ -1585,7 +1595,6 @@ static int fwu_start_reflash(void)
 	const struct firmware *fw_entry = NULL;
 	struct f01_device_status f01_device_status;
 	enum flash_area flash_area;
-
 	pr_notice("%s: Start of reflash process\n", __func__);
 
 	if (fwu->ext_data_source)
@@ -1678,6 +1687,8 @@ static int fwu_start_reflash(void)
 
 	/* reset device */
 	fwu_reset_device();
+	msleep(200);
+	fwu_scan_pdt();
 
 	/* check device status */
 	retval = fwu_read_f01_device_status(&f01_device_status);

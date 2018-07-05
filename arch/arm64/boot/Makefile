@@ -14,7 +14,18 @@
 # Based on the ia64 boot/Makefile.
 #
 
-include $(srctree)/arch/arm64/boot/dts/qcom/Makefile
+DTS_CUSTOM_DIR := qcom
+
+ifeq ($(CONFIG_PROJECT_P7201),y)
+DTS_CUSTOM_DIR := p7201
+endif
+
+ifeq ($(CONFIG_PROJECT_P6901),y)
+DTS_CUSTOM_DIR := p6901
+endif
+
+#include $(srctree)/arch/arm64/boot/dts/qcom/Makefile
+include $(srctree)/arch/arm64/boot/dts/$(DTS_CUSTOM_DIR)/Makefile
 
 targets := Image Image.gz
 
