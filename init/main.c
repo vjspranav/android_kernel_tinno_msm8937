@@ -933,6 +933,9 @@ static int __ref kernel_init(void *unused)
 	int ret;
 
 	kernel_init_freeable();
+
+	pr_err("--------Leo, Start Kernel Init!");
+
 	/* need to finish all async __init code before freeing the memory */
 	async_synchronize_full();
 	free_initmem();

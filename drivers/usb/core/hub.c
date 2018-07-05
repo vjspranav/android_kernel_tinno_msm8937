@@ -5169,6 +5169,7 @@ static struct usb_driver hub_driver = {
 	.supports_autosuspend =	1,
 };
 
+
 int usb_hub_init(void)
 {
 	if (usb_register(&hub_driver) < 0) {

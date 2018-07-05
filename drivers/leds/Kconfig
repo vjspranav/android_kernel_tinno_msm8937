@@ -544,5 +544,5 @@ config LEDS_AW2013
 
 comment "LED Triggers"
 source "drivers/leds/trigger/Kconfig"
-
+  
 endif # NEW_LEDS

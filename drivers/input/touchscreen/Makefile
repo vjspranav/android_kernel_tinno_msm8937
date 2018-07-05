@@ -89,4 +89,10 @@ obj-$(CONFIG_TOUCHSCREEN_ZFORCE)	+= zforce_ts.o
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI4)		+= synaptics_i2c_rmi4.o
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_RMI4_DEV)	+= synaptics_rmi_dev.o
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_FW_UPDATE) 	+= synaptics_fw_update.o
-obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
+obj-$(GT9XX_TOUCHPANEL_DRIVER) 	+= gt9xx/
+#wangyanhui add 
+#Line <REQ> <20150724> <goodix>add GESTURE_WAKEUP
+obj-$(CONFIG_TP_TGESTURE)		+= tgesture/
+obj-$(CONFIG_TOUCHSCREEN_FT5XX)		+= ft5xx/
+obj-$(CONFIG_TOUCHSCREEN_FT5364I)	+= ft5364i/
+
