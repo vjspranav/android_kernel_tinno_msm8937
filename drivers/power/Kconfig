@@ -526,6 +526,14 @@ config QPNP_FG
 	  fuel gauge. The state of charge is reported through a BMS power
 	  supply property and also sends uevents when the capacity is updated.
 
+config TINNO_BATTERY_FG_HEART
+	tristate "TINNO battery FG heart config for debug"
+	depends on SPMI || MSM_SPMI
+	depends on OF_SPMI
+	help
+	 Say Y here to enable support for tinno battery heart update for charger debug
+	 PMIC chips.
+
 config BATTERY_BCL
 	tristate "Battery Current Limit driver"
 	depends on THERMAL_MONITOR
@@ -618,6 +626,11 @@ config MSM_BCL_PERIPHERAL_CTL
 
 source "drivers/power/reset/Kconfig"
 
+config SMART_CHARGING_CONTROL
+	bool "smart charing"
+	default n	
+	help
+	  Say Y here to enable smart charging control driver. 
 endif # POWER_SUPPLY
 
 source "drivers/power/avs/Kconfig"
