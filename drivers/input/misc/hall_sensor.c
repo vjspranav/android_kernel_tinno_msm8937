@@ -431,24 +431,8 @@ static struct platform_driver hall_driver = {
 	.id_table = hall_id,
 };
 
-// TINNO BEGIN
-// Shuai.Chen, HCABNA-215, Modify For Wiko Unify Version Sensor Controller
-#ifdef CONFIG_WIKO_UNIFY
-extern int Hall;
-#endif
-// TINNO END
-
 static int __init hall_init(void)
 {
-// TINNO BEGIN
-// Shuai.Chen, HCABNA-215, Modify For Wiko Unify Version Sensor Controller
-#ifdef CONFIG_WIKO_UNIFY
-	printk("-----Leo, Hall = %d", Hall);
-	if(Hall == 0) {
-		return 0;
-	}
-#endif
-// TINNO END
 	return platform_driver_register(&hall_driver);
 }
 

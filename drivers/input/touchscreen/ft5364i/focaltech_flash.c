@@ -107,23 +107,6 @@
 #define HIDTOI2C_DISABLE					0
 #define FTXXXX_INI_FILEPATH_CONFIG "/sdcard/"
 
-//Begin<BUG><JABALL-0><20150831>store tp  info;xiongdajun
-#ifdef CONFIG_DEV_INFO
-#define FTS_CTP_VENDOR_BYD          (0x59)
-#define FTS_CTP_VENDOR_TRULY        (0x5A)
-#define FTS_CTP_VENDOR_NANBO        (0x5B)
-#define FTS_CTP_VENDOR_BAOMING      (0x5D)
-#define FTS_CTP_VENDOR_JIEMIAN      (0x8B)
-#define FTS_CTP_VENDOR_YEJI         (0x80)
-#define FTS_CTP_VENDOR_HUARUICHUANG (0x43)
-#define FTS_CTP_VENDOR_DIJING       (0x67)
-#define FTS_CTP_VENDOR_DEFAULT      (0x79)
-#define FTS_CTP_VENDOR_SHENYUE      (0xA0)
-#define FTS_CTP_VENDOR_BOEN          (0x3B) //LINE<20160617><add tp info for p7201>wangyanhui
-extern int store_tp_info(const char *const str);
-#endif
-//Begin<BUG><JABALL-0><20150831>store tp  info;xiongdajun
-
 /*******************************************************************************
 * Private enumerations, structures and unions using typedef
 *******************************************************************************/
@@ -3399,35 +3382,6 @@ int fts_ctpm_fw_upgrade_with_i_file(struct i2c_client *client)
 	return i_ret;
 }
 
-//Begin<BUG><JABALL-0><20150831>store tp  info;xiongdajun
-#ifdef CONFIG_DEV_INFO
-static int save_ft5xx_tp_info(int product_id, char *config_id, int id)
-{
-	char buf[80];
-       char ic_name[16];
-         if ((id==0x54))
-         {
-	sprintf(ic_name, "FT%d3%dI",5,46);
-         }
-        FTS_DBG("xiongdajun add %d %x %d\n",product_id,config_id[0],id);
-        if(product_id == FTS_CTP_VENDOR_YEJI){
-            sprintf(buf, "YEJI-%s-%s--V%X",
-                    CONFIG_PRODUCT_NAME , ic_name, config_id[0]);
-        }
-        else if(product_id ==  FTS_CTP_VENDOR_BOEN) //LINE<20160617><add tp info for p7201>wangyanhui
-        {
-            sprintf(buf, "BOEN-%s-%s--V%X",
-                    CONFIG_PRODUCT_NAME , ic_name, config_id[0]);
-	}
-        else{
-	//LINE<FFBAKK-502><20141104>Modify TP information;xiongdajun
-            sprintf(buf, "JIEMIAN-%s-S%d--V%d%d",
-                    CONFIG_PRODUCT_NAME , id, config_id[2]-0x30, config_id[3]-0x30);
-        }
-	store_tp_info(buf);
-	return 0;
-}
-#endif
 /************************************************************************
 * Name: fts_ctpm_auto_upgrade
 * Brief:  auto upgrade
@@ -3473,9 +3427,5 @@ int fts_ctpm_auto_upgrade(struct i2c_client *client,u8 vendor_id,char *config_id
 			return -EIO;
 		}
 	}
-    //Begin<BUG><JABALL-0><20150831>store tp  info;xiongdajun
-#ifdef CONFIG_DEV_INFO
-    save_ft5xx_tp_info(vendor_id,config_id,fts_updateinfo_curr.CHIP_ID);
-#endif
 	return 0;
 }

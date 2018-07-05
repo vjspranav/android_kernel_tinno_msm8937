@@ -29,11 +29,6 @@ static int32_t msm_sensor_driver_platform_probe(struct platform_device *pdev);
 
 /* Static declaration */
 static struct msm_sensor_ctrl_t *g_sctrl[MAX_CAMERAS];
- 
-#ifdef CONFIG_DEV_INFO
-extern void store_camera_info(const char *const sensor_name, const char *const eeprom_name);
-#endif
-//BEGIN<20170225>liaoshuang add for mipi switch
 
 static int msm_sensor_platform_remove(struct platform_device *pdev)
 {
@@ -906,9 +901,6 @@ CSID_TG:
 	}
 
 	pr_err("%s probe succeeded", slave_info->sensor_name);
-#ifdef CONFIG_DEV_INFO    
-        store_camera_info(slave_info->sensor_name, s_ctrl->sensordata->eeprom_name);
-#endif
 
 	/*
 	  Set probe succeeded flag to 1 so that no other camera shall

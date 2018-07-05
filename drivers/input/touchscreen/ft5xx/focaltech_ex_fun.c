@@ -591,9 +591,6 @@ static ssize_t fts_fwupdate_store(struct device *dev, struct device_attribute *a
 	       if(fts_wq_data != NULL)
 	       {
 			fts_wq_data->fw_ver[0] = uc_host_fm_ver;
-		#ifdef CONFIG_DEV_INFO
-    			save_ft5xx_tp_info(fts_wq_data->fw_vendor_id,fts_wq_data->fw_ver,fts_updateinfo_curr.CHIP_ID);
-		#endif
 	       }
 	       //END<><20161228><update  dev info >wangyanhui
 		dev_dbg(dev, "%s [FTS] upgrade to new version 0x%x\n", __func__, uc_host_fm_ver);

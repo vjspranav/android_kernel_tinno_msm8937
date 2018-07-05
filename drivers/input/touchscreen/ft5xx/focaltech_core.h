@@ -308,10 +308,6 @@ extern int fts_i2c_write(struct i2c_client *client, char *writebuf, int writelen
 extern int fts_read_reg(struct i2c_client *client, u8 addr, u8 *val);
 extern int fts_write_reg(struct i2c_client *client, u8 addr, const u8 val);
 
-#ifdef CONFIG_DEV_INFO
-int save_ft5xx_tp_info(int product_id, char *config_id, int id);//LINE<><20161228><update  dev info >wangyanhui
-#endif
-
 /*******************************************************************************
 * Static function prototypes
 *******************************************************************************/
