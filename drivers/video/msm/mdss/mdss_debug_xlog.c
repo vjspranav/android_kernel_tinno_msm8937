@@ -28,7 +28,11 @@
 #define XLOG_DEFAULT_ENABLE 0
 #endif
 
+#ifdef CONFIG_PLATFORM_TINNO
 #define XLOG_DEFAULT_PANIC 0   //1  //LINE<20161123><Don't entry panic when LCD has errors>wangyanhui
+#else
+#define XLOG_DEFAULT_PANIC 1
+#endif
 #define XLOG_DEFAULT_REGDUMP 0x2 /* dump in RAM */
 #define XLOG_DEFAULT_DBGBUSDUMP 0x2 /* dump in RAM */
 #define XLOG_DEFAULT_VBIF_DBGBUSDUMP 0x2 /* dump in RAM */

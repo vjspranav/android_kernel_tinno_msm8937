@@ -2298,7 +2298,9 @@ composite_suspend(struct usb_gadget *gadget)
 	spin_unlock_irqrestore(&cdev->lock, flags);
 
     //LINE<JIRA_ID><DATE20170117><merge from p7201 M>zenghaihui
+	#ifdef CONFIG_PLATFORM_TINNO
 	usb_gadget_vbus_draw(gadget, 500);//LINE<BUG><HHABM-1319><When usb suspend, always vote 500mA current then usb won't disconnect.><20160614>huiyong.yin
+	#endif
 }
 
 static void

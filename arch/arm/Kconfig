@@ -2286,6 +2286,11 @@ source "lib/Kconfig"
 source "arch/arm/kvm/Kconfig"
 
 
+config PLATFORM_TINNO
+	tristate "Tinno Platform"
+	help
+	  Tells whether it is a tinno device or not
+
 config PROJECT_P7201
 	tristate "project support"
 	help

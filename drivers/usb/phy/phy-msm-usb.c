@@ -2814,10 +2814,8 @@ static void msm_otg_sm_work(struct work_struct *w)
 			case USB_CHG_STATE_DETECTED:
 				switch (motg->chg_type) {
 				case USB_DCP_CHARGER:
-					printk("DCP charger present \n");		//caizhifu add for charger debug, 2016-11-24
 					/* fall through */
 				case USB_PROPRIETARY_CHARGER:
-					printk("PROPRIETARY charger present \n");			//caizhifu add for charger debug, 2016-11-24
 					msm_otg_notify_charger(motg,
 							dcp_max_current);
 					if (!motg->is_ext_chg_dcp)
@@ -2825,7 +2823,6 @@ static void msm_otg_sm_work(struct work_struct *w)
 							OTG_STATE_B_CHARGER;
 					break;
 				case USB_FLOATED_CHARGER:
-					printk("FLOATED charger present \n");			//caizhifu add for charger debug, 2016-11-24
 					msm_otg_notify_charger(motg,
 							IDEV_CHG_MAX);
 					otg->phy->state = OTG_STATE_B_CHARGER;
@@ -2835,11 +2832,12 @@ static void msm_otg_sm_work(struct work_struct *w)
 							IDEV_CHG_MAX);
 					/* fall through */
 				case USB_SDP_CHARGER:
-					printk("SDP charger present \n");			//caizhifu add for charger debug, 2016-11-24
 					//caizhifu add start for sdp chager report and charger current setting, 2016-12-14
+					#ifdef CONFIG_PLATFORM_TINNO
 					msm_otg_notify_charger(motg,100);
 					msleep(100);
 					msm_otg_notify_charger(motg,500);
+					#endif
 					//caizhifu add end for sdp chager report and charger current setting, 2016-12-14					
 					pm_runtime_get_sync(otg->phy->dev);
 					msm_otg_start_peripheral(otg, 1);

@@ -45,7 +45,9 @@
 #include "msm8916-wcd-irq.h"
 #include "msm8x16_wcd_registers.h"
 
+#ifdef CONFIG_PLATFORM_TINNO
 #include <linux/switch.h>//yangliang add fot ftm hph detect20150830
+#endif
 
 #define MSM8X16_WCD_RATES (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |\
 			SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000)
@@ -139,8 +141,13 @@ enum {
 static const DECLARE_TLV_DB_SCALE(digital_gain, 0, 1, 0);
 static const DECLARE_TLV_DB_SCALE(analog_gain, 0, 25, 1);
 static struct snd_soc_dai_driver msm8x16_wcd_i2s_dai[];
+#ifdef CONFIG_PLATFORM_TINNO
 /* By default disable the internal speaker boost   TN:peter*/
 static bool spkr_boost_en = false;
+#else
+/* By default enable the internal speaker boost */
+static bool spkr_boost_en = true;
+#endif
 
 #define MSM8X16_WCD_ACQUIRE_LOCK(x) \
 	mutex_lock_nested(&x, SINGLE_DEPTH_NESTING)
@@ -148,6 +155,7 @@ static bool spkr_boost_en = false;
 #define MSM8X16_WCD_RELEASE_LOCK(x) mutex_unlock(&x)
 
 //yangliang add for ftm hph detect20150830
+#ifdef CONFIG_PLATFORM_TINNO
 #ifdef CONFIG_SWITCH
 struct switch_dev wcd_mbhc_headset_switch = {
 	.name = "h2w",
@@ -156,6 +164,7 @@ struct switch_dev wcd_mbhc_headset_switch = {
 struct switch_dev wcd_mbhc_button_switch = {
 	.name = "linebtn",
 };
+#endif
 #endif
 
 /* Codec supports 2 IIR filters */
@@ -5584,9 +5593,17 @@ static int msm8x16_wcd_device_down(struct snd_soc_codec *codec)
 	pdata = snd_soc_card_get_drvdata(codec->component.card);
 	dev_dbg(codec->dev, "%s: device down!\n", __func__);
 	msm8x16_wcd_write(codec,
+#ifdef CONFIG_PLATFORM_TINNO
 		MSM8X16_WCD_A_ANALOG_TX_1_EN, 0x33);//(0x03) yangliang modify to avoid modem-reset resulting in mic-snd small 20160420
 	msm8x16_wcd_write(codec,
 		MSM8X16_WCD_A_ANALOG_TX_2_EN, 0x33);//(0x03) yangliang modify to avoid modem-reset resulting in mic-snd small 20160420
+#else
+	msm8x16_wcd_write(codec,
+		MSM8X16_WCD_A_ANALOG_TX_1_EN, 0x3);
+	msm8x16_wcd_write(codec,
+		MSM8X16_WCD_A_ANALOG_TX_2_EN, 0x3);
+#endif
+
 	if (msm8x16_wcd_priv->boost_option == BOOST_ON_FOREVER) {
 		if ((snd_soc_read(codec, MSM8X16_WCD_A_ANALOG_SPKR_DRV_CTL)
 			& 0x80) == 0) {
@@ -5954,6 +5971,7 @@ static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 
 	wcd_mbhc_init(&msm8x16_wcd_priv->mbhc, codec, &mbhc_cb, &intr_ids,
 		      wcd_mbhc_registers, true);
+				#ifdef CONFIG_PLATFORM_TINNO
         #ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
 	ret = switch_dev_register(&wcd_mbhc_headset_switch);
 	if (ret < 0) {
@@ -5964,6 +5982,7 @@ static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 		dev_err(codec->dev, "not able to register switch device linebtn\n");
 	}
         #endif
+				#endif
 	msm8x16_wcd_priv->mclk_enabled = false;
 	msm8x16_wcd_priv->clock_active = false;
 	msm8x16_wcd_priv->config_mode_active = false;
@@ -6004,10 +6023,12 @@ static int msm8x16_wcd_codec_remove(struct snd_soc_codec *codec)
 	msm8x16_wcd_priv->on_demand_list[ON_DEMAND_MICBIAS].supply = NULL;
 	atomic_set(&msm8x16_wcd_priv->on_demand_list[ON_DEMAND_MICBIAS].ref, 0);
 	iounmap(msm8x16_wcd->dig_base);
+				#ifdef CONFIG_PLATFORM_TINNO
         #ifdef CONFIG_SWITCH//yangliang add for ftm hph detect20150830
         switch_dev_unregister(&wcd_mbhc_headset_switch);
         switch_dev_unregister(&wcd_mbhc_button_switch);
         #endif
+				#endif
 	kfree(msm8x16_wcd_priv->fw_data);
 	kfree(msm8x16_wcd_priv);
 

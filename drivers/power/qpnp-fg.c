@@ -1978,11 +1978,12 @@ static void fg_handle_battery_insertion(struct fg_chip *chip)
 }
 
 //BEGIN<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
-/*static int soc_to_setpoint(int soc)
+#ifndef CONFIG_PLATFORM_TINNO
+static int soc_to_setpoint(int soc)
 {
 	return DIV_ROUND_CLOSEST(soc * 255, 100);
 }
-*/
+#endif
 //END<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
 static void batt_to_setpoint_adc(int vbatt_mv, u8 *data)
 {
@@ -2206,11 +2207,13 @@ static int get_prop_capacity(struct fg_chip *chip)
 			return FULL_CAPACITY;
 	
 //BEGIN<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
-
-//	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 2),
-//			FULL_SOC_RAW - 2) + 1;
-
+#ifdef CONFIG_PLATFORM_TINNO
 	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1;
+#else
+	return DIV_ROUND_CLOSEST((chip->last_soc - 1) *
+			(FULL_CAPACITY - 2),
+			FULL_SOC_RAW - 2) + 1;
+#endif
 //END<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
 	}
 
@@ -2254,11 +2257,12 @@ static int get_prop_capacity(struct fg_chip *chip)
 	}
 
 //BEGIN<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
-
-//	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 2),
-//			FULL_SOC_RAW - 2) + 1;
-
+#ifdef CONFIG_PLATFORM_TINNO
 	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1;
+#else
+	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 2),
+			FULL_SOC_RAW - 2) + 1;
+#endif
 //END<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
 }
 
@@ -6679,11 +6683,15 @@ static void charge_full_work(struct work_struct *work)
 		goto out;
 	}
 // modify by alik ,if the battery soc raw <resume soc raw ,it must in recharging  process.
+#ifdef CONFIG_PLATFORM_TINNO
 	if (buffer[2] <= (resume_soc_raw-4)) {
+#else
+	if (buffer[2] <= resume_soc_raw) {
+#endif
 		if (fg_debug_mask & FG_STATUS)
 			pr_info("bsoc = 0x%02x <= resume = 0x%02x\n",
 					buffer[2], resume_soc_raw);
-		printk("charge_full_work bsoc = 0x%02x <= resume = 0x%02x\n",
+		pr_info("charge_full_work bsoc = 0x%02x <= resume = 0x%02x\n",
 					buffer[2], resume_soc_raw);
 		disable = true;
 	}
@@ -8014,7 +8022,11 @@ static int fg_common_hw_init(struct fg_chip *chip)
 
 	rc = fg_mem_masked_write(chip, settings[FG_MEM_DELTA_SOC].address, 0xFF,
 	        //LINE<BUG><HCABN-523><Hop two percentage my ocuur when large current dischare><20161118>huiyong.yin
-			/*soc_to_setpoint(settings[FG_MEM_DELTA_SOC].value)-1*/1,
+#ifdef CONFIG_PLATFORM_TINNO
+			1,
+#else
+			soc_to_setpoint(settings[FG_MEM_DELTA_SOC].value),
+#endif
 			settings[FG_MEM_DELTA_SOC].offset);
 	if (rc) {
 		pr_err("failed to write delta soc rc=%d\n", rc);

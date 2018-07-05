@@ -91,7 +91,7 @@ static int msm8952_wsa_switch_event(struct snd_soc_dapm_widget *w,
  * Need to report LINEIN
  * if R/L channel impedance is larger than 5K ohm
  */
-#if defined(CONFIG_PROJECT_P7201)
+#ifdef CONFIG_PROJECT_P7201
 static struct wcd_mbhc_config mbhc_cfg = {//yangliang mask and add for p7201 linear hph20160729
 	.read_fw_bin = false,
 	.calibration = NULL,
@@ -277,8 +277,9 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 	#ifdef CONFIG_PROJECT_P7201
 		ext_spk_pa_gpio = pdata->spk_ext_pa_gpio;//yangliang add 
 	#endif
+	#ifdef CONFIG_PLATFORM_TINNO
 	of_property_read_u32(pdev->dev.of_node, "qcom,spk-ext-pa_mode", &pdata->ext_pa_mode);//ext pa mode number added by liuweiwei
-
+	#endif
 	if (pdata->spk_ext_pa_gpio < 0) {
 		dev_dbg(&pdev->dev,
 			"%s: missing %s in dt node\n", __func__, spk_ext_pa);
@@ -288,7 +289,9 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 				__func__, pdata->spk_ext_pa_gpio);
 			return -EINVAL;
 		}
+		#ifdef CONFIG_PLATFORM_TINNO
 		gpio_direction_output(pdata->spk_ext_pa_gpio, 0); //<20160310>wangyanhui add for ext speaker--new
+		#endif
 	}
 	return 0;
 }
@@ -299,7 +302,9 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 	//int ret; //<20160310>wangyanhui delete for  ext spk
 	int ret = 0;
 
-	static bool ext_pa_gpio_requested = false;//yangliang add for pa mode-2;20150901	
+	#ifdef CONFIG_PLATFORM_TINNO
+	static bool ext_pa_gpio_requested = false;//yangliang add for pa mode-2;20150901
+	#endif
 	if (!gpio_is_valid(pdata->spk_ext_pa_gpio)) {
 		pr_err("%s: Invalid gpio: %d\n", __func__,
 			pdata->spk_ext_pa_gpio);
@@ -308,6 +313,8 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 
 	pr_debug("%s: %s external speaker PA\n", __func__,
 		enable ? "Enable" : "Disable");
+
+	#ifdef CONFIG_PLATFORM_TINNO
 	//pa mode 2  TN:peter
 	//gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, enable);
 
@@ -323,15 +330,18 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 
 		ext_pa_gpio_requested = true;
 	}
+	#endif
 
 	if (enable) {
 		//<20160310>wangyanhui delete for  ext spk
-		/*ret = msm_gpioset_activate(CLIENT_WCD_INT, "ext_spk_gpio");
+		#ifndef CONFIG_PLATFORM_TINNO
+		ret = msm_gpioset_activate(CLIENT_WCD_INT, "ext_spk_gpio");
 		if (ret) {
 			pr_err("%s: gpio set cannot be de-activated %s\n",
 					__func__, "ext_spk_gpio");
 			return ret;
-		}*/
+		}
+		#endif
 		#ifdef CONFIG_PROJECT_P7201
 			printk(KERN_ERR"goto mode-2");
 			ext_spk_pa_current_state = true;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
@@ -348,18 +358,27 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 			gpio_direction_output(pdata->spk_ext_pa_gpio, enable);
 		#endif
 	} else {
+		#ifdef CONFIG_PLATFORM_TINNO
 		ext_spk_pa_current_state = false;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
 		//gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, enable);
 		gpio_direction_output(pdata->spk_ext_pa_gpio, enable);
+		#else
+		gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, enable);
+		ret = msm_gpioset_suspend(CLIENT_WCD_INT, "ext_spk_gpio");
+		#endif
 		//<20160310>wangyanhui delete for  ext spk
-		/*ret = msm_gpioset_suspend(CLIENT_WCD_INT, "ext_spk_gpio");
+		#ifndef CONFIG_PLATFORM_TINNO
+		ret = msm_gpioset_suspend(CLIENT_WCD_INT, "ext_spk_gpio");
 		if (ret) {
 			pr_err("%s: gpio set cannot be de-activated %s\n",
 					__func__, "ext_spk_gpio");
 			return ret;
-		}*/
+		}
+		#endif
 	}
+#ifdef CONFIG_PLATFORM_TINNO
 err:
+#endif
 	return 0;
 }
 
@@ -1606,7 +1625,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	 * 210-290 == Button 2
 	 * 360-680 == Button 3
 	 */
-	#if 1 //TN:peter  //<use same para>wangyanhui 
+	#ifdef CONFIG_PLATFORM_TINNO //TN:peter  //<use same para>wangyanhui 
  	btn_low[0] = 120;
 	btn_high[0] = 600;
 	btn_low[1] = 200;
@@ -1836,7 +1855,9 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.platform_name	= "msm-pcm-hostless",
 		.dynamic = 1,
 		.dpcm_playback = 1,
+		#ifdef CONFIG_PLATFORM_TINNO
 		.dpcm_capture = 1,
+		#endif
 		.trigger = {SND_SOC_DPCM_TRIGGER_POST,
 			SND_SOC_DPCM_TRIGGER_POST},
 		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
@@ -2065,7 +2086,9 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.platform_name = "msm-lsm-client",
 		.dynamic = 1,
 		.dpcm_playback = 1,
+		#ifdef CONFIG_PLATFORM_TINNO
 		.dpcm_capture = 1,
+		#endif
 		.trigger = {SND_SOC_DPCM_TRIGGER_POST,
 			SND_SOC_DPCM_TRIGGER_POST },
 		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
@@ -2162,7 +2185,9 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.platform_name = "msm-pcm-hostless",
 		.dynamic = 1,
 		.dpcm_playback = 1,
+		#ifdef CONFIG_PLATFORM_TINNO
 		.dpcm_capture = 1,
+		#endif
 		.trigger = {SND_SOC_DPCM_TRIGGER_POST,
 			SND_SOC_DPCM_TRIGGER_POST},
 		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,

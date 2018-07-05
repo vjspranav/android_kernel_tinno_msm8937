@@ -40,7 +40,9 @@
 #include <linux/ktime.h>
 #include "pmic-voter.h"
 
+#ifdef CONFIG_PLATFORM_TINNO
 bool g_do_not_support_qc=false;//LINE<20160720><don't support qc>wangyanhui
+#endif
 
 /* Mask/Bit helpers */
 #define _SMB_MASK(BITS, POS) \
@@ -142,7 +144,9 @@ struct smbchg_chip {
 	int				fastchg_current_ma;
 	int				vfloat_mv;
 	int				fastchg_current_comp;
+#ifdef CONFIG_PLATFORM_TINNO
 	int                         no_parallel_defualt_dcp_icl_ma;//LINE<REQ><><DEFUALT USB DCP ICL SET TO 1400MA><20160708>huiyong.yin
+#endif
 	int				float_voltage_comp;
 	int				resume_delta_mv;
 	int				safety_time;
@@ -154,7 +158,9 @@ struct smbchg_chip {
 
 // TINNO BEGIN
 // Added by liaoye on MAR. 11, 2017 for(GJABN-171) reset the float voltage comp code
+#ifdef CONFIG_PLATFORM_TINNO
 	bool				jeita_adjust_float_voltage_comp;
+#endif
 // TINNO END
 
 	bool				iterm_disabled;
@@ -1915,8 +1921,10 @@ static bool is_hvdcp_present(struct smbchg_chip *chip)
 	int rc;
 	u8 reg, hvdcp_sel;
 
+#ifdef CONFIG_PLATFORM_TINNO
 	if(g_do_not_support_qc)//LINE<20160720><don't support qc>wangyanhui
 		return false;
+#endif
 	
 	rc = smbchg_read(chip, &reg,
 			chip->usb_chgpth_base + USBIN_HVDCP_STS, 1);
@@ -4124,9 +4132,11 @@ static int smbchg_chg_led_controls(struct smbchg_chip *chip)
 
 	rc = smbchg_masked_write(chip, chip->bat_if_base + CMD_CHG_LED_REG,
 			mask, reg);
-	
+#ifdef CONFIG_PLATFORM_TINNO
 	smbchg_read(chip,&reg,chip->bat_if_base + CMD_CHG_LED_REG,1);
 	printk("led reg=%X\n",reg);
+#endif
+
 	if (rc < 0)
 		dev_err(chip->dev,
 				"Couldn't write LED_CTRL_BIT rc=%d\n", rc);
@@ -6225,6 +6235,7 @@ static int smbchg_dc_is_writeable(struct power_supply *psy,
 
 // TINNO BEGIN
 // Added by liaoye on MAR. 11, 2017 for(GJABN-171) reset the float voltage comp code
+#ifdef CONFIG_PLATFORM_TINNO
 static int batt_float_voltage_comp_set(struct smbchg_chip *chip, int code)
 {
 	int rc;
@@ -6244,6 +6255,7 @@ static int batt_float_voltage_comp_set(struct smbchg_chip *chip, int code)
 
 	return rc;
 }
+#endif
 // TINNO END
 
 #define HOT_BAT_HARD_BIT	BIT(0)
@@ -6301,9 +6313,11 @@ static irqreturn_t batt_warm_handler(int irq, void *_chip)
 	smbchg_parallel_usb_check_ok(chip);
 
 	// TINNO BEGIN
+	#ifdef CONFIG_PLATFORM_TINNO
 	// Added by liaoye on MAR. 11, 2017 for(GJABN-171) reset the float voltage comp code
 	if (chip->jeita_adjust_float_voltage_comp && chip->batt_warm)
 		batt_float_voltage_comp_set(chip, chip->float_voltage_comp);
+	#endif
 	// TINNO END
 
 	if (chip->psy_registered)
@@ -6324,9 +6338,11 @@ static irqreturn_t batt_cool_handler(int irq, void *_chip)
 	smbchg_parallel_usb_check_ok(chip);
 
 	// TINNO BEGIN
+	#ifdef CONFIG_PLATFORM_TINNO
 	// Added by liaoye on MAR. 11, 2017 for(GJABN-171) reset the float voltage comp code
 	if (chip->jeita_adjust_float_voltage_comp && chip->batt_cool)
 		batt_float_voltage_comp_set(chip, 0);
+	#endif
 	// TINNO END
 
 	if (chip->psy_registered)
@@ -7410,9 +7426,11 @@ static int smbchg_hw_init(struct smbchg_chip *chip)
 	if (rc)
 		dev_err(chip->dev, "Couldn't switch to Syson LDO, rc=%d\n",
 			rc);
+	#ifdef CONFIG_PLATFORM_TINNO
 	rc = smbchg_sec_masked_write(chip, chip->usb_chgpth_base + CHGPTH_CFG, HVDCP_EN_BIT, HVDCP_EN_BIT); 
 		dev_err(chip->dev, "Couldn't turn on hvdcp, rc=%d\n",
 			rc);
+	#endif
 	return rc;
 }
 
@@ -7574,6 +7592,7 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 	OF_PROP_READ(chip, chip->fastchg_current_comp, "fastchg-current-comp",
 			rc, 1);
 	//BEGIN<REQ><><DEFUALT USB DCP ICL SET TO 1400MA><20160708>huiyong.yin
+	#ifdef CONFIG_PLATFORM_TINNO
        OF_PROP_READ(chip, chip->no_parallel_defualt_dcp_icl_ma, "no-parallel-defualt-dcp-icl-ma",
                        rc, 1);
         if (chip->no_parallel_defualt_dcp_icl_ma != -EINVAL){
@@ -7581,6 +7600,7 @@ static int smb_parse_dt(struct smbchg_chip *chip)
                 chip->no_parallel_defualt_dcp_icl_ma);
               smbchg_default_dcp_icl_ma = chip->no_parallel_defualt_dcp_icl_ma;
         }
+	#endif
        //END<REQ><><DEFUALT USB DCP ICL SET TO 1400MA><20160708>huiyong.yin
 	OF_PROP_READ(chip, chip->float_voltage_comp, "float-voltage-comp",
 			rc, 1);
@@ -7652,10 +7672,10 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 					"qcom,force-aicl-rerun");
 	chip->skip_usb_suspend_for_fake_battery = of_property_read_bool(node,
 				"qcom,skip-usb-suspend-for-fake-battery");
-	
+#ifdef CONFIG_PLATFORM_TINNO
 	g_do_not_support_qc = of_property_read_bool(node,
 				"qcom,no_support_qc");//LINE<20160720><don't support qc>wangyanhui
-
+#endif
 // TINNO BEGIN
 // Added by liaoye on MAR. 11, 2017 for(GJABN-171) reset the float voltage comp code
 	chip->jeita_adjust_float_voltage_comp = of_property_read_bool(node,

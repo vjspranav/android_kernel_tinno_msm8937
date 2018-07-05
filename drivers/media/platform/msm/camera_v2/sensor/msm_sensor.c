@@ -18,8 +18,10 @@
 #include <linux/regulator/rpm-smd-regulator.h>
 #include <linux/regulator/consumer.h>
 
+#ifdef CONFIG_PLATFORM_TINNO
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
+#endif
 #undef CDBG
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
 
@@ -110,6 +112,7 @@ int32_t msm_sensor_free_sensor_data(struct msm_sensor_ctrl_t *s_ctrl)
 	return 0;
 }
 
+#ifdef CONFIG_PLATFORM_TINNO
 //BEGIN<20150826><add for dual flash >wangyanhui 
 /*this function only used in leds-msm-gpio-dual-flash.c ,if don't use dual flash,  pls keep below code*/
 int  is_front_camera = 0;
@@ -134,6 +137,7 @@ int msm_sensor_is_mono_camera(void)
      return is_mono_camera;
 }
 //END<20150826><add for dual flash >wangyanhui
+#endif
 
 int msm_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 {
@@ -146,8 +150,10 @@ int msm_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 			__func__, __LINE__, s_ctrl);
 		return -EINVAL;
 	}
+#ifdef CONFIG_PLATFORM_TINNO
 	msm_sensor_set_front_camera_status(0);//LINE<20150826><add for dual flash >wangyanhui 
 	msm_sensor_set_mono_camera_status(2);//LINE<20150826><add for dual flash >wangyanhui 
+#endif
 	if (s_ctrl->is_csid_tg_mode)
 		return 0;
 
@@ -272,7 +278,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
     #endif
     //END<20160602><add camera otp>wangyanhui add 	
     //<BEGIN><make a distinction between ov5670_sunwin and ov5670_cmk ><20170407>;liaoshuang
-    #if 1
+    #ifdef CONFIG_PLATFORM_TINNO
        int addr_mid = 0;
 	uint16_t otp_flag = 0, _mid = 0;
 	uint16_t reg_5002 = 0;
@@ -389,6 +395,8 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 
 	pr_err("%s: read id: 0x%x expected id 0x%x:\n",
 			__func__, chipid, slave_info->sensor_id);
+
+#ifdef CONFIG_PLATFORM_TINNO
     pr_err("%s: xiongdajun add %d\n",
 			__func__, s_ctrl->id);
       //BEGIN<20150826><add for dual flash >wangyanhui 
@@ -405,6 +413,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 	else
 	   	msm_sensor_set_mono_camera_status(2);
 	//END<20150826><add for dual flash >wangyanhui
+#endif
 	if (msm_sensor_id_by_mask(s_ctrl, chipid) != slave_info->sensor_id) {
 		pr_err("%s chip id %x does not match %x\n",
 				__func__, chipid, slave_info->sensor_id);
