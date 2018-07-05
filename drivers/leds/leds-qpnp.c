@@ -2625,11 +2625,8 @@ static void led_blink(struct qpnp_led_data *led,
 			struct pwm_config_data *pwm_cfg)
 {
 	#ifdef CONFIG_PLATFORM_TINNO
-	
-
 	if(led->cdev.brightness>0)
 		led->cdev.brightness = 102;
-
 	qpnp_mpp_set(led);
 	#else
 	int rc;
@@ -2676,7 +2673,6 @@ static void led_blink(struct qpnp_led_data *led,
 	}
 	mutex_unlock(&led->lock);
 	#endif
-
 }
 
 static ssize_t blink_store(struct device *dev,

@@ -72,7 +72,6 @@ static atomic_t quat_mi2s_clk_ref;
 static atomic_t quin_mi2s_clk_ref;
 static atomic_t auxpcm_mi2s_clk_ref;
 
-
 #ifdef CONFIG_PROJECT_P7201
 int ext_spk_pa_gpio = -1;
 #endif
@@ -100,7 +99,6 @@ static struct wcd_mbhc_config mbhc_cfg = {
 	.swap_gnd_mic = NULL,
 	.hs_ext_micbias = false,
 	.key_code[0] = KEY_MEDIA,
-	
 	.key_code[1] = KEY_VOLUMEUP,
 	.key_code[2] = KEY_VOLUMEDOWN,
 	.key_code[3] = 0,
@@ -266,10 +264,7 @@ done:
 int is_ext_spk_gpio_support(struct platform_device *pdev,
 			struct msm8916_asoc_mach_data *pdata)
 {
-	
 	const char *spk_ext_pa = "qcom,msm-spk-ext-pa";
-	
-
 	pr_debug("%s:Enter\n", __func__);
 
 	pdata->spk_ext_pa_gpio = of_get_named_gpio(pdev->dev.of_node,
@@ -290,7 +285,7 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 			return -EINVAL;
 		}
 		#ifdef CONFIG_PLATFORM_TINNO
-		gpio_direction_output(pdata->spk_ext_pa_gpio, 0); 
+		gpio_direction_output(pdata->spk_ext_pa_gpio, 0);
 		#endif
 	}
 	return 0;
@@ -299,7 +294,6 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 {
 	struct snd_soc_card *card = codec->component.card;
 	struct msm8916_asoc_mach_data *pdata = snd_soc_card_get_drvdata(card);
-	
 	int ret = 0;
 
 	#ifdef CONFIG_PLATFORM_TINNO
@@ -315,10 +309,6 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 		enable ? "Enable" : "Disable");
 
 	#ifdef CONFIG_PLATFORM_TINNO
-	
-	
-
-	
 	pr_info("ext_pa_gpio_requested=%d\n", ext_pa_gpio_requested);
 	if(!ext_pa_gpio_requested) {
 		ret = gpio_request(pdata->spk_ext_pa_gpio, "spk_ext_pa_gpio");
@@ -327,13 +317,11 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 			        __func__);
 			goto err;
 		}
-
 		ext_pa_gpio_requested = true;
 	}
 	#endif
 
 	if (enable) {
-		
 		#ifndef CONFIG_PLATFORM_TINNO
 		ret = msm_gpioset_activate(CLIENT_WCD_INT, "ext_spk_gpio");
 		if (ret) {
@@ -345,8 +333,6 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 		#ifdef CONFIG_PROJECT_P7201
 		printk(KERN_ERR"goto mode-2");
 		ext_spk_pa_current_state = true;
-		
-		
 		gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 1);
 		udelay(2);
 		gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 0);
@@ -354,19 +340,16 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 		gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 1);
 		#else
 		ext_spk_pa_current_state = true;
-		
 		gpio_direction_output(pdata->spk_ext_pa_gpio, enable);
 		#endif
 	} else {
 		#ifdef CONFIG_PLATFORM_TINNO
 		ext_spk_pa_current_state = false;
-		
 		gpio_direction_output(pdata->spk_ext_pa_gpio, enable);
 		#else
 		gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, enable);
 		ret = msm_gpioset_suspend(CLIENT_WCD_INT, "ext_spk_gpio");
 		#endif
-		
 		#ifndef CONFIG_PLATFORM_TINNO
 		ret = msm_gpioset_suspend(CLIENT_WCD_INT, "ext_spk_gpio");
 		if (ret) {
@@ -1625,7 +1608,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	 * 210-290 == Button 2
 	 * 360-680 == Button 3
 	 */
-	#ifdef CONFIG_PLATFORM_TINNO 
+	#ifdef CONFIG_PLATFORM_TINNO
 	btn_low[0] = 120;
 	btn_high[0] = 600;
 	btn_low[1] = 200;
@@ -1637,7 +1620,6 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_low[4] = 200;
 	btn_high[4] = 700;
 	#else
-	
 	btn_low[0] = 75;
 	btn_high[0] = 75;
 	btn_low[1] = 150;
@@ -1647,8 +1629,6 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_low[3] = 450;
 	btn_high[3] = 450;
 	#endif
-
-	
 	#ifdef CONFIG_PROJECT_P6901 
 	btn_low[0] = 75;
 	btn_high[0] = 75;
@@ -1661,8 +1641,6 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_low[4] = 500;
 	btn_high[4] = 500;
 	#endif
-
-	
 	#ifdef CONFIG_PROJECT_P7201
 	btn_low[0] = 100;
 	btn_high[0] = 100;
@@ -2395,7 +2373,7 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.be_id = MSM_FRONTEND_DAI_QCHAT,
 	},
 
-	#ifdef CONFIG_PROJECT_P6901 
+	#ifdef CONFIG_PROJECT_P6901
 	#if 1
 	{ /* hw:x,37 */
 		.name = "QUIN_MI2S Hostless",
@@ -2702,7 +2680,7 @@ static struct snd_soc_dai_link msm8952_hdmi_dba_dai_link[] = {
 };
 
 static struct snd_soc_dai_link msm8952_quin_dai_link[] = {
-	#ifdef CONFIG_PROJECT_P6901 
+	#ifdef CONFIG_PROJECT_P6901
 	#if 1
 	{
 		.name = LPASS_BE_QUIN_MI2S_RX,
@@ -3399,7 +3377,6 @@ static int msm8952_asoc_machine_remove(struct platform_device *pdev)
 	struct msm8916_asoc_mach_data *pdata = snd_soc_card_get_drvdata(card);
 	int i;
 
-	
 	#ifdef CONFIG_PROJECT_P7201
 	if (gpio_is_valid(ext_spk_pa_gpio))
 		gpio_free(ext_spk_pa_gpio);

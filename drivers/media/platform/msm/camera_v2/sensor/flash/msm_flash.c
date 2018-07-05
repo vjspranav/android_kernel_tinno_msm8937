@@ -501,7 +501,6 @@ static int32_t msm_flash_init(
 	return 0;
 }
 #ifdef CONFIG_PLATFORM_TINNO
-
 extern int msm_sensor_is_front_camera(void);
 #endif
 static int32_t msm_flash_low(
@@ -531,7 +530,6 @@ static int32_t msm_flash_low(
 					curr);
 			}
 			CDBG("low_flash_current[%d] = %d", i, curr);
-			
 			#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 
 			if((msm_sensor_is_front_camera()||flash_data->camera_id == 1))
@@ -540,12 +538,10 @@ static int32_t msm_flash_low(
 			else if(i < 2)
 				led_trigger_event(flash_ctrl->torch_trigger[i],
 				                  curr);
-			
 			#else
 			led_trigger_event(flash_ctrl->torch_trigger[i],
 			                  curr);
 			#endif
-			
 		}
 	}
 	if (flash_ctrl->switch_trigger)
@@ -581,7 +577,6 @@ static int32_t msm_flash_high(
 					i, curr);
 			}
 			CDBG("high_flash_current[%d] = %d", i, curr);
-			
 			#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 			if((msm_sensor_is_front_camera()|| flash_data->camera_id == 1))
 				led_trigger_event(flash_ctrl->flash_trigger[2],
@@ -589,12 +584,10 @@ static int32_t msm_flash_high(
 			else if(i < 2)
 				led_trigger_event(flash_ctrl->flash_trigger[i],
 				                  curr);
-			
 			#else
 			led_trigger_event(flash_ctrl->flash_trigger[i],
 			                  curr);
 			#endif
-			
 		}
 	}
 	if (flash_ctrl->switch_trigger)
@@ -1013,12 +1006,10 @@ static long msm_flash_subdev_do_ioctl(
 		flash_data.flash_duration[i] = u32->flash_duration[i];
 	}
 
-	
 	#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 	flash_data.flash_current[MAX_LED_TRIGGERS - 1] = flash_data.flash_current[MAX_LED_TRIGGERS - 2];
 	flash_data.flash_duration[MAX_LED_TRIGGERS - 1] = flash_data.flash_duration[MAX_LED_TRIGGERS - 2];
 	#endif
-	
 
 	switch (cmd) {
 	case VIDIOC_MSM_FLASH_CFG32:

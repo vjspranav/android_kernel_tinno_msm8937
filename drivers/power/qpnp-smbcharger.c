@@ -41,7 +41,7 @@
 #include "pmic-voter.h"
 
 #ifdef CONFIG_PLATFORM_TINNO
-bool g_do_not_support_qc=false;
+bool g_do_not_support_qc = false;
 #endif
 
 /* Mask/Bit helpers */
@@ -145,7 +145,7 @@ struct smbchg_chip {
 	int				vfloat_mv;
 	int				fastchg_current_comp;
 	#ifdef CONFIG_PLATFORM_TINNO
-	int                         no_parallel_defualt_dcp_icl_ma;
+	int				no_parallel_defualt_dcp_icl_ma;
 	#endif
 	int				float_voltage_comp;
 	int				resume_delta_mv;
@@ -155,14 +155,9 @@ struct smbchg_chip {
 	int				jeita_temp_hard_limit;
 	int				aicl_rerun_period_s;
 	bool				use_vfloat_adjustments;
-
-
-
 	#ifdef CONFIG_PLATFORM_TINNO
 	bool				jeita_adjust_float_voltage_comp;
 	#endif
-
-
 	bool				iterm_disabled;
 	bool				bmd_algo_disabled;
 	bool				soft_vfloat_comp_disabled;
@@ -319,9 +314,9 @@ struct smbchg_chip {
 
 	#ifdef CONFIG_SMART_CHARGING_CONTROL
 	int				current_speed;
-	int             target_speed;   
-	int             speed_current_map[SPEED_MAX];   
-	bool            speed_restoring;    
+	int				target_speed;   // Target speed set by app layer.
+	int				speed_current_map[SPEED_MAX];   // Actual current/ma for speed level.
+	bool				speed_restoring;    // Indicating if a speed restoration is in process.
 	struct delayed_work		smart_charging_control_work;
 	#endif
 
@@ -1922,7 +1917,7 @@ static bool is_hvdcp_present(struct smbchg_chip *chip)
 	u8 reg, hvdcp_sel;
 
 	#ifdef CONFIG_PLATFORM_TINNO
-	if(g_do_not_support_qc)
+	if (g_do_not_support_qc)
 		return false;
 	#endif
 
@@ -4858,7 +4853,7 @@ static void handle_usb_removal(struct smbchg_chip *chip)
 		restore_from_hvdcp_detection(chip);
 
 	#ifdef CONFIG_SMART_CHARGING_CONTROL
-	
+	// Restore charge speed when charger is removed.
 	smbchg_charge_speed_restore(chip);
 	#endif
 }
@@ -4887,14 +4882,12 @@ static void handle_usb_insertion(struct smbchg_chip *chip)
 	/* usb inserted */
 	read_usb_type(chip, &usb_type_name, &usb_supply_type);
 
-
 	#ifdef CONFIG_TINNO_BATTERY_FG_HEART
 	printk("vbus insert inserted type = %d (%s)", usb_supply_type, usb_type_name);
 	#else
 	pr_smb(PR_STATUS,
 	       "inserted type = %d (%s)", usb_supply_type, usb_type_name);
 	#endif
-
 
 	smbchg_aicl_deglitch_wa_check(chip);
 	if (chip->typec_psy)
@@ -6233,8 +6226,6 @@ static int smbchg_dc_is_writeable(struct power_supply *psy,
 	return rc;
 }
 
-
-
 #ifdef CONFIG_PLATFORM_TINNO
 static int batt_float_voltage_comp_set(struct smbchg_chip *chip, int code)
 {
@@ -6256,7 +6247,6 @@ static int batt_float_voltage_comp_set(struct smbchg_chip *chip, int code)
 	return rc;
 }
 #endif
-
 
 #define HOT_BAT_HARD_BIT	BIT(0)
 #define HOT_BAT_SOFT_BIT	BIT(1)
@@ -6312,13 +6302,10 @@ static irqreturn_t batt_warm_handler(int irq, void *_chip)
 	pr_smb(PR_INTERRUPT, "triggered: 0x%02x\n", reg);
 	smbchg_parallel_usb_check_ok(chip);
 
-	
 	#ifdef CONFIG_PLATFORM_TINNO
-	
 	if (chip->jeita_adjust_float_voltage_comp && chip->batt_warm)
 		batt_float_voltage_comp_set(chip, chip->float_voltage_comp);
 	#endif
-	
 
 	if (chip->psy_registered)
 		power_supply_changed(&chip->batt_psy);
@@ -6337,13 +6324,10 @@ static irqreturn_t batt_cool_handler(int irq, void *_chip)
 	pr_smb(PR_INTERRUPT, "triggered: 0x%02x\n", reg);
 	smbchg_parallel_usb_check_ok(chip);
 
-	
 	#ifdef CONFIG_PLATFORM_TINNO
-	
 	if (chip->jeita_adjust_float_voltage_comp && chip->batt_cool)
 		batt_float_voltage_comp_set(chip, 0);
 	#endif
-	
 
 	if (chip->psy_registered)
 		power_supply_changed(&chip->batt_psy);
@@ -7591,7 +7575,7 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 			rc, 1);
 	OF_PROP_READ(chip, chip->fastchg_current_comp, "fastchg-current-comp",
 			rc, 1);
-	
+
 	#ifdef CONFIG_PLATFORM_TINNO
 	OF_PROP_READ(chip, chip->no_parallel_defualt_dcp_icl_ma, "no-parallel-defualt-dcp-icl-ma",
 	             rc, 1);
@@ -7601,7 +7585,7 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 		smbchg_default_dcp_icl_ma = chip->no_parallel_defualt_dcp_icl_ma;
 	}
 	#endif
-	
+
 	OF_PROP_READ(chip, chip->float_voltage_comp, "float-voltage-comp",
 			rc, 1);
 	if (chip->safety_time != -EINVAL &&
@@ -7676,13 +7660,8 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 	g_do_not_support_qc = of_property_read_bool(node,
 	                      "qcom,no_support_qc");
 	#endif
-
-
 	chip->jeita_adjust_float_voltage_comp = of_property_read_bool(node,
 	                                        "qcom,jeita-adjust-float-voltage-comp");
-
-
-	
 
 	/* parse the battery missing detection pin source */
 	rc = of_property_read_string(chip->spmi->dev.of_node,
@@ -8097,7 +8076,7 @@ static int smbchg_set_hvdcp_speed(struct smbchg_chip *chip)
 	struct power_supply *parallel_psy = get_parallel_psy(chip);
 	union power_supply_propval pval = {0, };
 
-	if (parallel_psy != NULL) {
+	if (parallel_psy != NULL) { // Get parallel charger fcc, debug output only.
 		parallel_psy->get_property(parallel_psy,
 		                           POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX, &pval);
 		parallel_fcc_ma = pval.intval / 1000;
@@ -8106,12 +8085,12 @@ static int smbchg_set_hvdcp_speed(struct smbchg_chip *chip)
 	pr_smb(PR_STATUS, "FCC = %d[%d, %d] usb present: %d\n",
 	       cur_total_fcc_ma, chip->fastchg_current_ma, parallel_fcc_ma, chip->usb_present);
 
-	
+	// Check charger existance.
 	if(chip->usb_present) {
-		
+		// Reset restoration flag.
 		chip->speed_restoring = false;
 
-		
+		// Check charger type, only hvdcp charger will be handled.
 		pr_smb(PR_STATUS, "current usb type: %d\n", chip->usb_supply_type);
 		if(chip->usb_supply_type != POWER_SUPPLY_TYPE_USB_HVDCP
 		   && chip->usb_supply_type != POWER_SUPPLY_TYPE_USB_HVDCP_3
@@ -8120,16 +8099,16 @@ static int smbchg_set_hvdcp_speed(struct smbchg_chip *chip)
 			return rc;
 		}
 
-		
+		// Check charging type, only CC will be handled.
 		charge_type = get_prop_charge_type(chip);
 		if (charge_type != POWER_SUPPLY_CHARGE_TYPE_FAST) {
 			pr_smb(PR_STATUS, "Not in fast charge(%d), skipping\n", charge_type);
 			return rc;
 		}
 	} else {
-		
+		// Only speed restoration is allowed to set FCC current without a charger connected.
 		if(chip->speed_restoring) {
-			chip->speed_restoring = false;
+			chip->speed_restoring = false; // Reset flag.
 		} else {
 			pr_smb(PR_STATUS, "Not restoration, no charger, skipping\n");
 			return rc;
@@ -8179,7 +8158,7 @@ static int smbchg_charge_speed_set(struct smbchg_chip *chip, int speed)
 
 static int smbchg_charge_speed_restore(struct smbchg_chip *chip)
 {
-	int restore_speed = SPEED_0;
+	int restore_speed = SPEED_0; // Default speed to restore. 100%.
 
 	pr_smb(PR_STATUS, "current speed: %d target: %d\n", chip->current_speed, chip->target_speed);
 	if(chip->current_speed != restore_speed) {
@@ -8210,7 +8189,7 @@ static int smbchg_init_speed_current_map(struct smbchg_chip *chip)
 		}
 	}
 
-	
+	// Use default settings if property is not found in device tree.
 	if(!use_dt_settings) {
 		chip->speed_current_map[0] = chip->cfg_fastchg_current_ma;
 		chip->speed_current_map[1] = 3000;

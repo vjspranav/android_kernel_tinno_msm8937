@@ -42,17 +42,13 @@ struct hall_data {
 	u32 max_uv;	/* device allow max voltage */
 };
 
-
 #ifdef CONFIG_SWITCH
 struct switch_dev hall_sensor_data = {
 	.name = "sensor_hall",
 };
 #endif
 
-
-
 static int g_hall_state = 0;
-
 
 static  void sendevent(int status,struct input_dev *dev_input)
 {
@@ -64,7 +60,6 @@ static  void sendevent(int status,struct input_dev *dev_input)
 		input_report_key(dev_input, KEY_HALLOPEN, 0);
 		pr_info("sendevent : KEY_HALLOPEN = %d,  set g_hall_state = 1 to ftm, meaning open \n", KEY_HALLOPEN);
 
-		
 		g_hall_state = 1; 
 	} else {
 		#ifdef CONFIG_SWITCH
@@ -74,7 +69,6 @@ static  void sendevent(int status,struct input_dev *dev_input)
 		pr_info("sendevent : KEY_HALLCLOSE = %d,  set g_hall_state = 0 to ftm, meaning cover  \n", KEY_HALLCLOSE);
 		input_report_key(dev_input, KEY_HALLCLOSE, 1);
 		input_report_key(dev_input, KEY_HALLCLOSE, 0);
-		
 		g_hall_state = 0; 
 	}
 	input_sync(dev_input);
@@ -82,7 +76,6 @@ static  void sendevent(int status,struct input_dev *dev_input)
 
 static irqreturn_t hall_interrupt_handler(int irq, void *dev)
 {
-
 	#if 1
 	int value;
 	struct hall_data *data = dev;
@@ -124,8 +117,7 @@ static int hall_input_init(struct platform_device *pdev,
 	}
 	data->hall_dev->name = LID_DEV_NAME;
 	data->hall_dev->phys = HALL_INPUT;
-	
-	
+
 	__set_bit(KEY_HALLOPEN, data->hall_dev->keybit);
 	__set_bit(KEY_HALLCLOSE, data->hall_dev->keybit);
 	__set_bit(EV_KEY, data->hall_dev->evbit);
@@ -252,14 +244,12 @@ static int hall_parse_dt(struct device *dev, struct hall_data *data)
 }
 #endif
 
-
 static ssize_t hall_info_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	return sprintf(buf, "%d", g_hall_state);
 }
 
 static DEVICE_ATTR(hall_state, 0444, hall_info_show, NULL);
-
 
 static ssize_t hall_driver_info_show(struct device_driver *ddri, char *buf)
 {
@@ -269,13 +259,12 @@ static DRIVER_ATTR(hall_state,     S_IWUSR | S_IRUGO, hall_driver_info_show, NUL
 
 static struct platform_driver hall_driver;
 
-
 static int hall_driver_probe(struct platform_device *dev)
 {
 	struct hall_data *data;
 	int err = 0;
 	int irq_flags;
-	int ret = 0; 
+	int ret = 0;
 
 	dev_dbg(&dev->dev, "hall_driver probe\n");
 	data = devm_kzalloc(&dev->dev, sizeof(struct hall_data), GFP_KERNEL);
@@ -300,7 +289,6 @@ static int hall_driver_probe(struct platform_device *dev)
 		goto exit;
 	}
 
-	
 	#ifdef CONFIG_SWITCH
 	ret = switch_dev_register(&hall_sensor_data);
 	if (ret < 0) {
@@ -336,7 +324,6 @@ static int hall_driver_probe(struct platform_device *dev)
 		dev_err(&dev->dev, "request irq failed : %d\n", data->irq);
 		goto free_gpio;
 	} else {
-		
 		int value;
 		enable_irq_wake(data->irq);
 		value = gpio_get_value_cansleep(data->gpio);
@@ -358,15 +345,12 @@ static int hall_driver_probe(struct platform_device *dev)
 		goto err_regulator_init;
 	}
 
-	
 	device_create_file(&dev->dev, &dev_attr_hall_state);
 
-	
 	err = driver_create_file(&hall_driver.driver, &driver_attr_hall_state);
 	if (err < 0) {
 		dev_err(&dev->dev, "driver_create_file  failed: %d\n", err);
 	}
-	
 
 	return 0;
 
@@ -392,12 +376,10 @@ static int hall_driver_remove(struct platform_device *dev)
 	hall_set_regulator(dev, false);
 	hall_config_regulator(dev, false);
 
-	
 	#ifdef CONFIG_SWITCH
 	switch_dev_unregister(&hall_sensor_data);
 	#endif
 
-	
 	device_remove_file(&dev->dev, &dev_attr_hall_state);
 	driver_remove_file(&hall_driver.driver, &driver_attr_hall_state);
 	return 0;

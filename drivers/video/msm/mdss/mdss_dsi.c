@@ -330,7 +330,6 @@ static int mdss_dsi_panel_power_off(struct mdss_panel_data *pdata)
 		       __func__, __mdss_dsi_pm_name(DSI_PANEL_PM));
 	#endif
 
-
 end:
 	return ret;
 }
@@ -348,7 +347,6 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
-
 	#if defined(CONFIG_PROJECT_P7201) || defined(CONFIG_PROJECT_P6901)
 	ret = mdss_dsi_panel_disp_en_gpio(pdata, 1);
 	if (ret)
@@ -357,7 +355,6 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 
 	msleep(5);
 	#endif
-
 
 	ret = msm_dss_enable_vreg(
 		ctrl_pdata->panel_power_data.vreg_config,

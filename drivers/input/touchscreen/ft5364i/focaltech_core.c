@@ -36,7 +36,7 @@
 /*******************************************************************************
 * Included header files
 *******************************************************************************/
-
+//user defined include header files
 #include "focaltech_core.h"
 
 #if defined(CONFIG_FB)
@@ -135,14 +135,12 @@
 struct i2c_client *fts_i2c_client;
 struct fts_ts_data *fts_wq_data;
 struct input_dev *fts_input_dev;
-
 #ifdef CONFIG_FT5XX_TGESTURE_FUNCTION
 #if FTS_GESTRUE_EN
 struct input_dev *ft5xx_key_dev;
 extern int bEnTGesture;
 #endif
 #endif
-
 
 static unsigned int buf_count_add=0;
 static unsigned int buf_count_neg=0;
@@ -460,7 +458,6 @@ static int fts_read_Touchdata(struct fts_ts_data *data)
 
 	u8 buf[POINT_READ_BUF] = { 0 };
 	int ret = -1;
-
 	#ifdef CONFIG_FT5XX_TGESTURE_FUNCTION
 	#if FTS_GESTRUE_EN
 	u8 state;
@@ -475,7 +472,6 @@ static int fts_read_Touchdata(struct fts_ts_data *data)
 	}
 	#endif
 	#endif
-
 	#ifdef CONFIG_TOUCHSCREEN_FTS_PSENSOR
 	if (fts_psensor_support_enabled() && data->pdata->psensor_support &&
 	    data->psensor_pdata->tp_psensor_opened) {
@@ -576,7 +572,6 @@ static void fts_report_value(struct fts_ts_data *data)
 			{
 
 				input_report_abs(data->input_dev, ABS_MT_TOUCH_MAJOR, event->area[i]);
-				
 				input_report_abs(data->input_dev, ABS_MT_POSITION_X, event->au16_x[i]);
 				input_report_abs(data->input_dev, ABS_MT_POSITION_Y, event->au16_y[i]);
 			}
@@ -965,17 +960,11 @@ static int fts_ts_stop(struct device *dev)
 	}
 	input_mt_report_pointer_emulation(data->input_dev, false);
 	input_sync(data->input_dev);
-	
 	#ifdef CONFIG_PROJECT_P6901
-	
 	txbuf[0] = FTS_REG_PMODE;
 	txbuf[1] = FTS_PMODE_HIBERNATE;
 	fts_i2c_write(data->client, txbuf, sizeof(txbuf));
 	msleep(5);
-	
-	
-	
-	
 	#else
 	if (!gpio_is_valid(data->pdata->reset_gpio)) {
 		txbuf[0] = FTS_REG_PMODE;
@@ -983,7 +972,6 @@ static int fts_ts_stop(struct device *dev)
 		fts_i2c_write(data->client, txbuf, sizeof(txbuf));
 	}
 	#endif
-	
 	if (data->pdata->power_on) {
 		err = data->pdata->power_on(false);
 		if (err) {
@@ -1061,22 +1049,19 @@ int fts_ts_suspend(struct device *dev)
 	#ifdef CONFIG_TOUCHSCREEN_FTS_PSENSOR
 	int err = 0;
 	#endif
-
 	#ifdef CONFIG_FT5XX_TGESTURE_FUNCTION
 	#if FTS_GESTRUE_EN
 	int error = 0;
-	int i = 0;  
+	int i = 0;
 	if (bEnTGesture) {
 
 		disable_irq(data->client->irq);
-		
 		for (i = 0; i < data->pdata->num_max_touches; i++) {
 			input_mt_slot(data->input_dev, i);
 			input_mt_report_slot_state(data->input_dev, MT_TOOL_FINGER, 0);
 		}
 		input_mt_report_pointer_emulation(data->input_dev, false);
 		input_sync(data->input_dev);
-		
 		fts_write_reg(fts_i2c_client, 0xd0, 0x01);
 		if (fts_updateinfo_curr.CHIP_ID==0x54 || fts_updateinfo_curr.CHIP_ID==0x58 || fts_updateinfo_curr.CHIP_ID==0x86) {
 			fts_write_reg(fts_i2c_client, 0xd1, 0xff);
@@ -1086,13 +1071,12 @@ int fts_ts_suspend(struct device *dev)
 			fts_write_reg(fts_i2c_client, 0xd7, 0xff);
 			fts_write_reg(fts_i2c_client, 0xd8, 0xff);
 		}
-		enable_irq(data->client->irq);  
+		enable_irq(data->client->irq);
 		enable_irq_wake(data->client->irq);
 		if (error)
 			dev_err(&data->client->dev,
 			        "%s: set_irq_wake failed\n", __func__);
 		data->suspended = true;
-		
 		error = fts_gpio_configure(data, false);
 		if (error < 0) {
 			dev_err(dev,
@@ -1106,12 +1090,10 @@ int fts_ts_suspend(struct device *dev)
 			}
 			#endif
 		}
-		
 		return 0;
 	}
 	#endif
 	#endif
-
 	if (data->loading_fw) {
 		dev_info(dev, "Firmware loading in process...\n");
 		return 0;
@@ -1155,7 +1137,6 @@ int fts_ts_resume(struct device *dev)
 		dev_dbg(dev, "Already in awake state\n");
 		return 0;
 	}
-
 	#ifdef CONFIG_FT5XX_TGESTURE_FUNCTION
 	#if FTS_GESTRUE_EN
 	if (bEnTGesture) {
@@ -1187,7 +1168,6 @@ int fts_ts_resume(struct device *dev)
 			gpio_set_value_cansleep(data->pdata->reset_gpio, 1);
 		}
 		data->suspended = false;
-		
 		err = fts_gpio_configure(data, true);
 		if (err < 0) {
 			dev_err(dev,
@@ -1203,12 +1183,10 @@ int fts_ts_resume(struct device *dev)
 		}
 
 		msleep(data->pdata->soft_rst_dly);
-		
 		return 0;
 	}
 	#endif
 	#endif
-
 	#ifdef CONFIG_TOUCHSCREEN_FTS_PSENSOR
 	if (fts_psensor_support_enabled() && data->pdata->psensor_support &&
 	    device_may_wakeup(dev) &&
@@ -1818,11 +1796,9 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
 	__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
 
 	input_mt_init_slots(input_dev, pdata->num_max_touches,0);
-	
 	input_set_abs_params(input_dev, ABS_MT_POSITION_X, pdata->x_min, pdata->x_max, 0, 0);
 	input_set_abs_params(input_dev, ABS_MT_POSITION_Y, pdata->y_min, pdata->y_max, 0, 0);
 	input_set_abs_params(input_dev, ABS_MT_TOUCH_MAJOR, 0, 0x0f, 0, 0);
-	
 
 	err = input_register_device(input_dev);
 	if (err) {
@@ -2023,7 +1999,6 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
 	fts_update_fw_vendor_id(data);
 
 	p6901_tp_vendor_id = data->fw_vendor_id;
-	
 	dev_err(&client->dev, "geroge data->fw_vendor_id is %x",data->fw_vendor_id );
 	if ( 0xA8 == data->fw_vendor_id || 0x00 == data->fw_vendor_id ) {
 		fts_ctpm_fw_upgrade_ReadVendorID(data->client, &data->fw_vendor_id);
@@ -2034,7 +2009,6 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
 		gpio_direction_output(data->pdata->reset_gpio, 1);
 		msleep(40);
 	}
-	
 	FTS_STORE_TS_INFO(data->ts_info, data->family_id, data->pdata->name,
 	                  data->pdata->num_max_touches, data->pdata->group_id,
 	                  data->pdata->fw_vkey_support ? "yes" : "no",
@@ -2056,11 +2030,8 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
 	}
 	#endif
 
-
 	#ifdef CONFIG_FT5XX_TGESTURE_FUNCTION
 	#if FTS_GESTRUE_EN
-	
-	
 	ft5xx_key_dev= input_allocate_device();
 	if (! ft5xx_key_dev) {
 		dev_err(&client->dev,"[syna]SY_key_dev: fail!\n");
@@ -2077,7 +2048,6 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
 	}
 	#endif
 	#endif
-
 	/**/
 	#ifdef FTS_AUTO_UPGRADE
 	printk("********************Enter CTP Auto Upgrade********************\n");
@@ -2129,7 +2099,6 @@ free_gpio:
 		gpio_free(pdata->reset_gpio);
 	if (gpio_is_valid(pdata->irq_gpio))
 		gpio_free(pdata->irq_gpio);
-
 	printk("==singlethread error =\n");
 	i2c_set_clientdata(client, NULL);
 err_gpio_req:

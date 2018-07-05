@@ -538,7 +538,7 @@ struct msm_flash_cfg_data_t {
 	int32_t flash_current[MAX_LED_TRIGGERS];
 	int32_t flash_duration[MAX_LED_TRIGGERS];
 	#ifdef CONFIG_PLATFORM_TINNO
-	int32_t camera_id; 
+	int32_t camera_id;
 	#endif
 	union {
 		struct msm_flash_init_info_t *flash_init_info;
