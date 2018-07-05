@@ -189,13 +189,13 @@
 #define MSM8X16_WCD_A_ANALOG_MBHC_ZDET_ELECT_RESULT__POR	(0x00)
 #define MSM8X16_WCD_A_ANALOG_TX_1_EN			(0x160)
 #ifdef CONFIG_PLATFORM_TINNO
-#define MSM8X16_WCD_A_ANALOG_TX_1_EN__POR			(0x33)//(0x03) yangliang modify to avoid modem-reset resulting in mic-snd small 20160420
+#define MSM8X16_WCD_A_ANALOG_TX_1_EN__POR			(0x33)
 #else
 #define MSM8X16_WCD_A_ANALOG_TX_1_EN__POR			(0x03)
 #endif
 #define MSM8X16_WCD_A_ANALOG_TX_2_EN			(0x161)
 #ifdef CONFIG_PLATFORM_TINNO
-#define MSM8X16_WCD_A_ANALOG_TX_2_EN__POR			(0x33)//(0x03) yangliang modify to avoid modem-reset resulting in mic-snd small 20160420
+#define MSM8X16_WCD_A_ANALOG_TX_2_EN__POR			(0x33)
 #else
 #define MSM8X16_WCD_A_ANALOG_TX_2_EN__POR			(0x03)
 #endif
@@ -211,7 +211,7 @@
 #define MSM8X16_WCD_A_ANALOG_TX_1_2_TXFE_CLKDIV__POR		(0x51)
 #define MSM8X16_WCD_A_ANALOG_TX_3_EN			(0x167)
 #ifdef CONFIG_PLATFORM_TINNO
-#define MSM8X16_WCD_A_ANALOG_TX_3_EN__POR			(0x32)//(0x02) yangliang modify to avoid modem-reset resulting in mic-snd small 20160420
+#define MSM8X16_WCD_A_ANALOG_TX_3_EN__POR			(0x32)
 #else
 #define MSM8X16_WCD_A_ANALOG_TX_3_EN__POR			(0x02)
 #endif

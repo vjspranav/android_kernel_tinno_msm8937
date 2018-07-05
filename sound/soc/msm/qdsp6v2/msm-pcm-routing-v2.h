@@ -306,7 +306,6 @@ enum msm_pcm_routing_event {
 };
 
 #ifdef CONFIG_PROJECT_WIMLITE
-//yangliang mask and add for msm8953 the EC ref port should be set before setting up the voice path 20160919
 enum {
 	EXT_EC_REF_NONE = 0,
 	EXT_EC_REF_PRI_MI2S_TX,

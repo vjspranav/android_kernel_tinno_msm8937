@@ -42,7 +42,7 @@ struct gf_key_map {
 #define  GFX1XM_IOC_SET_MODE	_IOW(GF_IOC_MAGIC, 102, int)
 
 #define  GF_IOC_MAXNR    13
-//#define AP_CONTROL_CLK       1
+
 /*#define  USE_PLATFORM_BUS     1*/
 #define  USE_SPI_BUS	1
 #define GF_FASYNC   1	/*If support fasync mechanism.*/
@@ -72,11 +72,11 @@ struct gf_dev {
 	struct notifier_block notifier;
 	char device_available;
 	char fb_black;
-	//<copy from 7701> add by yinglong.tang
+	
 	u8           isPowerOn;
 	struct regulator *vdd;
 	struct regulator *vio;
-	//<copy from 7701> add by yinglong.tang
+	
 };
 
 int gf_parse_dts(struct gf_dev* gf_dev);
@@ -87,10 +87,10 @@ int gf_power_off(struct gf_dev *gf_dev);
 
 int gf_hw_reset(struct gf_dev *gf_dev, unsigned int delay_ms);
 int gf_irq_num(struct gf_dev *gf_dev);
-//<copy from 7701> add by yinglong.tang
+
 extern int gf_power_ctl(struct gf_dev* gf_dev, bool on);
 extern int gf_power_init(struct gf_dev* gf_dev);
 extern int gf_power_deinit(struct gf_dev* gf_dev);
-//<copy from 7701> add by yinglong.tang
+
 
 #endif /*__GF_SPI_H*/

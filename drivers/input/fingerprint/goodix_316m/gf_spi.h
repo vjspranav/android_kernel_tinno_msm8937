@@ -45,12 +45,10 @@ struct gf_key_map {
 
 #define  GF_IOC_MAXNR    14
 
-//#define AP_CONTROL_CLK       1
 /*#define  USE_PLATFORM_BUS     */
 #define  USE_SPI_BUS	1
 #define GF_FASYNC   1	/*If support fasync mechanism.*/
 #define GF_NET_EVENT_IRQ 0
-//#define GF_NETLINK_ENABLE
 #define GF_NET_EVENT_FB_BLACK 1
 #define GF_NET_EVENT_FB_UNBLACK 2
 
@@ -81,12 +79,9 @@ struct gf_dev {
 	struct notifier_block notifier;
 	char device_available;
 	char fb_black;
-	//TINNO BEGIN
 	u8           isPowerOn;
 	struct regulator *vdd;
 	struct regulator *vio;
-	//signed fpid_gpio;
-	//TINNO END
 };
 
 int gf_parse_dts(struct gf_dev* gf_dev);
@@ -97,11 +92,9 @@ int gf_power_off(struct gf_dev *gf_dev);
 
 int gf_hw_reset(struct gf_dev *gf_dev, unsigned int delay_ms);
 int gf_irq_num(struct gf_dev *gf_dev);
-//<copy from 7701> add by yinglong.tang
 extern int gf_power_ctl(struct gf_dev* gf_dev, bool on);
 extern int gf_power_init(struct gf_dev* gf_dev);
 extern int gf_power_deinit(struct gf_dev* gf_dev);
-//<copy from 7701> add by yinglong.tang
 
 void sendnlmsg(char *message);
 int netlink_init(void);

@@ -35,10 +35,8 @@
 #include <linux/of_gpio.h>
 #include "fp_drv.h"
 
-///////////////////////////////////////////////////////////////////
 static int fp_probe(struct platform_device *pdev);
 static int fp_remove(struct platform_device *pdev);
-///////////////////////////////////////////////////////////////////
 
 static struct platform_driver fp_driver = {
 	.probe = fp_probe,
@@ -53,11 +51,6 @@ struct platform_device fp_device = {
 	.id        	= -1,
 };
 
-
-//static struct fp_driver_t *g_fp_drv = NULL;
-//static struct fp_driver_t fp_driver_list[MAX_DRV_NUM];
-
-// IC info.
 static char m_dev_name[64];
 static int has_exist = 0;
 
@@ -77,7 +70,6 @@ struct fp_gpio_data *fp_gpio_id = NULL;
 int fp_id_parse_dt(struct device *dev, struct fp_gpio_data *pdata)
 {
 	struct device_node *node;
-	//int ret;
 	int dt_error = 1;
 	int rc = 0;
 
@@ -129,7 +121,7 @@ int fp_id_parse_dt(struct device *dev, struct fp_gpio_data *pdata)
 	return 0;
 }
 
-///////////////////////////////////////////////////////////////////
+
 int read_fpId_pin_value(struct device *dev, char *label)
 {
 	struct device_node *np = dev->of_node;
@@ -149,7 +141,7 @@ int read_fpId_pin_value(struct device *dev, char *label)
 		return -1;
 	}
 
-// Give a HIGH
+	// Give a HIGH
 	gpio_direction_input(fp_pin);
 	gpio_direction_output(fp_pin, 1);
 
@@ -161,7 +153,7 @@ int read_fpId_pin_value(struct device *dev, char *label)
 
 	mdelay(20);
 
-// Give a LOW
+	// Give a LOW
 	gpio_direction_input(fp_pin);
 	gpio_direction_output(fp_pin, 0);
 
@@ -192,9 +184,7 @@ int read_fpId_pin_value(struct device *dev, char *label)
 	gpio_direction_input(fp_pin);
 	fp_id_pin_value = ret;
 
-	//<BEGIN>set fp_id to high impedance status .add by yinglong.tang
 	fp_id_parse_dt(dev, NULL);
-	//<END>set fp_id to high impedance status .add by yinglong.tang
 
 	return ret;
 }
@@ -292,13 +282,8 @@ static void __exit fp_drv_exit(void)
 	platform_driver_unregister(&fp_driver);
 }
 
-///////////////////////////////////////////////////////////////////
 late_initcall(fp_drv_init);
 module_exit(fp_drv_exit);
-
-//MODULE_LICENSE("GPL");
-//MODULE_DESCRIPTION("fp-drv");
-//MODULE_AUTHOR("<mingyi.guo@tinno.com>");
 
 
 

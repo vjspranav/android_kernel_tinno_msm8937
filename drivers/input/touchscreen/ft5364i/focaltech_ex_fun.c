@@ -497,7 +497,6 @@ static ssize_t fts_tprwreg_store(struct device *dev, struct device_attribute *at
 {
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
 	ssize_t num_read_chars = 0;
-	//int retval = 0;
 	long unsigned int wmreg=0;
 	u8 regaddr=0xff,regvalue=0xff;
 	u8 valbuf[5]= {0};
@@ -513,11 +512,6 @@ static ssize_t fts_tprwreg_store(struct device *dev, struct device_attribute *at
 	}
 	memcpy(valbuf, buf, num_read_chars);
 	wmreg = simple_strtoul(valbuf, NULL, 16);
-	//if (0 != retval)
-	//{
-	//	dev_err(dev, "%s() - ERROR: Could not convert the given input to a number. The given input was: \"%s\"\n", __FUNCTION__, buf);
-	//	goto error_return;
-	//}
 	if (2 == num_read_chars) {
 		/*read register*/
 		regaddr = wmreg;

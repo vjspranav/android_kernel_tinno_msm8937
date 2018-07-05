@@ -15,12 +15,10 @@
 #include <linux/platform_device.h>
 #endif
 
-//<copy from 7701> add by yinglong.tang
 #define GF_VDD_MIN_UV      2800000
 #define GF_VDD_MAX_UV	        3000000
 #define GF_VIO_MIN_UV      1800000
 #define GF_VIO_MAX_UV      1800000
-//<copy from 7701> add by yinglong.tang
 
 #if 0
 /*GPIO pins reference.*/
@@ -77,11 +75,9 @@ int gf_parse_dts(struct gf_dev* gf_dev)
 int gf_parse_dts(struct gf_dev* gf_dev)
 {
 	int rc = 0;
-	//int fpid = 0;//TINNO LINE
 
 	/*get irq resourece*/
 	gf_dev->irq_gpio = of_get_named_gpio(gf_dev->spi->dev.of_node,"qcom,irq-gpio",0);
-//   rc = gpio_request(gf_dev->irq_gpio, "gf_irq-gpio");
 	if (gpio_is_valid(gf_dev->irq_gpio)) {
 		rc = pinctrl_request_gpio(gf_dev->irq_gpio);
 		if(rc) {
@@ -93,7 +89,6 @@ int gf_parse_dts(struct gf_dev* gf_dev)
 		return -EIO;
 
 	}
-	// gpio_direction_input(gf_dev->irq_gpio);
 	pinctrl_gpio_direction_input(gf_dev->irq_gpio);
 
 	#if 0
@@ -135,7 +130,6 @@ int gf_parse_dts(struct gf_dev* gf_dev)
 		return -EIO;
 	}
 
-	//TINNO BEGIN
 	/*gf_dev->fpid_gpio = of_get_named_gpio(gf_dev->spi->dev.of_node,"qcom,fpid-gpio",0);
 	   pr_warn("gf:get fpid gpio gf_dev->fpid_gpio = %d\n", gf_dev->fpid_gpio);
 	if (gpio_is_valid(gf_dev->fpid_gpio)){
@@ -151,7 +145,6 @@ int gf_parse_dts(struct gf_dev* gf_dev)
 		pr_warn("gf:not valid fpid gpio\n");
 		return -EIO;
 	}*/
-	//TINNO END
 	/*get pw resource*/
 	#if 0
 	gf_dev->pw_gpio = of_get_named_gpio(gf_dev->spi->dev.of_node,"gf,power-gpio",0);
@@ -214,8 +207,6 @@ int gf_power_on(struct gf_dev* gf_dev)
 
 	rc = gf_power_ctl(gf_dev, true);
 
-	//pr_info("---- gf_power_on rc = %d\n", rc);
-
 	return rc;
 
 	#endif
@@ -235,8 +226,6 @@ int gf_power_off(struct gf_dev* gf_dev)
 	int rc = 0;
 
 	rc = gf_power_ctl(gf_dev, false);
-
-	//pr_info("---- gf_power_off rc = %d \n", rc);
 
 	return rc;
 
@@ -271,8 +260,6 @@ int gf_irq_num(struct gf_dev *gf_dev)
 	}
 }
 
-
-//<copy from 7701> add by yinglong.tang
 int gf_power_ctl(struct gf_dev* gf_dev, bool on)
 {
 	int rc = 0;
@@ -404,4 +391,3 @@ int gf_power_deinit(struct gf_dev* gf_dev)
 
 	return ret;
 }
-//<copy from 7701> add by yinglong.tang

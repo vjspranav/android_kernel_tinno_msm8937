@@ -33,16 +33,13 @@
 
 #include <linux/of_gpio.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define AW87319_I2C_NAME		"AW87319_PA"
 #define AW87319_I2C_BUS		0
 #define AW87319_I2C_ADDR		0x58
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned char AW87319_Audio_Reciver(void);
 unsigned char AW87319_Audio_Speaker(void);
 unsigned char AW87319_Audio_OFF(void);
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned char AW87319_HW_ON(void);
 unsigned char AW87319_HW_OFF(void);
 unsigned char AW87319_SW_ON(void);
@@ -61,9 +58,6 @@ static DEVICE_ATTR(hwen, 0660, AW87319_get_hwen,  AW87319_set_hwen);
 
 struct i2c_client *AW87319_pa_client;
 int aw87319_rst;
-//struct pinctrl *aw87319ctrl = NULL;
-//struct pinctrl_state *aw87319_rst_high = NULL;
-//struct pinctrl_state *aw87319_rst_low = NULL;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // GPIO Control
@@ -74,7 +68,6 @@ static int AW87319_pinctrl_init(struct device *dev)
 	int ret = 0;
 	aw87319ctrl = devm_pinctrl_get(dev);
 	if (IS_ERR(aw87319ctrl)) {
-		//dev_err(&pdev->dev, "Cannot find aw87319 pinctrl!");
 		ret = PTR_ERR(aw87319ctrl);
 		printk("%s devm_pinctrl_get fail!\n", __func__);
 	}
@@ -97,10 +90,8 @@ static int AW87319_pinctrl_init(struct device *dev)
 static void AW87319_pa_pwron(void)
 {
 	printk("%s enter\n", __func__);
-	//pinctrl_select_state(aw87319ctrl, aw87319_rst_low);
 	gpio_set_value_cansleep(aw87319_rst, 0);
 	msleep(1);
-	//pinctrl_select_state(aw87319ctrl, aw87319_rst_high);
 	gpio_set_value_cansleep(aw87319_rst, 1);
 	msleep(10);
 	printk("%s out\n", __func__);
@@ -108,7 +99,6 @@ static void AW87319_pa_pwron(void)
 
 static void AW87319_pa_pwroff(void)
 {
-	//pinctrl_select_state(aw87319ctrl, aw87319_rst_low);
 	gpio_set_value_cansleep(aw87319_rst, 0);
 	msleep(1);
 }

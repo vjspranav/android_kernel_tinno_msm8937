@@ -31,7 +31,7 @@
 #include "wcdcal-hwdep.h"
 
 #ifdef CONFIG_PLATFORM_TINNO
-#include <linux/switch.h>//yangliang add for ftm hph detect20150830
+#include <linux/switch.h>
 #endif
 
 #ifdef CONFIG_PROJECT_GARLIC
@@ -75,7 +75,7 @@ enum wcd_mbhc_cs_mb_en_flag {
 	WCD_MBHC_EN_NONE,
 };
 #ifdef CONFIG_PLATFORM_TINNO
-#ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
+#ifdef CONFIG_SWITCH 
 extern struct switch_dev wcd_mbhc_headset_switch ;
 extern struct switch_dev wcd_mbhc_button_switch ;
 #endif
@@ -520,8 +520,6 @@ static void wcd_mbhc_set_and_turnoff_hph_padac(struct wcd_mbhc *mbhc)
 	} else {
 		pr_debug("%s PA is off\n", __func__);
 	}
-
-	//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
 	#ifdef CONFIG_PROJECT_GARLIC
 	if(ext_spk_pa_current_state == false) {
 		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
@@ -529,8 +527,6 @@ static void wcd_mbhc_set_and_turnoff_hph_padac(struct wcd_mbhc *mbhc)
 	#else
 	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
 	#endif
-	//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
-
 	usleep_range(wg_time * 1000, wg_time * 1000 + 50);
 }
 
@@ -743,7 +739,7 @@ static void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 	}
 	pr_debug("%s: leave hph_status %x\n", __func__, mbhc->hph_status);
 	#ifdef CONFIG_PLATFORM_TINNO
-	#ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
+	#ifdef CONFIG_SWITCH 
 	switch_set_state(&wcd_mbhc_headset_switch, insertion ? 1:0);
 	#endif
 	#endif
@@ -2166,7 +2162,7 @@ static int wcd_mbhc_initialise(struct wcd_mbhc *mbhc)
 
 	#ifdef CONFIG_PLATFORM_TINNO
 	/* Insertion debounce set to 256ms */
-	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_INSREM_DBNC, 9);//yangliang modify 6 to 9 for 256ms debounce time for judgement by mistake 20160606;
+	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_INSREM_DBNC, 9);
 	#else
 	/* Insertion debounce set to 96ms */
 	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_INSREM_DBNC, 6);

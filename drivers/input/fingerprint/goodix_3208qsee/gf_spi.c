@@ -42,7 +42,7 @@
 #include <linux/cpufreq.h>
 #include <linux/wakelock.h>
 #include "gf_spi.h"
-#include "../fp_drv/fp_drv.h" //add by yinglong.tang
+#include "../fp_drv/fp_drv.h"
 #include <linux/poll.h>
 #if defined(USE_SPI_BUS)
 #include <linux/spi/spi.h>
@@ -57,7 +57,6 @@
 
 #define WAKELOCK_HOLD_TIME 500 /* in ms */
 
-//#define GF_SPIDEV_NAME     "goodix,fingerprint"
 #define GF_SPIDEV_NAME     "qcom,fingerprint"
 /*device name after register in charater*/
 #define GF_DEV_NAME            "goodix_fp"
@@ -67,7 +66,6 @@
 #define	CLASS_NAME		    "goodix_fp"
 #define SPIDEV_MAJOR		225	/* assigned */
 #define N_SPI_MINORS		32	/* ... up to 256 */
-//static int SPIDEV_MAJOR;
 
 static DECLARE_BITMAP(minors, N_SPI_MINORS);
 static LIST_HEAD(device_list);
@@ -443,7 +441,6 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		} else if(gf_key.value  == 0) {
 			ftm_gfx_irq_state = 0x2; //up.
 		}
-		//gf_kernel_key_input(gf_dev, &gf_key);
 		pr_info("GF_IOC_INPUT_KEY_EVENT gf_key.value = %d\n",gf_key.value);
 		ftm_gfx_irq_send_key = 1;
 		wake_up(&gf_poll_wq);
@@ -788,7 +785,6 @@ static int gf_probe(struct platform_device *pdev)
 	if (gf_parse_dts(gf_dev))
 		goto error_hw;
 
-	//<copy from 7701> add by yinglong.tang
 	ret = gf_power_init(gf_dev);
 	if (ret) {
 		dev_err(&gf_dev->spi->dev, "Failed to init regulator\n");
@@ -801,7 +797,6 @@ static int gf_probe(struct platform_device *pdev)
 		goto err_deinit_regulator;
 	}
 	gf_dev->device_available = 1;
-	//<copy from 7701> add by yinglong.tang
 
 	/* If we can allocate a minor number, hook up this device.
 	 * Reusing minors is fine so long as udev or mdev is working.
@@ -879,7 +874,7 @@ goto gfspi_probe_clk_init_failed:
 	gf_dev->irq_enabled = 1;
 	gf_disable_irq(gf_dev);
 	#endif
-	full_fp_chip_name(GF_DEV_NAME);//add by yinglong.tang.
+	full_fp_chip_name(GF_DEV_NAME);
 	pr_info("version V%d.%d.%02d\n", VER_MAJOR, VER_MINOR, PATCH_LEVEL);
 	FUNC_EXIT();
 	return status;
@@ -956,7 +951,7 @@ static int gf_remove(struct platform_device *pdev)
 	list_del(&gf_dev->device_entry);
 	device_destroy(gf_class, gf_dev->devt);
 	clear_bit(MINOR(gf_dev->devt), minors);
-	gf_power_deinit(gf_dev);//<copy from 7701> add by yinglong.tang
+	gf_power_deinit(gf_dev);
 	if (gf_dev->users == 0)
 		gf_cleanup(gf_dev);
 
@@ -1009,7 +1004,7 @@ static int __init gf_init(void)
 		FUNC_EXIT();
 		return status;
 	}
-	//SPIDEV_MAJOR = status;
+
 	printk("gf3208--chrdev--status=%d\n",status);
 	gf_class = class_create(THIS_MODULE, CLASS_NAME);
 	if (IS_ERR(gf_class)) {

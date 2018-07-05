@@ -840,7 +840,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.probe = fe_dai_probe,
 	},
 
-	#ifdef CONFIG_PROJECT_WIMLITE //yangliang add for smartpa fm-spk20160922
+	#ifdef CONFIG_PROJECT_WIMLITE
 	{
 		.capture = {
 			.stream_name = "Quinary MI2S_TX Hostless Capture",

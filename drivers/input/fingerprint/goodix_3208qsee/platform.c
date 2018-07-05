@@ -20,12 +20,10 @@
 #include <linux/platform_device.h>
 #endif
 
-//<copy from 7701> add by yinglong.tang
 #define GF_VDD_MIN_UV      2800000
-#define GF_VDD_MAX_UV	        2800000
+#define GF_VDD_MAX_UV	   2800000
 #define GF_VIO_MIN_UV      1800000
 #define GF_VIO_MAX_UV      1800000
-//<copy from 7701> add by yinglong.tang
 
 int gf_parse_dts(struct gf_dev* gf_dev)
 {
@@ -77,7 +75,6 @@ void gf_cleanup(struct gf_dev	* gf_dev)
 		pr_info("gf:remove reset_gpio success\n");
 	}
 }
-//<copy from 7701> add by yinglong.tang
 int gf_power_ctl(struct gf_dev* gf_dev, bool on)
 {
 	int rc = 0;

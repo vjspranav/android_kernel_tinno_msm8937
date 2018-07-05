@@ -229,7 +229,6 @@ unsigned short coordinate_y[150] = {0};
 	}
 
 }*/
-//Begin<REQ><><20150910>Add WAKEUP_GESTURE for ft5xx;xiongdajun
 #ifdef CONFIG_FT5XX_TGESTURE_FUNCTION
 static int fts_check_gesture(int gesture_id)
 {
@@ -284,7 +283,6 @@ static int fts_check_gesture(int gesture_id)
 
 }
 #endif
-//END<REQ><><20150910>Add WAKEUP_GESTURE for ft5xx;xiongdajun
 /************************************************************************
 * Name: fts_read_Gestruedata
 * Brief: read data from TP register
@@ -324,7 +322,6 @@ int fts_read_Gestruedata(void)
 			printk( "%s read touchdata failed.\n", __func__);
 			return ret;
 		}
-		//Begin<REQ><><20150910>Add WAKEUP_GESTURE for ft5xx;xiongdajun
 		#ifdef CONFIG_FT5XX_TGESTURE_FUNCTION
 		if(gestrue_id == GESTURE_DOUBLECLICK) {
 			gTGesture = 'u';
@@ -337,9 +334,7 @@ int fts_read_Gestruedata(void)
 			input_report_key(ft5xx_key_dev,KEY_FT5XX_SENSOR, 0);
 			input_sync(ft5xx_key_dev);
 		}
-		//fts_check_gesture(fts_input_dev,gestrue_id);
 		#endif
-		//END<REQ><><20150910>Add WAKEUP_GESTURE for ft5xx;xiongdajun
 		for(i = 0; i < pointnum; i++) {
 			coordinate_x[i] =  (((s16) buf[2 + (4 * i)]) & 0x0F) <<
 			                   8 | (((s16) buf[3 + (4 * i)])& 0xFF);

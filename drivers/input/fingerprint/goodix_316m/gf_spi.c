@@ -58,8 +58,7 @@
 
 #include "../fp_drv/fp_drv.h"
 
-//#define GF_SPIDEV_NAME     "goodix,fingerprint"
-#define GF_SPIDEV_NAME     "qcom,fingerprint" //TINNO, modified by wenguangyu, for fingerprint
+#define GF_SPIDEV_NAME     "qcom,fingerprint"
 
 /*device name after register in charater*/
 #define GF_DEV_NAME            "goodix_fp"
@@ -304,7 +303,6 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	int retval = 0;
 	u32 tmp = 0;
 	int irq_err = -1;
-	//int i;
 	#ifdef AP_CONTROL_CLK
 	unsigned int speed = 0;
 	#endif
@@ -355,9 +353,6 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		#endif
 		break;
 	case GF_IOC_RESET:
-		//retval = __get_user(delay_ms, (u32 __user *) arg);
-		//if(retval == 0)
-		//{
 		gf_hw_reset(gf_dev, 70);
 		/*}
 		else
@@ -633,7 +628,6 @@ static int goodix_fb_state_chg_callback(struct notifier_block *nb,
 				}
 				#endif
 				/*device unavailable */
-				//gf_dev->device_available = 0;
 			}
 			break;
 		case FB_BLANK_UNBLANK:
@@ -649,7 +643,6 @@ static int goodix_fb_state_chg_callback(struct notifier_block *nb,
 				}
 				#endif
 				/*device available */
-				//gf_dev->device_available = 1;
 			}
 			break;
 		default:
@@ -705,7 +698,6 @@ static int gf_probe(struct platform_device *pdev)
 	gf_dev->pwr_gpio = -EINVAL;
 	gf_dev->device_available = 0;
 	gf_dev->fb_black = 0;
-	//gf_dev->fpid_gpio = -EINVAL;//TINNO LINE
 
 	if (gf_parse_dts(gf_dev))
 		goto error;
@@ -715,7 +707,6 @@ static int gf_probe(struct platform_device *pdev)
 		gf_dev->device_available = 1;
 	*/
 
-	//TINNO BEGIN
 	ret = gf_power_init(gf_dev);
 	if (ret) {
 		dev_err(&spi->dev, "Failed to init regulator\n");
@@ -727,7 +718,6 @@ static int gf_probe(struct platform_device *pdev)
 		dev_err(&spi->dev, "Failed to power on device\n");
 		goto err_deinit_regulator;
 	}
-	//TINNO END
 
 	/* If we can allocate a minor number, hook up this device.
 	 * Reusing minors is fine so long as udev or mdev is working.
@@ -779,16 +769,9 @@ static int gf_probe(struct platform_device *pdev)
 		gf_reg_key_kernel(gf_dev);
 
 		gf_dev->irq = gf_irq_num(gf_dev);
-
-//#if 1
 		/*ret = request_threaded_irq(gf_dev->irq, NULL, gf_irq,
 					   IRQF_TRIGGER_RISING | IRQF_ONESHOT,
 					   "gf", gf_dev);*/
-//#else
-		//ret = request_irq(gf_dev->irq, gf_irq,
-		//            IRQ_TYPE_EDGE_RISING, /*IRQ_TYPE_LEVEL_HIGH,*/
-		//            "gf", gf_dev);
-//#endif
 		/*if (!ret) {
 			enable_irq_wake(gf_dev->irq);
 			gf_disable_irq(gf_dev);
@@ -848,13 +831,9 @@ static int gf_remove(struct platform_device *pdev)
 	list_del(&gf_dev->device_entry);
 	device_destroy(gf_class, gf_dev->devt);
 	clear_bit(MINOR(gf_dev->devt), minors);
-	gf_power_deinit(gf_dev);//<copy from 7701> add by yinglong.tang
+	gf_power_deinit(gf_dev);
 	if (gf_dev->users == 0)
-		//gf_cleanup(gf_dev);
 		kfree(gf_dev);
-
-
-	//fb_unregister_client(&gf_dev->notifier);
 	mutex_unlock(&device_list_lock);
 
 	FUNC_EXIT();
@@ -867,7 +846,7 @@ static int gf_suspend(struct spi_device *spi, pm_message_t mesg)
 static int gf_suspend(struct platform_device *pdev, pm_message_t state)
 #endif
 {
-	#if 0//defined(USE_SPI_BUS)
+	#if 0
 	struct gf_dev *gfspi_device;
 
 	pr_debug("%s: enter\n", __func__);
@@ -885,7 +864,7 @@ static int gf_resume(struct spi_device *spi)
 static int gf_resume(struct platform_device *pdev)
 #endif
 {
-	#if 0//defined(USE_SPI_BUS)
+	#if 0
 	struct gf_dev *gfspi_device;
 
 	pr_debug("%s: enter\n", __func__);
@@ -916,9 +895,6 @@ static struct platform_driver gf_driver = {
 	.driver = {
 		.name = GF_DEV_NAME,
 		.owner = THIS_MODULE,
-		#if defined(USE_SPI_BUS)
-		//.bus    = &spi_bus_type,
-		#endif
 		.of_match_table = gx_match_table,
 	},
 	.probe = gf_probe,
@@ -930,8 +906,6 @@ static struct platform_driver gf_driver = {
 static int __init gf_init(void)
 {
 	int status;
-
-	//return 1;
 
 	FUNC_ENTRY();
 
@@ -972,7 +946,7 @@ static int __init gf_init(void)
 	#endif
 	pr_info(" status = 0x%x\n", status);
 	FUNC_EXIT();
-	return 0;		//status;
+	return 0;
 }
 
 module_init(gf_init);

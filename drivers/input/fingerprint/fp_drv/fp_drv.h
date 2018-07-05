@@ -24,12 +24,9 @@
 
 #include <linux/types.h>
 
-///////////////////////////////////////////////////////////////////////////////////////////
-
 extern int full_fp_chip_name(const char *name);
 extern int full_fp_chip_info(const char *name);
 extern int read_fpId_pin_value(struct device *dev, char *label);
-///////////////////////////////////////////////////////////////////////////////////////////
 
 #define LOG_TAG  "[fingerprint][fp_drv]:"
 #define __FUN(f)   printk(KERN_ERR LOG_TAG "~~~~~~~~~~~~ %s ~~~~~~~~~\n", __FUNCTION__)
@@ -39,7 +36,5 @@ extern int read_fpId_pin_value(struct device *dev, char *label);
 #define __HIGH   (1)
 #define __LOW   (2)
 #define __HIGH_IMPEDANCE   (3)
-///////////////////////////////////////////////////////////////////////////////////////////
-
 
 #endif /* __FP_DRV_H */

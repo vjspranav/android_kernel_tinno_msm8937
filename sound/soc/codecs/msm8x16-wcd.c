@@ -46,7 +46,7 @@
 #include "msm8x16_wcd_registers.h"
 
 #ifdef CONFIG_PLATFORM_TINNO
-#include <linux/switch.h>//yangliang add fot ftm hph detect20150830
+#include <linux/switch.h>
 #endif
 
 #define MSM8X16_WCD_RATES (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |\
@@ -85,7 +85,6 @@
  */
 #define ADSP_STATE_READY_TIMEOUT_MS 50
 
-//yangliang add for external padac for spk;20150708
 #ifdef CONFIG_PROJECT_GARLIC
 bool current_ext_spk_pa_state = false;
 #endif
@@ -154,7 +153,6 @@ static bool spkr_boost_en = true;
 
 #define MSM8X16_WCD_RELEASE_LOCK(x) mutex_unlock(&x)
 
-//yangliang add for ftm hph detect20150830
 #ifdef CONFIG_PLATFORM_TINNO
 #ifdef CONFIG_SWITCH
 struct switch_dev wcd_mbhc_headset_switch = {
@@ -472,7 +470,6 @@ static bool msm8x16_adj_ref_current(struct snd_soc_codec *codec,
 	return true;
 }
 
-//yangliang add for external padac for spk;20150708
 #ifdef CONFIG_PROJECT_GARLIC
 extern int ext_spk_pa_gpio;
 #endif
@@ -2158,13 +2155,11 @@ static int msm8x16_wcd_hph_mode_set(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-
-//yangliang add for external padac for spk;20150708
 #ifdef CONFIG_PROJECT_GARLIC
 static int msm8x16_wcd_ext_spk_get(struct snd_kcontrol *kcontrol,
                                    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol); //HHAFMCNA-710 kernel panic TN:peter
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
 
 	if (current_ext_spk_pa_state == false) {
 		ucontrol->value.integer.value[0] = 0;
@@ -2184,7 +2179,7 @@ static int msm8x16_wcd_ext_spk_get(struct snd_kcontrol *kcontrol,
 static int msm8x16_wcd_ext_spk_set(struct snd_kcontrol *kcontrol,
                                    struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol); //HHAFMCNA-710 kernel panic TN:peter
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol); 
 
 	dev_dbg(codec->dev, "%s: ucontrol->value.integer.value[0] = %ld\n",
 	        __func__, ucontrol->value.integer.value[0]);
@@ -2201,10 +2196,8 @@ static int msm8x16_wcd_ext_spk_set(struct snd_kcontrol *kcontrol,
 			gpio_direction_output(ext_spk_pa_gpio, 0);
 			gpio_set_value_cansleep(ext_spk_pa_gpio, 0);
 			udelay(2);
-			//gpio_direction_output(ext_spk_pa_gpio, 0);
 			gpio_set_value(ext_spk_pa_gpio, 1);
 			udelay(2);
-			//gpio_direction_output(ext_spk_pa_gpio, 1);
 			gpio_set_value(ext_spk_pa_gpio, 0);
 			udelay(2);
 			gpio_set_value(ext_spk_pa_gpio, 1);
@@ -2655,8 +2648,6 @@ static const struct soc_enum msm8x16_wcd_hph_mode_ctl_enum[] = {
 			msm8x16_wcd_hph_mode_ctrl_text),
 };
 
-
-//yangliang add for external padac for spk;20150708
 #ifdef CONFIG_PROJECT_GARLIC
 static const char * const msm8x16_wcd_ext_spk_ctrl_text[] = {
 	"DISABLE", "ENABLE"
@@ -2709,7 +2700,6 @@ static const struct snd_kcontrol_new msm8x16_wcd_snd_controls[] = {
 	SOC_ENUM_EXT("LOOPBACK Mode", msm8x16_wcd_loopback_mode_ctl_enum[0],
 		msm8x16_wcd_loopback_mode_get, msm8x16_wcd_loopback_mode_put),
 
-	//yangliang add for external padac for spk;20150708
 	#ifdef CONFIG_PROJECT_GARLIC
 	SOC_ENUM_EXT("Speaker Ext", msm8x16_wcd_ext_spk_ctl_enum[0], 
 	msm8x16_wcd_ext_spk_get, msm8x16_wcd_ext_spk_set),
@@ -5595,9 +5585,9 @@ static int msm8x16_wcd_device_down(struct snd_soc_codec *codec)
 	dev_dbg(codec->dev, "%s: device down!\n", __func__);
 	msm8x16_wcd_write(codec,
 #ifdef CONFIG_PLATFORM_TINNO
-		MSM8X16_WCD_A_ANALOG_TX_1_EN, 0x33);//(0x03) yangliang modify to avoid modem-reset resulting in mic-snd small 20160420
+		MSM8X16_WCD_A_ANALOG_TX_1_EN, 0x33);
 	msm8x16_wcd_write(codec,
-		MSM8X16_WCD_A_ANALOG_TX_2_EN, 0x33);//(0x03) yangliang modify to avoid modem-reset resulting in mic-snd small 20160420
+		MSM8X16_WCD_A_ANALOG_TX_2_EN, 0x33);
 #else
 	msm8x16_wcd_write(codec,
 		MSM8X16_WCD_A_ANALOG_TX_1_EN, 0x3);
@@ -5973,7 +5963,7 @@ static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 	wcd_mbhc_init(&msm8x16_wcd_priv->mbhc, codec, &mbhc_cb, &intr_ids,
 	              wcd_mbhc_registers, true);
 	#ifdef CONFIG_PLATFORM_TINNO
-	#ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
+	#ifdef CONFIG_SWITCH 
 	ret = switch_dev_register(&wcd_mbhc_headset_switch);
 	if (ret < 0) {
 		dev_err(codec->dev, "not able to register switch device h2w\n");
@@ -6025,7 +6015,7 @@ static int msm8x16_wcd_codec_remove(struct snd_soc_codec *codec)
 	atomic_set(&msm8x16_wcd_priv->on_demand_list[ON_DEMAND_MICBIAS].ref, 0);
 	iounmap(msm8x16_wcd->dig_base);
 	#ifdef CONFIG_PLATFORM_TINNO
-	#ifdef CONFIG_SWITCH//yangliang add for ftm hph detect20150830
+	#ifdef CONFIG_SWITCH
 	switch_dev_unregister(&wcd_mbhc_headset_switch);
 	switch_dev_unregister(&wcd_mbhc_button_switch);
 	#endif

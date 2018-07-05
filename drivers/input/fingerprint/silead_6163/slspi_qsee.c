@@ -21,11 +21,9 @@
 #include <linux/of_gpio.h>
 #include <linux/interrupt.h>
 #include <linux/seq_file.h>
-//add by bacon for fp_wake_lock
 #include <linux/kobject.h>
 #include <linux/debugfs.h>
 #include <../kernel/power/power.h>
-//add by bacon for fp_wake_lock
 #include <linux/jiffies.h>
 #include <linux/spi/spi.h>
 #include <linux/timex.h>
@@ -43,7 +41,7 @@
 #include <linux/input/mt.h>
 #include "slspi_qsee.h"
 #include <linux/regulator/consumer.h>
-#include "../fp_drv/fp_drv.h" //add by wenguangyu
+#include "../fp_drv/fp_drv.h"
 
 #define VERSION_LOG	"Silead fingerprint drvier V0.1"
 
@@ -62,7 +60,6 @@
 
 #define SLFP_VIO_CTRL 1
 
-//static struct completion cmd_done_irq;
 static DEFINE_MUTEX(silead_factory_mutex);
 
 static int finger_status = 0;
@@ -83,8 +80,6 @@ VKEY_SLIDERT
 static int finger_vkey_result = 0;
 
 static struct fasync_struct *fasync_queue = NULL;
-//static int key_status = 0;
-//static int factory_status = 0;
 
 #define KEY_FP_INT			KEY_POWER //KEY_WAKEUP // change by customer & framework support
 #define KEY_FP_INT2			KEY_1 // change by customer & framework support
@@ -114,22 +109,14 @@ static unsigned int spidev_major = 0;
 struct cdev spicdev;
 
 #define REDUCE_REPEAT_IRQ
-
-//#ifndef REDUCE_REPEAT_IRQ
 static int g_irq_svc_debounce = 0;
-//#endif
-//add by matthew start
 static int chip_power_off = 0;
-//add by matthew end
-
 static int silead_fp_probe(struct platform_device *spi);
 static irqreturn_t finger_interrupt_handler(int irq, void *dev);
-//add by bacon for fp_wake_lock
 static ssize_t fp_wake_lock_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t n);
 static ssize_t fp_wake_unlock_store(struct kobject *kobj, struct kobj_attribute *attr,const char *buf, size_t n);
 static ssize_t fp_wake_lock_show(struct kobject *kobj,struct kobj_attribute *attr,char *buf);
 static ssize_t fp_wake_unlock_show(struct kobject *kobj,struct kobj_attribute *attr,char *buf);
-//add by bacon for fp_wake_lock
 int silead_power_init(struct spidev_data *pdata);
 static int silead_parse_dt(struct spidev_data *pdata);
 
@@ -144,11 +131,6 @@ static int silead_gpio_free(struct spidev_data* spidev);
 #define SL_MAX_LIB_BUF 64
 static char sl_lib_ver_buf[SL_MAX_LIB_BUF] = "unknow";
 
-//for power status detect
-//#define POWER_NOTIFY
-//static int is_screen_poweroff = 0;
-
-//add by bacon for fp_wake_lock
 #define silead_attr(_name) \
 static struct kobj_attribute _name##_attr = {	\
 	.attr	= {				\
@@ -197,8 +179,6 @@ static ssize_t fp_wake_lock_show(struct kobject *kobj,
                                  struct kobj_attribute *attr,
                                  char *buf)
 {
-	//return pm_show_wakelocks(buf, true);
-
 	char *str = buf;
 	char *end = buf + PAGE_SIZE;
 	int i;
@@ -223,9 +203,6 @@ static ssize_t fp_wake_lock_store(struct kobject *kobj,
                                   struct kobj_attribute *attr,
                                   const char *buf, size_t n)
 {
-//	int error = pm_wake_lock(buf);
-//	return error ? error : n;
-
 	int i, j;
 	int ret= -1;
 	char * wl_name;
@@ -268,7 +245,6 @@ static ssize_t fp_wake_lock_store(struct kobject *kobj,
 	__pm_stay_awake(&wl->ws);
 	mutex_unlock(&wakelocks_lock);
 
-	// SL_LOGD("fp_wake_lock_store ret = %d\n", ret);
 	return ret;
 }
 
@@ -276,7 +252,6 @@ static ssize_t fp_wake_unlock_show(struct kobject *kobj,
                                    struct kobj_attribute *attr,
                                    char *buf)
 {
-	//return pm_show_wakelocks(buf, fasle);
 
 	char *str = buf;
 	char *end = buf + PAGE_SIZE;
@@ -302,8 +277,6 @@ static ssize_t fp_wake_unlock_store(struct kobject *kobj,
                                     struct kobj_attribute *attr,
                                     const char *buf, size_t n)
 {
-//	int error = pm_wake_unlock(buf);
-//	return error ? error : n;
 	struct wakelock *wl;
 	int ret = -1;
 	int i;
@@ -325,10 +298,8 @@ static ssize_t fp_wake_unlock_store(struct kobject *kobj,
 	}
 
 	mutex_unlock(&wakelocks_lock);
-	//SL_LOGD("fp_wake_unlock_store ret = %d\n", ret);
 	return ret;
 }
-//add by bacon for fp_wake_unlock
 
 void silead_irq_enable(struct spidev_data *pdata)
 {
@@ -336,7 +307,6 @@ void silead_irq_enable(struct spidev_data *pdata)
 	printk("[guomingyi] IRQ Enable = %d.\n", pdata->int_irq);
 
 	if(irq_requested == 0) {
-		// printk("[guomingyi] %s, silead_request_irq\n", __func__);
 		silead_request_irq(pdata);
 	}
 
@@ -346,11 +316,9 @@ void silead_irq_enable(struct spidev_data *pdata)
 		enable_irq(pdata->int_irq);
 		irq_enabled = 1;
 		printk("[guomingyi] enable_irq, irq_enabled = %d\n", irq_enabled);
-		//#ifndef REDUCE_REPEAT_IRQ
 		g_irq_svc_debounce = 1;
 		mdelay(5);
 		g_irq_svc_debounce = 0;
-		//#endif
 	} else {
 		printk("[guomingyi] %s, irq has enabled!\n", __func__);
 	}
@@ -424,8 +392,6 @@ static int spidev_shutdown_hw(struct spidev_data *spidev)
 {
 	gpio_direction_output(spidev->shutdown_gpio, 0);
 	mdelay(3);
-	//gpio_direction_output(spidev->shutdown_gpio, 1);
-	//mdelay(3);
 	return 0;
 }
 
@@ -440,18 +406,14 @@ static void finger_interrupt_work(struct work_struct *work)
 {
 	struct spidev_data *spidev = container_of(work, struct spidev_data, int_work);
 
-	char*   env_ext[2] = {"SILEAD_FP_EVENT=IRQ", NULL};
-	//#ifndef REDUCE_REPEAT_IRQ
-	char*					env_ext_forged[2] = {"SILEAD_FP_EVENT=IRQ_FORGED", NULL};
-	//#endif
+	char* env_ext[2] = {"SILEAD_FP_EVENT=IRQ", NULL};
+	char* env_ext_forged[2] = {"SILEAD_FP_EVENT=IRQ_FORGED", NULL};
 	DBG_MSG(MSG_TRK, "irq bottom half spidev_irq_work enter \n");
-	//#ifndef REDUCE_REPEAT_IRQ
 	if(g_irq_svc_debounce) {
 		kobject_uevent_env(&spidev->spi->dev.kobj, KOBJ_CHANGE, env_ext_forged);
 		return;
 	}
 	g_irq_svc_debounce = 1;
-	//#endif
 	kobject_uevent_env(&spidev->spi->dev.kobj, KOBJ_CHANGE, env_ext );
 }
 #endif
@@ -459,20 +421,14 @@ static void finger_interrupt_work(struct work_struct *work)
 static irqreturn_t finger_interrupt_handler(int irq, void *dev)
 {
 	int value;
-	//struct timex txc;
 	struct spidev_data *spidev = dev;
-	//add by matthew start
-	if(chip_power_off) {
+	if (chip_power_off)
 		return IRQ_HANDLED;
-	}
-	//add by matthew end
 
 	#ifdef REDUCE_REPEAT_IRQ
 	spidev_shutdown_hw(spidev);
 	#endif
 
-	//do_gettimeofday(&(txc.time));
-	//DBG_MSG(MSG_TRK, "txc.time.tv_sec=%ld,txc.time.tv_usec=%ld \n",txc.time.tv_sec,txc.time.tv_usec);
 	DBG_MSG(MSG_TRK, "S interrupt top half has entered!\n");
 
 	wake_lock_timeout(&spidev->wake_lock, 10*HZ);
@@ -564,8 +520,6 @@ static long spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	struct spidev_data	*spidev;
 	int retval = 0;
-	//int ret = -1;
-	//int err = 0;
 	/* Check type and command number */
 	if (_IOC_TYPE(cmd) != SPI_IOC_MAGIC)
 		return -ENOTTY;
@@ -577,23 +531,17 @@ static long spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case SPI_HW_RESET :
 		DBG_MSG(MSG_INFO, "SPI_HW_RESET called\n");
 		spidev_reset_hw(spidev);
-		//add by matthew start
 		if(chip_power_off) {
 			mdelay(1);
 			chip_power_off = 0;
 		}
-		//add by matthew end
 		break;
 
 	case SPI_HW_SHUTDOWN:
 		DBG_MSG(MSG_INFO, "SPI_HW_SHUTDOWN called\n");
-		//add by matthew start
 		chip_power_off = 1;
-		//add by matthew end
 		spidev_shutdown_hw(spidev);
-		//add by matthew start
 		silead_irq_enable(spidev);
-		//add by matthew end
 		break;
 
 	case SPI_OPEN_CLOCK:
@@ -725,7 +673,6 @@ static int spidev_fp_fasync(int fd, struct file * filp, int on)
 	return fasync_helper(fd, filp, on, &fasync_queue);
 }
 
-//<copy from 7701> add by yinglong.tang
 int silead_power_ctl(struct spidev_data *pdata, bool on)
 {
 	int rc = 0;
@@ -877,8 +824,6 @@ static int silead_fb_state_chg_callback(struct notifier_block *nb,
 		case FB_BLANK_POWERDOWN:
 			is_screen_poweroff = 1;
 			complete(&cmd_done_irq);
-			//is_interrupt |= 2;
-			//wake_up(&fp->slfp_wait);
 			break;
 		case FB_BLANK_UNBLANK:
 			is_screen_poweroff = 0;
@@ -925,7 +870,7 @@ static char silead_gpio_config(struct spidev_data* spidev)
 {
 	int ret = -1;
 
-	ret =  gpio_request(spidev->shutdown_gpio, "reset-gpio");//spidev->shutdown_gpio
+	ret =  gpio_request(spidev->shutdown_gpio, "reset-gpio");
 	if(ret < 0) {
 		printk("silead:reset gpio_request failed ret = %d", ret);
 		ret = -ENODEV;
@@ -1006,8 +951,6 @@ static const struct file_operations spidev_fops = {
 	 * gets more complete API coverage.  It'll simplify things
 	 * too, except for the locking.
 	 */
-	//.write =	spidev_write,
-	//.read =		spidev_read,
 	.unlocked_ioctl = spidev_ioctl,
 	.compat_ioctl = spidev_compat_ioctl,
 	.open =		spidev_open,
@@ -1022,13 +965,11 @@ static int silead_fp_probe(struct platform_device *spi)
 	int			status;
 	int         error;
 	unsigned long		minor;
-	//int ret;
 	dev_t devno;
 
 	DBG_MSG(MSG_INFO, "S1\n");
 
 	if (read_fpId_pin_value(&spi->dev, "qcom,fpid-gpio") == 1 /*HIGH*/) {
-		// full_fp_chip_name(SILEAD_FP_NAME);
 	} else {
 		DBG_MSG(MSG_ERR, "%s, not detect silead hw!\n", __func__);
 		return -1;
@@ -1116,15 +1057,11 @@ static int silead_fp_probe(struct platform_device *spi)
 	spidev->int_wq= create_singlethread_workqueue("int_silead_wq");
 	INIT_WORK(&spidev->int_work, finger_interrupt_work);
 
-
-	//silead_request_irq(spidev);
-
 	#ifdef POWER_NOTIFY
 	spidev->notifier = silead_noti_block;
 	fb_register_client(&spidev->notifier);
 	#endif
 
-	//add by bacon for fp_wake_lock
 	power_kobj = kobject_create_and_add("silead", NULL);
 	if (!power_kobj) {
 		class_destroy(spidev_class);
@@ -1139,7 +1076,6 @@ static int silead_fp_probe(struct platform_device *spi)
 		kfree(spidev);
 		return error;
 	}
-	//add by bacon for fp_wake_lock
 
 	if (status == 0) {
 		platform_set_drvdata(spi, spidev);
@@ -1157,8 +1093,6 @@ static int silead_fp_probe(struct platform_device *spi)
 static int __init silead_fp_init(void)
 {
 	int status = 0;
-	//dev_t devno;
-
 	DBG_MSG(MSG_INFO, "S\n");
 
 	status = platform_driver_register(&silead_fp_driver);

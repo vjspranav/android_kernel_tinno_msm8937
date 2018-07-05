@@ -6,7 +6,6 @@
 #define ID_IOCTL_READ_REGISTER          _IOW(ELAN_IOCTLID, 2,  int)
 #define ID_IOCTL_WRITE_REGISTER         _IOW(ELAN_IOCTLID, 3,  int)
 #define ID_IOCTL_RESET                  _IOW(ELAN_IOCTLID, 6,  int)
-//#define ID_IOCTL_GET_RAW_IMAGE          _IOW(ELAN_IOCTLID, 10, int) // To Get Raw Image (Original)
 #define IOCTL_READ_KEY_STATUS    _IOW(ELAN_IOCTLID, 10, int)
 #define IOCTL_WRITE_KEY_STATUS    _IOW(ELAN_IOCTLID, 11, int)
 #define ID_IOCTL_STATUS                 _IOW(ELAN_IOCTLID, 12, int)

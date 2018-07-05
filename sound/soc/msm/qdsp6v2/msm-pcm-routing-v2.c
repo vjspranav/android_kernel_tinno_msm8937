@@ -49,7 +49,6 @@
 static int get_cal_path(int path_type);
 
 #ifndef CONFIG_PROJECT_WIMLITE
-//yangliang mask and add for msm8953 the EC ref port should be set before setting up the voice path 20160919
 #define EC_PORT_ID_PRIMARY_MI2S_TX    1
 #define EC_PORT_ID_SECONDARY_MI2S_TX  2
 #define EC_PORT_ID_TERTIARY_MI2S_TX   3
@@ -72,8 +71,6 @@ static int lsm_mux_slim_port;
 static int slim0_rx_aanc_fb_port;
 
 #ifdef CONFIG_PROJECT_WIMLITE
-//yangliang mask and add for msm8953 the EC ref port should be set before setting up the voice path 20160919
-//static int msm_route_ec_ref_rx = 9; /* NONE */
 static int msm_route_ec_ref_rx;
 #else
 static int msm_route_ec_ref_rx = 9; /* NONE */
@@ -82,8 +79,6 @@ static int msm_route_ec_ref_rx = 9; /* NONE */
 static uint32_t voc_session_id = ALL_SESSION_VSID;
 
 #ifdef CONFIG_PROJECT_WIMLITE
-//yangliang mask and add for msm8953 the EC ref port should be set before setting up the voice path 20160919
-//static int msm_route_ext_ec_ref = AFE_PORT_INVALID;
 static int msm_route_ext_ec_ref;
 #else
 static int msm_route_ext_ec_ref = AFE_PORT_INVALID;
@@ -2083,7 +2078,7 @@ static int msm_routing_ec_ref_rx_put(struct snd_kcontrol *kcontrol,
 		ec_ref_port_id = AFE_PORT_ID_TERTIARY_TDM_TX;
 		break;
 		#ifdef CONFIG_PLATFORM_TINNO
-	case 19://yangliang add for voice spk using handset second mic uplink ok20170106
+	case 19:
 		msm_route_ec_ref_rx = 19;
 		ec_ref_port_id = AFE_PORT_ID_QUINARY_MI2S_TX;
 		break;
@@ -2165,7 +2160,6 @@ static int msm_routing_ext_ec_get(struct snd_kcontrol *kcontrol,
 }
 
 #ifdef CONFIG_PROJECT_WIMLITE
-//yangliang mask and add for msm8953 the EC ref port should be set before setting up the voice path 20160919
 static int msm_routing_ext_ec_put(struct snd_kcontrol *kcontrol,
                                   struct snd_ctl_elem_value *ucontrol)
 {
@@ -5343,7 +5337,7 @@ static const struct snd_kcontrol_new quat_mi2s_rx_port_mixer_controls[] = {
 	msm_routing_put_port_mixer),
 };
 
-#ifdef CONFIG_PROJECT_WIMLITE //yangliang add for smartpa 20160921
+#ifdef CONFIG_PROJECT_WIMLITE 
 static const struct snd_kcontrol_new quin_mi2s_rx_port_mixer_controls[] = {
 	SOC_SINGLE_EXT("PRI_MI2S_TX", MSM_BACKEND_DAI_QUINARY_MI2S_RX,
 	MSM_BACKEND_DAI_PRI_MI2S_TX, 1, 0, msm_routing_get_port_mixer,
@@ -5995,8 +5989,7 @@ static const struct snd_kcontrol_new quat_mi2s_rx_switch_mixer_controls =
 	0, 1, 0, msm_routing_get_quat_mi2s_switch_mixer,
 	msm_routing_put_quat_mi2s_switch_mixer);
 
-//<BEGIN><FFBAKK-105><2015.02.27>add for fm-speaker;yangliang
-#ifdef CONFIG_PROJECT_WIMLITE //yangliang add for smartpa 20160922
+#ifdef CONFIG_PROJECT_WIMLITE 
 static const struct snd_kcontrol_new quin_mi2s_rx_switch_mixer_controls =
 	SOC_SINGLE_EXT("Switch", SND_SOC_NOPM,
 	0, 1, 0, msm_routing_get_switch_mixer,
@@ -6919,7 +6912,6 @@ static const struct snd_soc_dapm_widget msm_qdsp6_widgets[] = {
 		"Quaternary MI2S_RX Hostless Playback",
 		0, 0, 0, 0),
 
-	//<BEGIN><FFBAKK-105><2015.02.27>add for fm-speaker;yangliang
 	#ifdef CONFIG_PROJECT_WIMLITE
 	SND_SOC_DAPM_AIF_IN("QUIN_MI2S_DL_HL",
 		"Quinary MI2S_RX Hostless Playback",
@@ -7404,7 +7396,6 @@ static const struct snd_soc_dapm_widget msm_qdsp6_widgets[] = {
 	SND_SOC_DAPM_SWITCH("QUAT_MI2S_RX_DL_HL", SND_SOC_NOPM, 0, 0,
 				&quat_mi2s_rx_switch_mixer_controls),
 
-	//<BEGIN><FFBAKK-105><2015.02.27>add for fm-speaker;yangliang
 	#ifdef CONFIG_PROJECT_WIMLITE
 	SND_SOC_DAPM_SWITCH("QUIN_MI2S_RX_DL_HL", SND_SOC_NOPM, 0, 0,
 				&quin_mi2s_rx_switch_mixer_controls),
@@ -7675,7 +7666,7 @@ static const struct snd_soc_dapm_widget msm_qdsp6_widgets[] = {
 	quat_mi2s_rx_port_mixer_controls,
 	ARRAY_SIZE(quat_mi2s_rx_port_mixer_controls)),
 
-	#ifdef CONFIG_PROJECT_WIMLITE //yangliang add for smartpa 20160921
+	#ifdef CONFIG_PROJECT_WIMLITE 
 	SND_SOC_DAPM_MIXER("QUIN_MI2S_RX Port Mixer", SND_SOC_NOPM, 0, 0,
 	quin_mi2s_rx_port_mixer_controls,
 	ARRAY_SIZE(quin_mi2s_rx_port_mixer_controls)),
@@ -8591,7 +8582,7 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"VOC_EXT_EC MUX", "QUAT_MI2S_TX" , "QUAT_MI2S_TX"},
 	{"VOC_EXT_EC MUX", "SLIM_1_TX" ,    "SLIMBUS_1_TX"},
 #ifdef CONFIG_PLATFORM_TINNO
-	{"VOC_EXT_EC MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"}, //yangliang add "QUIN_MI2S_TX" for voice spk using handset second mic uplink ok20170106
+	{"VOC_EXT_EC MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"}, 
 #endif
 	{"CS-VOICE_UL1", NULL, "VOC_EXT_EC MUX"},
 	{"VOIP_UL", NULL, "VOC_EXT_EC MUX"},
@@ -8611,7 +8602,7 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"AUDIO_REF_EC_UL1 MUX", "QUAT_TDM_RX_2" , "QUAT_TDM_RX_2"},
 	{"AUDIO_REF_EC_UL1 MUX", "TERT_TDM_TX_0" , "TERT_TDM_TX_0"},
 #ifdef CONFIG_PLATFORM_TINNO
-	{"AUDIO_REF_EC_UL1 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},//yangliang add "QUIN_MI2S_TX" for voice spk using handset second mic uplink ok20170106
+	{"AUDIO_REF_EC_UL1 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},
 #endif
 
 	{"AUDIO_REF_EC_UL2 MUX", "PRI_MI2S_TX" , "PRI_MI2S_TX"},
@@ -8619,7 +8610,7 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"AUDIO_REF_EC_UL2 MUX", "TERT_MI2S_TX" , "TERT_MI2S_TX"},
 	{"AUDIO_REF_EC_UL2 MUX", "QUAT_MI2S_TX" , "QUAT_MI2S_TX"},
 #ifdef CONFIG_PLATFORM_TINNO
-	{"AUDIO_REF_EC_UL2 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},//yangliang add "QUIN_MI2S_TX" for voice spk using handset second mic uplink ok20170106
+	{"AUDIO_REF_EC_UL2 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},
 #endif
 
 	{"AUDIO_REF_EC_UL4 MUX", "PRI_MI2S_TX" , "PRI_MI2S_TX"},
@@ -8627,13 +8618,13 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"AUDIO_REF_EC_UL4 MUX", "TERT_MI2S_TX" , "TERT_MI2S_TX"},
 	{"AUDIO_REF_EC_UL4 MUX", "QUAT_MI2S_TX" , "QUAT_MI2S_TX"},
 #ifdef CONFIG_PLATFORM_TINNO
-	{"AUDIO_REF_EC_UL4 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},//yangliang add "QUIN_MI2S_TX" for voice spk using handset second mic uplink ok20170106
+	{"AUDIO_REF_EC_UL4 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},
 
 	{"AUDIO_REF_EC_UL5 MUX", "PRI_MI2S_TX" , "PRI_MI2S_TX"},
 	{"AUDIO_REF_EC_UL5 MUX", "SEC_MI2S_TX" , "SEC_MI2S_TX"},
 	{"AUDIO_REF_EC_UL5 MUX", "TERT_MI2S_TX" , "TERT_MI2S_TX"},
 	{"AUDIO_REF_EC_UL5 MUX", "QUAT_MI2S_TX" , "QUAT_MI2S_TX"},
-	{"AUDIO_REF_EC_UL5 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},//yangliang add "QUIN_MI2S_TX" for voice spk using handset second mic uplink ok20170106
+	{"AUDIO_REF_EC_UL5 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},
 #endif
 
 	{"AUDIO_REF_EC_UL6 MUX", "PRI_MI2S_TX" , "PRI_MI2S_TX"},
@@ -8641,21 +8632,21 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"AUDIO_REF_EC_UL6 MUX", "TERT_MI2S_TX" , "TERT_MI2S_TX"},
 	{"AUDIO_REF_EC_UL6 MUX", "QUAT_MI2S_TX" , "QUAT_MI2S_TX"},
 #ifdef CONFIG_PLATFORM_TINNO
-	{"AUDIO_REF_EC_UL6 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},//yangliang add "QUIN_MI2S_TX" for voice spk using handset second mic uplink ok20170106
+	{"AUDIO_REF_EC_UL6 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},
 #endif
 
 	{"AUDIO_REF_EC_UL8 MUX", "PRI_MI2S_TX" , "PRI_MI2S_TX"},
 	{"AUDIO_REF_EC_UL8 MUX", "SEC_MI2S_TX" , "SEC_MI2S_TX"},
 	{"AUDIO_REF_EC_UL8 MUX", "TERT_MI2S_TX" , "TERT_MI2S_TX"},
 	{"AUDIO_REF_EC_UL8 MUX", "QUAT_MI2S_TX" , "QUAT_MI2S_TX"},
-	{"AUDIO_REF_EC_UL8 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},//yangliang add "QUIN_MI2S_TX" for voice spk using handset second mic uplink ok20170106
+	{"AUDIO_REF_EC_UL8 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},
 
 	{"AUDIO_REF_EC_UL9 MUX", "PRI_MI2S_TX" , "PRI_MI2S_TX"},
 	{"AUDIO_REF_EC_UL9 MUX", "SEC_MI2S_TX" , "SEC_MI2S_TX"},
 	{"AUDIO_REF_EC_UL9 MUX", "TERT_MI2S_TX" , "TERT_MI2S_TX"},
 	{"AUDIO_REF_EC_UL9 MUX", "QUAT_MI2S_TX" , "QUAT_MI2S_TX"},
 #ifdef CONFIG_PLATFORM_TINNO
-	{"AUDIO_REF_EC_UL9 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},//yangliang add "QUIN_MI2S_TX" for voice spk using handset second mic uplink ok20170106
+	{"AUDIO_REF_EC_UL9 MUX", "QUIN_MI2S_TX" , "QUIN_MI2S_TX"},
 #endif
 
 	{"MM_UL1", NULL, "AUDIO_REF_EC_UL1 MUX"},
@@ -8863,10 +8854,7 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"QUAT_MI2S_RX_DL_HL", "Switch", "QUAT_MI2S_DL_HL"},
 	{"QUAT_MI2S_RX", NULL, "QUAT_MI2S_RX_DL_HL"},
 
-	#ifdef CONFIG_PROJECT_WIMLITE //yangliang add for smartpa fm-spk 20160922
-	//<BEGIN><FFBAKK-105><2015.02.27>add for fm-speaker;yangliang
-	//<BEGIN><JABAL-105><2015.03.18>add for fm-speaker and touchsound;yangliang
-	//{"QUAT_MI2S_RX_DL_HL", "Switch", "QUAT_MI2S_DL_HL"},
+	#ifdef CONFIG_PROJECT_WIMLITE 
 	{"QUIN_MI2S_RX_DL_HL", "Switch", "PRI_MI2S_DL_HL"},
 	{"QUIN_MI2S_RX", NULL, "QUIN_MI2S_RX_DL_HL"},
 	#endif
@@ -9189,8 +9177,8 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"QUAT_MI2S_RX Port Mixer", "SLIM_0_TX", "SLIMBUS_0_TX"},
 	{"QUAT_MI2S_RX Port Mixer", "INTERNAL_FM_TX", "INT_FM_TX"},
 
-	#ifdef CONFIG_PROJECT_WIMLITE //yangliang add for smartpa fm-spk 20160922
-	{"QUIN_MI2S_RX Port Mixer", "INTERNAL_FM_TX", "INT_FM_TX"},//<BEGIN><FFBAKK-105><2015.02.27>add for fm-speaker;yangliang
+	#ifdef CONFIG_PROJECT_WIMLITE 
+	{"QUIN_MI2S_RX Port Mixer", "INTERNAL_FM_TX", "INT_FM_TX"},
 	#endif
 
 	{"QUAT_MI2S_RX Port Mixer", "AUX_PCM_UL_TX", "AUX_PCM_TX"},
@@ -9269,8 +9257,7 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"SLIM0_RX_VI_FB_RCH_MUX", "SLIM4_TX", "SLIMBUS_4_TX"},
 
 	#ifndef CONFIG_PROJECT_WIMLITE
-//yangliang mask and add for msm8953 the EC ref port should be set before setting up the voice path 20160919
-	{"PRI_MI2S_RX_VI_FB_MUX", "SENARY_TX", "SENARY_TX"},//yangliang the EC ref port should be set before setting up the voice path;yangliang20160919
+	{"PRI_MI2S_RX_VI_FB_MUX", "SENARY_TX", "SENARY_TX"},
 	#endif
 	{"SLIMBUS_0_RX", NULL, "SLIM0_RX_VI_FB_LCH_MUX"},
 	{"SLIMBUS_0_RX", NULL, "SLIM0_RX_VI_FB_RCH_MUX"},

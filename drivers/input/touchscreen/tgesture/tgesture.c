@@ -19,18 +19,10 @@
 #include <linux/input.h>
 #include <linux/workqueue.h>
 #include <linux/kobject.h>
-//#include <linux/earlysuspend.h>
 #include <linux/platform_device.h>
 #include <asm/atomic.h>
 
-//#include <mach/mt_typedefs.h>
-//#include <mach/mt_gpio.h>
-//#include <mach/mt_pm_ldo.h>
-//#include <mach/irqs.h>
-//#include <mach/eint.h>
-
 #include <asm/io.h>
-//#include <cust_eint.h>
 #include <linux/proc_fs.h>
 #include "tgesture.h"
 /******************************************************************************
@@ -45,16 +37,11 @@
 #define TGESTURE_DEBUG_FUNC(fmt, args...)                       do{\
                                          printk("<<-GTP-FUNC->> Func:%s@Line:%d\n",__func__,__LINE__);\
                                        }while(0)
-
-//static	struct work_struct	eint_work;
-//static struct input_dev *TGesture_key_dev;
 extern int gBackLightLevel;
 u8 gTGesture = 0;
 
 static int enable_key = 1;
-//static s32 value_hall1_rev = 1;
-//static s32 value_hall2_rev = 1;
-static s32 tgesture_state = 1; //open status
+static s32 tgesture_state = 1; 
 int  bEnTGesture = 0;
 char Tg_buf[16]= {"-1"};
 static int TGesture_probe(struct platform_device *pdev);
@@ -113,8 +100,7 @@ static ssize_t TGesture_show_key(struct device_driver *ddri, char *buf)
 /*----------------------------------------------------------------------------*/
 static ssize_t TGesture_store_key(struct device_driver *ddri, const char *buf, size_t count)
 {
-	int enable;//, res;
-//    u8 databuf[1];
+	int enable;
 
 	if(1 == sscanf(buf, "%d", &enable)) {
 		enable_key = enable;
@@ -142,9 +128,7 @@ static struct driver_attribute *TGesture_attr_list[] = {
 static ssize_t TGesture_config_read_proc(struct file *file, char __user *page, size_t size, loff_t *ppos)
 {
 	char *ptr = page;
-//    char temp_data[2] = {'a','\0'};
-//    int i;
-	if (*ppos) { // CMD call again
+	if (*ppos) { 
 		return 0;
 	}
 	printk("TGesture1:%d\n",gTGesture);
@@ -155,8 +139,6 @@ static ssize_t TGesture_config_read_proc(struct file *file, char __user *page, s
 }
 static ssize_t TGesture_config_write_proc(struct file *filp, const char __user *buffer, size_t count, loff_t *off)
 {
-	// s32 ret = 0;
-
 	TGESTURE_DEBUG_FUNC("====LGC=========TGesture_config_write_procwrite count %d\n", count);
 
 	if (count > TGesture_CONFIG_MAX_LENGTH  ) {
@@ -168,15 +150,12 @@ static ssize_t TGesture_config_write_proc(struct file *filp, const char __user *
 		TGESTURE_DEBUG_FUNC("copy from user fail\n");
 		return -EFAULT;
 	}
-	//  tp__write_flag;
-
 	if(atomic_read(&tp_write_flag)) {
 		atomic_set(&tp_write_flag,0);
 		bEnTGesture=config[0]-48;
 		printk("===== TGesture_config_write_proc%d=====",bEnTGesture);
 		atomic_set(&tp_write_flag,1);
 	}
-	// printk("====LGC=TGesture_config_write_procwrite bEnTGesture==%d===\n",bEnTGesture);
 	/*   ret = gtp_send_cfg(i2c_client_point);
 	   abs_x_max = (config[RESOLUTION_LOC + 1] << 8) + config[RESOLUTION_LOC];
 	   abs_y_max = (config[RESOLUTION_LOC + 3] << 8) + config[RESOLUTION_LOC + 2];
@@ -288,8 +267,3 @@ static void __exit TGesture_exit(void)
 module_init(TGesture_init);
 module_exit(TGesture_exit);
 /*----------------------------------------------------------------------------*/
-//MODULE_LICENSE("GPL");
-//MODULE_DESCRIPTION("tgesture DRIRVER");
-//MODULE_AUTHOR("yaohua.li");
-
-

@@ -44,7 +44,6 @@ void sendnlmsg(char *message)
 
 	ret = netlink_unicast(nl_sk,skb_1,pid,MSG_DONTWAIT);
 	if(!ret) {
-		//kfree_skb(skb_1);
 		pr_err("send msg from kernel to usespace failed ret 0x%x \n", ret);
 	}
 
