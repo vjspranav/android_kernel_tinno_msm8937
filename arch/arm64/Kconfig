@@ -1076,19 +1076,3 @@ config PROJECT_DTS_NAME
 	default "qcom"
 	help
 	  This option to select which dts will be use for build project
-
-#yangliang add for smartpa 20161026
-config SND_SOC_TFA98XX
-bool "for tinno smartPA solution"
-default n
-
-#yangliang add for smartpa 20161026
-config SND_SOC_TFA9890
-bool "for tinno smartPA solution"
-default n
-
-#yangliang add for smartpa 20161026
-config SND_SOC_TFA9896
-bool "for tinno smartPA solution"
-default n
-
