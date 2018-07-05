@@ -1132,14 +1132,6 @@ config FT5XX_TGESTURE_FUNCTION
 
           If unsure, say N.
 
-config SYNA_TGESTURE_FUNCTION
-	bool "syna tgesture function"
-	default n
-	help
-	  Say Y here if you use syna TP gesture function.
-
-          If unsure, say N.
-
 #End<REQ><><20150910>Add WAKEUP_GESTURE for ft5xx;xiongdajun
 config TOUCHSCREEN_GT9XX
 	bool "Goodix touchpanel GT9xx series"
