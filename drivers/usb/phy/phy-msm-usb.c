@@ -2831,6 +2831,11 @@ static void msm_otg_sm_work(struct work_struct *w)
 							IDEV_CHG_MAX);
 					/* fall through */
 				case USB_SDP_CHARGER:
+					#ifdef CONFIG_PLATFORM_TINNO
+					msm_otg_notify_charger(motg,100);
+					msleep(100);
+					msm_otg_notify_charger(motg,500);
+					#endif
 					pm_runtime_get_sync(otg->phy->dev);
 					msm_otg_start_peripheral(otg, 1);
 					otg->phy->state =
