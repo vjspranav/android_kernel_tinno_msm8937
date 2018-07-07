@@ -538,7 +538,7 @@ static int32_t msm_flash_low(
 			else if(i < 2)
 				led_trigger_event(flash_ctrl->torch_trigger[i],
 				                  curr);
-			#else if defined CONFIG_LEDS_MSM_GPIO_DUAL_FLASH
+			#elif defined(CONFIG_LEDS_MSM_GPIO_DUAL_FLASH)
 			if((msm_sensor_is_front_camera()||flash_data->camera_id == 1))//LINE<20160601>wangyanhui add for cts test
 				led_trigger_event(flash_ctrl->torch_trigger[1],
 				                  curr);
@@ -591,7 +591,7 @@ static int32_t msm_flash_high(
 			else if(i < 2)
 				led_trigger_event(flash_ctrl->flash_trigger[i],
 				                  curr);
-			#else if defined CONFIG_LEDS_MSM_GPIO_DUAL_FLASH
+			#elif defined(CONFIG_LEDS_MSM_GPIO_DUAL_FLASH)
 			if((msm_sensor_is_front_camera()|| flash_data->camera_id == 1))//LINE<20160601>wangyanhui add for cts test
 				led_trigger_event(flash_ctrl->flash_trigger[1],
 				                  curr);
