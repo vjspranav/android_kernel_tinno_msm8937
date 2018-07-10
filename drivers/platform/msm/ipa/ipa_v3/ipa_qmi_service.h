@@ -34,9 +34,9 @@
 	do { \
 		pr_debug(DEV_NAME " %s:%d " fmt, __func__, __LINE__, ## args); \
 		IPA_IPC_LOGGING(ipa_get_ipc_logbuf(), \
-			DEV_NAME " %s:%d " fmt, ## args); \
+		                DEV_NAME " %s:%d " fmt, ## args); \
 		IPA_IPC_LOGGING(ipa_get_ipc_logbuf_low(), \
-			DEV_NAME " %s:%d " fmt, ## args); \
+		                DEV_NAME " %s:%d " fmt, ## args); \
 	} while (0)
 
 
@@ -44,45 +44,45 @@
 	do { \
 		pr_debug(DEV_NAME " %s:%d " fmt, __func__, __LINE__, ## args); \
 		IPA_IPC_LOGGING(ipa_get_ipc_logbuf_low(), \
-			DEV_NAME " %s:%d " fmt, ## args); \
+		                DEV_NAME " %s:%d " fmt, ## args); \
 	} while (0)
 
 #define IPAWANERR(fmt, args...) \
 	do { \
 		pr_err(DEV_NAME " %s:%d " fmt, __func__, __LINE__, ## args); \
 		IPA_IPC_LOGGING(ipa_get_ipc_logbuf(), \
-			DEV_NAME " %s:%d " fmt, ## args); \
+		                DEV_NAME " %s:%d " fmt, ## args); \
 		IPA_IPC_LOGGING(ipa_get_ipc_logbuf_low(), \
-			DEV_NAME " %s:%d " fmt, ## args); \
+		                DEV_NAME " %s:%d " fmt, ## args); \
 	} while (0)
 
 #define IPAWANINFO(fmt, args...) \
 	do { \
 		pr_info(DEV_NAME " %s:%d " fmt, __func__, __LINE__, ## args); \
 		IPA_IPC_LOGGING(ipa_get_ipc_logbuf(), \
-			DEV_NAME " %s:%d " fmt, ## args); \
+		                DEV_NAME " %s:%d " fmt, ## args); \
 		IPA_IPC_LOGGING(ipa_get_ipc_logbuf_low(), \
-			DEV_NAME " %s:%d " fmt, ## args); \
+		                DEV_NAME " %s:%d " fmt, ## args); \
 	} while (0)
 
 extern struct ipa3_qmi_context *ipa3_qmi_ctx;
 
 struct ipa3_qmi_context {
-struct ipa_ioc_ext_intf_prop q6_ul_filter_rule[MAX_NUM_Q6_RULE];
-u32 q6_ul_filter_rule_hdl[MAX_NUM_Q6_RULE];
-int num_ipa_install_fltr_rule_req_msg;
-struct ipa_install_fltr_rule_req_msg_v01
+	struct ipa_ioc_ext_intf_prop q6_ul_filter_rule[MAX_NUM_Q6_RULE];
+	u32 q6_ul_filter_rule_hdl[MAX_NUM_Q6_RULE];
+	int num_ipa_install_fltr_rule_req_msg;
+	struct ipa_install_fltr_rule_req_msg_v01
 		ipa_install_fltr_rule_req_msg_cache[MAX_NUM_QMI_RULE_CACHE];
-int num_ipa_install_fltr_rule_req_ex_msg;
-struct ipa_install_fltr_rule_req_ex_msg_v01
+	int num_ipa_install_fltr_rule_req_ex_msg;
+	struct ipa_install_fltr_rule_req_ex_msg_v01
 		ipa_install_fltr_rule_req_ex_msg_cache[MAX_NUM_QMI_RULE_CACHE];
-int num_ipa_fltr_installed_notif_req_msg;
-struct ipa_fltr_installed_notif_req_msg_v01
+	int num_ipa_fltr_installed_notif_req_msg;
+	struct ipa_fltr_installed_notif_req_msg_v01
 		ipa_fltr_installed_notif_req_msg_cache[MAX_NUM_QMI_RULE_CACHE];
-int num_ipa_configure_ul_firewall_rules_req_msg;
-struct ipa_configure_ul_firewall_rules_req_msg_v01
-ipa_configure_ul_firewall_rules_req_msg_cache[MAX_NUM_QMI_RULE_CACHE];
-bool modem_cfg_emb_pipe_flt;
+	int num_ipa_configure_ul_firewall_rules_req_msg;
+	struct ipa_configure_ul_firewall_rules_req_msg_v01
+		ipa_configure_ul_firewall_rules_req_msg_cache[MAX_NUM_QMI_RULE_CACHE];
+	bool modem_cfg_emb_pipe_flt;
 };
 
 struct ipa3_rmnet_mux_val {
@@ -156,29 +156,29 @@ void ipa3_qmi_service_exit(void);
 
 /* sending filter-install-request to modem*/
 int ipa3_qmi_filter_request_send(
-	struct ipa_install_fltr_rule_req_msg_v01 *req);
+    struct ipa_install_fltr_rule_req_msg_v01 *req);
 
 int ipa3_qmi_filter_request_ex_send(
-	struct ipa_install_fltr_rule_req_ex_msg_v01 *req);
+    struct ipa_install_fltr_rule_req_ex_msg_v01 *req);
 
 int ipa3_qmi_ul_filter_request_send(
-	struct ipa_configure_ul_firewall_rules_req_msg_v01 *req);
+    struct ipa_configure_ul_firewall_rules_req_msg_v01 *req);
 
 /* sending filter-installed-notify-request to modem*/
 int ipa3_qmi_filter_notify_send(struct ipa_fltr_installed_notif_req_msg_v01
-		*req);
+                                *req);
 
 /* voting for bus BW to ipa_rm*/
 int ipa3_vote_for_bus_bw(uint32_t *bw_mbps);
 
 int ipa3_qmi_enable_force_clear_datapath_send(
-	struct ipa_enable_force_clear_datapath_req_msg_v01 *req);
+    struct ipa_enable_force_clear_datapath_req_msg_v01 *req);
 
 int ipa3_qmi_disable_force_clear_datapath_send(
-	struct ipa_disable_force_clear_datapath_req_msg_v01 *req);
+    struct ipa_disable_force_clear_datapath_req_msg_v01 *req);
 
 int ipa3_copy_ul_filter_rule_to_ipa(struct ipa_install_fltr_rule_req_msg_v01
-	*rule_req);
+                                    *rule_req);
 
 int ipa3_wwan_update_mux_channel_prop(void);
 
@@ -193,17 +193,17 @@ void ipa3_wan_ioctl_deinit(void);
 void ipa3_qmi_stop_workqueues(void);
 
 int rmnet_ipa3_poll_tethering_stats(struct wan_ioctl_poll_tethering_stats
-		*data);
+                                    *data);
 
 int rmnet_ipa3_set_data_quota(struct wan_ioctl_set_data_quota *data);
 
 void ipa3_broadcast_quota_reach_ind(uint32_t mux_id);
 
 int rmnet_ipa3_set_tether_client_pipe(struct wan_ioctl_set_tether_client_pipe
-	*data);
+                                      *data);
 
 int rmnet_ipa3_query_tethering_stats(struct wan_ioctl_query_tether_stats *data,
-	bool reset);
+                                     bool reset);
 
 int rmnet_ipa3_set_lan_client_info(struct wan_ioctl_lan_client_info *data);
 
@@ -214,16 +214,16 @@ int rmnet_ipa3_send_lan_client_msg(struct wan_ioctl_send_lan_client_msg *data);
 int rmnet_ipa3_enable_per_client_stats(bool *data);
 
 int rmnet_ipa3_query_per_client_stats(
-	struct wan_ioctl_query_per_client_stats *data);
+    struct wan_ioctl_query_per_client_stats *data);
 
 int rmnet_ipa3_query_tethering_stats_all(
-	struct wan_ioctl_query_tether_stats_all *data);
+    struct wan_ioctl_query_tether_stats_all *data);
 
 int ipa3_qmi_get_data_stats(struct ipa_get_data_stats_req_msg_v01 *req,
-	struct ipa_get_data_stats_resp_msg_v01 *resp);
+                            struct ipa_get_data_stats_resp_msg_v01 *resp);
 
 int ipa3_qmi_get_network_stats(struct ipa_get_apn_data_stats_req_msg_v01 *req,
-	struct ipa_get_apn_data_stats_resp_msg_v01 *resp);
+                               struct ipa_get_apn_data_stats_resp_msg_v01 *resp);
 
 int ipa3_qmi_set_data_quota(struct ipa_set_data_usage_quota_req_msg_v01 *req);
 
@@ -232,12 +232,12 @@ int ipa3_qmi_stop_data_qouta(void);
 void ipa3_q6_handshake_complete(bool ssr_bootup);
 
 int ipa3_qmi_enable_per_client_stats(
-	struct ipa_enable_per_client_stats_req_msg_v01 *req,
-	struct ipa_enable_per_client_stats_resp_msg_v01 *resp);
+    struct ipa_enable_per_client_stats_req_msg_v01 *req,
+    struct ipa_enable_per_client_stats_resp_msg_v01 *resp);
 
 int ipa3_qmi_get_per_client_packet_stats(
-	struct ipa_get_stats_per_client_req_msg_v01 *req,
-	struct ipa_get_stats_per_client_resp_msg_v01 *resp);
+    struct ipa_get_stats_per_client_req_msg_v01 *req,
+    struct ipa_get_stats_per_client_resp_msg_v01 *resp);
 
 void ipa3_qmi_init(void);
 
@@ -254,44 +254,44 @@ static inline void ipa3_qmi_service_exit(void) { }
 
 /* sending filter-install-request to modem*/
 static inline int ipa3_qmi_filter_request_send(
-	struct ipa_install_fltr_rule_req_msg_v01 *req)
+    struct ipa_install_fltr_rule_req_msg_v01 *req)
 {
 	return -EPERM;
 }
 
 static inline int ipa3_qmi_ul_filter_request_send(
-	struct ipa_configure_ul_firewall_rules_req_msg_v01 *req)
+    struct ipa_configure_ul_firewall_rules_req_msg_v01 *req)
 {
 	return -EPERM;
 }
 
 static inline int ipa3_qmi_filter_request_ex_send(
-	struct ipa_install_fltr_rule_req_ex_msg_v01 *req)
+    struct ipa_install_fltr_rule_req_ex_msg_v01 *req)
 {
 	return -EPERM;
 }
 
 /* sending filter-installed-notify-request to modem*/
 static inline int ipa3_qmi_filter_notify_send(
-	struct ipa_fltr_installed_notif_req_msg_v01 *req)
+    struct ipa_fltr_installed_notif_req_msg_v01 *req)
 {
 	return -EPERM;
 }
 
 static inline int ipa3_qmi_enable_force_clear_datapath_send(
-	struct ipa_enable_force_clear_datapath_req_msg_v01 *req)
+    struct ipa_enable_force_clear_datapath_req_msg_v01 *req)
 {
 	return -EPERM;
 }
 
 static inline int ipa3_qmi_disable_force_clear_datapath_send(
-	struct ipa_disable_force_clear_datapath_req_msg_v01 *req)
+    struct ipa_disable_force_clear_datapath_req_msg_v01 *req)
 {
 	return -EPERM;
 }
 
 static inline int ipa3_copy_ul_filter_rule_to_ipa(
-	struct ipa_install_fltr_rule_req_msg_v01 *rule_req)
+    struct ipa_install_fltr_rule_req_msg_v01 *rule_req)
 {
 	return -EPERM;
 }
@@ -320,13 +320,13 @@ static inline int ipa3_vote_for_bus_bw(uint32_t *bw_mbps)
 }
 
 static inline int rmnet_ipa3_poll_tethering_stats(
-	struct wan_ioctl_poll_tethering_stats *data)
+    struct wan_ioctl_poll_tethering_stats *data)
 {
 	return -EPERM;
 }
 
 static inline int rmnet_ipa3_set_data_quota(
-	struct wan_ioctl_set_data_quota *data)
+    struct wan_ioctl_set_data_quota *data)
 {
 	return -EPERM;
 }
@@ -334,21 +334,21 @@ static inline int rmnet_ipa3_set_data_quota(
 static inline void ipa3_broadcast_quota_reach_ind(uint32_t mux_id) { }
 
 static inline int ipa3_qmi_get_data_stats(
-	struct ipa_get_data_stats_req_msg_v01 *req,
-	struct ipa_get_data_stats_resp_msg_v01 *resp)
+    struct ipa_get_data_stats_req_msg_v01 *req,
+    struct ipa_get_data_stats_resp_msg_v01 *resp)
 {
 	return -EPERM;
 }
 
 static inline int ipa3_qmi_get_network_stats(
-	struct ipa_get_apn_data_stats_req_msg_v01 *req,
-	struct ipa_get_apn_data_stats_resp_msg_v01 *resp)
+    struct ipa_get_apn_data_stats_req_msg_v01 *req,
+    struct ipa_get_apn_data_stats_resp_msg_v01 *resp)
 {
 	return -EPERM;
 }
 
 static inline int ipa3_qmi_set_data_quota(
-	struct ipa_set_data_usage_quota_req_msg_v01 *req)
+    struct ipa_set_data_usage_quota_req_msg_v01 *req)
 {
 	return -EPERM;
 }
@@ -361,15 +361,15 @@ static inline int ipa3_qmi_stop_data_qouta(void)
 static inline void ipa3_q6_handshake_complete(bool ssr_bootup) { }
 
 static inline int ipa3_qmi_enable_per_client_stats(
-	struct ipa_enable_per_client_stats_req_msg_v01 *req,
-	struct ipa_enable_per_client_stats_resp_msg_v01 *resp)
+    struct ipa_enable_per_client_stats_req_msg_v01 *req,
+    struct ipa_enable_per_client_stats_resp_msg_v01 *resp)
 {
 	return -EPERM;
 }
 
 static inline int ipa3_qmi_get_per_client_packet_stats(
-	struct ipa_get_stats_per_client_req_msg_v01 *req,
-	struct ipa_get_stats_per_client_resp_msg_v01 *resp)
+    struct ipa_get_stats_per_client_req_msg_v01 *req,
+    struct ipa_get_stats_per_client_resp_msg_v01 *resp)
 {
 	return -EPERM;
 }

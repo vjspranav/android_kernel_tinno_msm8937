@@ -168,10 +168,6 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_CAPACITY_ALERT_MAX, /* in percents! */
 	POWER_SUPPLY_PROP_CAPACITY_LEVEL,
 	POWER_SUPPLY_PROP_CAPACITY_RAW,
-	POWER_SUPPLY_PROP_BATT_VOL,
-//#ifdef CONFIG_SMART_CHARGING_CONTROL
-	POWER_SUPPLY_PROP_CHARGE_SPEED, //added for scc. CONFIG_SMART_CHARGING_CONTROL
-//#endif
 	POWER_SUPPLY_PROP_TEMP,
 	POWER_SUPPLY_PROP_TEMP_MAX,
 	POWER_SUPPLY_PROP_TEMP_MIN,
@@ -353,13 +349,13 @@ struct power_supply {
 	 * example power_supply_get_property()).
 	 */
 	int (*get_property)(struct power_supply *psy,
-			    enum power_supply_property psp,
-			    union power_supply_propval *val);
+	                    enum power_supply_property psp,
+	                    union power_supply_propval *val);
 	int (*set_property)(struct power_supply *psy,
-			    enum power_supply_property psp,
-			    const union power_supply_propval *val);
+	                    enum power_supply_property psp,
+	                    const union power_supply_propval *val);
 	int (*property_is_writeable)(struct power_supply *psy,
-				     enum power_supply_property psp);
+	                             enum power_supply_property psp);
 	void (*external_power_changed)(struct power_supply *psy);
 	void (*set_charged)(struct power_supply *psy);
 
@@ -425,11 +421,13 @@ extern void power_supply_unreg_notifier(struct notifier_block *nb);
 extern struct power_supply *power_supply_get_by_name(const char *name);
 #ifdef CONFIG_OF
 extern struct power_supply *power_supply_get_by_phandle(struct device_node *np,
-							const char *property);
+        const char *property);
 #else /* !CONFIG_OF */
 static inline struct power_supply *
 power_supply_get_by_phandle(struct device_node *np, const char *property)
-{ return NULL; }
+{
+	return NULL;
+}
 #endif /* CONFIG_OF */
 extern void power_supply_changed(struct power_supply *psy);
 extern int power_supply_am_i_supplied(struct power_supply *psy);
@@ -438,22 +436,25 @@ extern int power_supply_set_battery_charged(struct power_supply *psy);
 #ifdef CONFIG_POWER_SUPPLY
 extern int power_supply_is_system_supplied(void);
 #else
-static inline int power_supply_is_system_supplied(void) { return -ENOSYS; }
+static inline int power_supply_is_system_supplied(void)
+{
+	return -ENOSYS;
+}
 #endif
 
 extern int power_supply_get_property(struct power_supply *psy,
-			    enum power_supply_property psp,
-			    union power_supply_propval *val);
+                                     enum power_supply_property psp,
+                                     union power_supply_propval *val);
 extern int power_supply_set_property(struct power_supply *psy,
-			    enum power_supply_property psp,
-			    const union power_supply_propval *val);
+                                     enum power_supply_property psp,
+                                     const union power_supply_propval *val);
 extern int power_supply_property_is_writeable(struct power_supply *psy,
-					enum power_supply_property psp);
+        enum power_supply_property psp);
 extern void power_supply_external_power_changed(struct power_supply *psy);
 extern int power_supply_register(struct device *parent,
-				 struct power_supply *psy);
+                                 struct power_supply *psy);
 extern int power_supply_register_no_ws(struct device *parent,
-				 struct power_supply *psy);
+                                       struct power_supply *psy);
 extern void power_supply_unregister(struct power_supply *psy);
 extern int power_supply_powers(struct power_supply *psy, struct device *dev);
 extern int power_supply_set_online(struct power_supply *psy, bool enable);
@@ -466,12 +467,12 @@ extern int power_supply_set_scope(struct power_supply *psy, int scope);
 extern int power_supply_set_usb_otg(struct power_supply *psy, int otg);
 extern int power_supply_set_charge_type(struct power_supply *psy, int type);
 extern int power_supply_set_supply_type(struct power_supply *psy,
-					enum power_supply_type supply_type);
+                                        enum power_supply_type supply_type);
 extern int power_supply_set_hi_power_state(struct power_supply *psy, int value);
 extern int power_supply_set_low_power_state(struct power_supply *psy,
-							int value);
+        int value);
 extern int power_supply_set_dp_dm(struct power_supply *psy,
-							int value);
+                                  int value);
 extern int power_supply_is_system_supplied(void);
 extern int power_supply_set_scope(struct power_supply *psy, int scope);
 extern void *power_supply_get_drvdata(struct power_supply *psy);

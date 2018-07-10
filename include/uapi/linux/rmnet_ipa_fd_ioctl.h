@@ -184,70 +184,70 @@ struct wan_ioctl_query_per_client_stats {
 };
 
 #define WAN_IOC_ADD_FLT_RULE _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_ADD_FLT_RULE, \
-		struct ipa_install_fltr_rule_req_msg_v01 *)
+                                   WAN_IOCTL_ADD_FLT_RULE, \
+                                   struct ipa_install_fltr_rule_req_msg_v01 *)
 
 #define WAN_IOC_ADD_FLT_RULE_INDEX _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_ADD_FLT_INDEX, \
-		struct ipa_fltr_installed_notif_req_msg_v01 *)
+        WAN_IOCTL_ADD_FLT_INDEX, \
+        struct ipa_fltr_installed_notif_req_msg_v01 *)
 
 #define WAN_IOC_VOTE_FOR_BW_MBPS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_VOTE_FOR_BW_MBPS, \
-		uint32_t *)
+                                       WAN_IOCTL_VOTE_FOR_BW_MBPS, \
+                                       uint32_t *)
 
 #define WAN_IOC_POLL_TETHERING_STATS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_POLL_TETHERING_STATS, \
-		struct wan_ioctl_poll_tethering_stats *)
+        WAN_IOCTL_POLL_TETHERING_STATS, \
+        struct wan_ioctl_poll_tethering_stats *)
 
 #define WAN_IOC_SET_DATA_QUOTA _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_SET_DATA_QUOTA, \
-		struct wan_ioctl_set_data_quota *)
+                                     WAN_IOCTL_SET_DATA_QUOTA, \
+                                     struct wan_ioctl_set_data_quota *)
 
 #define WAN_IOC_SET_TETHER_CLIENT_PIPE _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_SET_TETHER_CLIENT_PIPE, \
-		struct wan_ioctl_set_tether_client_pipe *)
+        WAN_IOCTL_SET_TETHER_CLIENT_PIPE, \
+        struct wan_ioctl_set_tether_client_pipe *)
 
 #define WAN_IOC_QUERY_TETHER_STATS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_QUERY_TETHER_STATS, \
-		struct wan_ioctl_query_tether_stats *)
+        WAN_IOCTL_QUERY_TETHER_STATS, \
+        struct wan_ioctl_query_tether_stats *)
 
 #define WAN_IOC_RESET_TETHER_STATS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_RESET_TETHER_STATS, \
-		struct wan_ioctl_reset_tether_stats *)
+        WAN_IOCTL_RESET_TETHER_STATS, \
+        struct wan_ioctl_reset_tether_stats *)
 
 #define WAN_IOC_QUERY_DL_FILTER_STATS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_QUERY_DL_FILTER_STATS, \
-		struct wan_ioctl_query_dl_filter_stats *)
+        WAN_IOCTL_QUERY_DL_FILTER_STATS, \
+        struct wan_ioctl_query_dl_filter_stats *)
 
 #define WAN_IOC_ADD_FLT_RULE_EX _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_ADD_FLT_RULE_EX, \
-		struct ipa_install_fltr_rule_req_ex_msg_v01 *)
+                                      WAN_IOCTL_ADD_FLT_RULE_EX, \
+                                      struct ipa_install_fltr_rule_req_ex_msg_v01 *)
 
 #define WAN_IOC_ADD_UL_FLT_RULE _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_ADD_UL_FLT_RULE, \
-		struct ipa_configure_ul_firewall_rules_req_msg_v01 *)
+                                      WAN_IOCTL_ADD_UL_FLT_RULE, \
+                                      struct ipa_configure_ul_firewall_rules_req_msg_v01 *)
 
 #define WAN_IOC_ENABLE_PER_CLIENT_STATS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_ENABLE_PER_CLIENT_STATS, \
-		bool *)
+        WAN_IOCTL_ENABLE_PER_CLIENT_STATS, \
+        bool *)
 
 #define WAN_IOC_QUERY_PER_CLIENT_STATS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_QUERY_PER_CLIENT_STATS, \
-		struct wan_ioctl_query_per_client_stats *)
+        WAN_IOCTL_QUERY_PER_CLIENT_STATS, \
+        struct wan_ioctl_query_per_client_stats *)
 
 #define WAN_IOC_SET_LAN_CLIENT_INFO _IOWR(WAN_IOC_MAGIC, \
-			WAN_IOCTL_SET_LAN_CLIENT_INFO, \
-			struct wan_ioctl_lan_client_info *)
+        WAN_IOCTL_SET_LAN_CLIENT_INFO, \
+        struct wan_ioctl_lan_client_info *)
 
 #define WAN_IOC_SEND_LAN_CLIENT_MSG _IOWR(WAN_IOC_MAGIC, \
-				WAN_IOCTL_SEND_LAN_CLIENT_MSG, \
-				struct wan_ioctl_send_lan_client_msg *)
+        WAN_IOCTL_SEND_LAN_CLIENT_MSG, \
+        struct wan_ioctl_send_lan_client_msg *)
 
 #define WAN_IOC_CLEAR_LAN_CLIENT_INFO _IOWR(WAN_IOC_MAGIC, \
-			WAN_IOCTL_CLEAR_LAN_CLIENT_INFO, \
-			struct wan_ioctl_lan_client_info *)
+        WAN_IOCTL_CLEAR_LAN_CLIENT_INFO, \
+        struct wan_ioctl_lan_client_info *)
 
 #define WAN_IOC_QUERY_TETHER_STATS_ALL _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_QUERY_TETHER_STATS_ALL, \
-		struct wan_ioctl_query_tether_stats_all *)
+        WAN_IOCTL_QUERY_TETHER_STATS_ALL, \
+        struct wan_ioctl_query_tether_stats_all *)
 #endif /* _RMNET_IPA_FD_IOCTL_H */

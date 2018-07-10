@@ -72,51 +72,51 @@ static bool __layer_needs_src_split(struct mdp_input_layer *layer)
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
 
 	return (layer->flags & MDP_LAYER_ASYNC) ||
-		mdss_has_quirk(mdata, MDSS_QUIRK_SRC_SPLIT_ALWAYS);
+	       mdss_has_quirk(mdata, MDSS_QUIRK_SRC_SPLIT_ALWAYS);
 }
 
 static int __async_update_position_check(struct msm_fb_data_type *mfd,
-		struct mdss_mdp_pipe *pipe, struct mdp_point *src,
-		struct mdp_point *dst)
+        struct mdss_mdp_pipe *pipe, struct mdp_point *src,
+        struct mdp_point *dst)
 {
 	struct fb_var_screeninfo *var = &mfd->fbi->var;
 	u32 xres = var->xres;
 	u32 yres = var->yres;
 
 	if (!pipe->async_update
-		|| CHECK_LAYER_BOUNDS(src->x, pipe->src.w, pipe->img_width)
-		|| CHECK_LAYER_BOUNDS(src->y, pipe->src.h, pipe->img_height)
-		|| CHECK_LAYER_BOUNDS(dst->x, pipe->dst.w, xres)
-		|| CHECK_LAYER_BOUNDS(dst->y, pipe->dst.h, yres)) {
+	    || CHECK_LAYER_BOUNDS(src->x, pipe->src.w, pipe->img_width)
+	    || CHECK_LAYER_BOUNDS(src->y, pipe->src.h, pipe->img_height)
+	    || CHECK_LAYER_BOUNDS(dst->x, pipe->dst.w, xres)
+	    || CHECK_LAYER_BOUNDS(dst->y, pipe->dst.h, yres)) {
 		pr_err("invalid configs: async_update=%d, src:{%d,%d}, dst:{%d,%d}\n",
-			pipe->async_update, src->x, src->y, dst->x, dst->y);
+		       pipe->async_update, src->x, src->y, dst->x, dst->y);
 		pr_err("pipe:- src:{%d,%d,%d,%d}, dst:{%d,%d,%d,%d}\n",
-			pipe->src.x, pipe->src.y, pipe->src.w, pipe->src.h,
-			pipe->dst.x, pipe->dst.y, pipe->dst.w, pipe->dst.h);
+		       pipe->src.x, pipe->src.y, pipe->src.w, pipe->src.h,
+		       pipe->dst.x, pipe->dst.y, pipe->dst.w, pipe->dst.h);
 		return -EINVAL;
 	}
 	return 0;
 }
 
 static int __cursor_layer_check(struct msm_fb_data_type *mfd,
-		struct mdp_input_layer *layer)
+                                struct mdp_input_layer *layer)
 {
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
 
 	if ((layer->z_order != HW_CURSOR_STAGE(mdata))
-			|| layer->src_rect.w > mdata->max_cursor_size
-			|| layer->src_rect.h > mdata->max_cursor_size
-			|| layer->src_rect.w != layer->dst_rect.w
-			|| layer->src_rect.h != layer->dst_rect.h
-			|| !mdata->ncursor_pipes) {
+	    || layer->src_rect.w > mdata->max_cursor_size
+	    || layer->src_rect.h > mdata->max_cursor_size
+	    || layer->src_rect.w != layer->dst_rect.w
+	    || layer->src_rect.h != layer->dst_rect.h
+	    || !mdata->ncursor_pipes) {
 		pr_err("Incorrect cursor configs for pipe:%d, cursor_pipes:%d, z_order:%d\n",
-				layer->pipe_ndx, mdata->ncursor_pipes,
-				layer->z_order);
+		       layer->pipe_ndx, mdata->ncursor_pipes,
+		       layer->z_order);
 		pr_err("src:{%d,%d,%d,%d}, dst:{%d,%d,%d,%d}\n",
-				layer->src_rect.x, layer->src_rect.y,
-				layer->src_rect.w, layer->src_rect.h,
-				layer->dst_rect.x, layer->dst_rect.y,
-				layer->dst_rect.w, layer->dst_rect.h);
+		       layer->src_rect.x, layer->src_rect.y,
+		       layer->src_rect.w, layer->src_rect.h,
+		       layer->dst_rect.x, layer->dst_rect.y,
+		       layer->dst_rect.w, layer->dst_rect.h);
 		return -EINVAL;
 	}
 
@@ -124,7 +124,7 @@ static int __cursor_layer_check(struct msm_fb_data_type *mfd,
 }
 
 static int __layer_xres_check(struct msm_fb_data_type *mfd,
-	struct mdp_input_layer *layer)
+                              struct mdp_input_layer *layer)
 {
 	u32 xres = 0;
 	u32 left_lm_w = left_lm_w_from_mfd(mfd);
@@ -157,7 +157,7 @@ static int __layer_xres_check(struct msm_fb_data_type *mfd,
 
 	if (CHECK_LAYER_BOUNDS(layer->dst_rect.x, layer->dst_rect.w, xres)) {
 		pr_err("dst_xres is invalid. dst_x:%d, dst_w:%d, xres:%d\n",
-			layer->dst_rect.x, layer->dst_rect.w, xres);
+		       layer->dst_rect.x, layer->dst_rect.w, xres);
 		return -EINVAL;
 	}
 
@@ -165,8 +165,8 @@ static int __layer_xres_check(struct msm_fb_data_type *mfd,
 }
 
 static int __layer_param_check(struct msm_fb_data_type *mfd,
-	struct mdp_input_layer *layer, struct mdss_mdp_format_params *fmt,
-	enum mdss_mdp_pipe_rect rect_num)
+                               struct mdp_input_layer *layer, struct mdss_mdp_format_params *fmt,
+                               enum mdss_mdp_pipe_rect rect_num)
 {
 	u32 yres;
 	u32 min_src_size, min_dst_size = 1;
@@ -189,7 +189,7 @@ static int __layer_param_check(struct msm_fb_data_type *mfd,
 
 	content_secure = (layer->flags & MDP_LAYER_SECURE_SESSION);
 	if (!ctl->is_secure && content_secure &&
-				 (mfd->panel.type == WRITEBACK_PANEL)) {
+	    (mfd->panel.type == WRITEBACK_PANEL)) {
 		pr_debug("return due to security concerns\n");
 		return -EPERM;
 	}
@@ -202,7 +202,7 @@ static int __layer_param_check(struct msm_fb_data_type *mfd,
 
 	if (!mdss_mdp_pipe_search(mdata, layer->pipe_ndx, rect_num)) {
 		pr_err("layer pipe is invalid: 0x%x rect:%d\n",
-				layer->pipe_ndx, rect_num);
+		       layer->pipe_ndx, rect_num);
 		return -EINVAL;
 	}
 
@@ -227,7 +227,7 @@ static int __layer_param_check(struct msm_fb_data_type *mfd,
 	}
 
 	if (layer->dst_rect.w < min_dst_size ||
-		layer->dst_rect.h < min_dst_size) {
+	    layer->dst_rect.h < min_dst_size) {
 		pr_err("invalid destination resolution (%dx%d)",
 		       layer->dst_rect.w, layer->dst_rect.h);
 		return -EINVAL;
@@ -238,9 +238,9 @@ static int __layer_param_check(struct msm_fb_data_type *mfd,
 			pr_err("No Decimation in MDP V=%x\n", mdata->mdp_rev);
 			return -EINVAL;
 		} else if ((layer->horz_deci > MAX_DECIMATION) ||
-				(layer->vert_deci > MAX_DECIMATION))  {
+		           (layer->vert_deci > MAX_DECIMATION))  {
 			pr_err("Invalid decimation factors horz=%d vert=%d\n",
-					layer->horz_deci, layer->vert_deci);
+			       layer->horz_deci, layer->vert_deci);
 			return -EINVAL;
 		} else if (layer->flags & MDP_LAYER_BWC) {
 			pr_err("Decimation can't be enabled with BWC\n");
@@ -253,7 +253,7 @@ static int __layer_param_check(struct msm_fb_data_type *mfd,
 
 	if (CHECK_LAYER_BOUNDS(layer->dst_rect.y, layer->dst_rect.h, yres)) {
 		pr_err("invalid vertical destination: y=%d, h=%d, yres=%d\n",
-			layer->dst_rect.y, layer->dst_rect.h, yres);
+		       layer->dst_rect.y, layer->dst_rect.h, yres);
 		return -EOVERFLOW;
 	}
 
@@ -265,7 +265,7 @@ static int __layer_param_check(struct msm_fb_data_type *mfd,
 
 	if (src_w > mdata->max_mixer_width) {
 		pr_err("invalid source width=%d HDec=%d\n",
-			layer->src_rect.w, layer->horz_deci);
+		       layer->src_rect.w, layer->horz_deci);
 		return -EINVAL;
 	}
 
@@ -297,8 +297,8 @@ static int __layer_param_check(struct msm_fb_data_type *mfd,
 		if ((layer->buffer.width != layer->src_rect.w) ||
 		    (layer->buffer.height != layer->src_rect.h)) {
 			pr_err("BWC: mismatch of src img=%dx%d rect=%dx%d\n",
-				layer->buffer.width, layer->buffer.height,
-				layer->src_rect.w, layer->src_rect.h);
+			       layer->buffer.width, layer->buffer.height,
+			       layer->src_rect.w, layer->src_rect.h);
 			return -EINVAL;
 		}
 
@@ -309,7 +309,7 @@ static int __layer_param_check(struct msm_fb_data_type *mfd,
 	}
 
 	if ((layer->flags & MDP_LAYER_DEINTERLACE) &&
-		!(layer->flags & SCALER_ENABLED)) {
+	    !(layer->flags & SCALER_ENABLED)) {
 		if (layer->flags & MDP_SOURCE_ROTATED_90) {
 			if ((layer->src_rect.w % 4) != 0) {
 				pr_err("interlaced rect not h/4\n");
@@ -334,7 +334,7 @@ static int __layer_param_check(struct msm_fb_data_type *mfd,
 
 /* compare all reconfiguration parameter validation in this API */
 static int __validate_layer_reconfig(struct mdp_input_layer *layer,
-	struct mdss_mdp_pipe *pipe)
+                                     struct mdss_mdp_pipe *pipe)
 {
 	int status = 0;
 	struct mdss_mdp_format_params *src_fmt;
@@ -355,7 +355,7 @@ static int __validate_layer_reconfig(struct mdp_input_layer *layer,
 }
 
 static int __validate_single_layer(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_validate_info_t *layer_info, u32 mixer_mux)
+                                   struct mdss_mdp_validate_info_t *layer_info, u32 mixer_mux)
 {
 	u32 bwc_enabled;
 	int ret;
@@ -373,16 +373,16 @@ static int __validate_single_layer(struct msm_fb_data_type *mfd,
 	}
 
 	if ((layer->dst_rect.w > mdata->max_mixer_width) ||
-		(layer->dst_rect.h > MAX_DST_H)) {
+	    (layer->dst_rect.h > MAX_DST_H)) {
 		pr_err("exceeded max mixer supported resolution %dx%d\n",
-				layer->dst_rect.w, layer->dst_rect.h);
+		       layer->dst_rect.w, layer->dst_rect.h);
 		ret = -EINVAL;
 		goto exit_fail;
 	}
 
 	pr_debug("ctl=%u mux=%d z_order=%d flags=0x%x dst_x:%d\n",
-		mdp5_data->ctl->num, mixer_mux, layer->z_order,
-		layer->flags, layer->dst_rect.x);
+	         mdp5_data->ctl->num, mixer_mux, layer->z_order,
+	         layer->flags, layer->dst_rect.x);
 
 	fmt = mdss_mdp_get_format_params(layer->buffer.format);
 	if (!fmt) {
@@ -401,12 +401,12 @@ static int __validate_single_layer(struct msm_fb_data_type *mfd,
 		}
 
 		layer->buffer.format =
-			mdss_mdp_get_rotator_dst_format(
-				layer->buffer.format, false, bwc_enabled);
+		    mdss_mdp_get_rotator_dst_format(
+		        layer->buffer.format, false, bwc_enabled);
 		fmt = mdss_mdp_get_format_params(layer->buffer.format);
 		if (!fmt) {
 			pr_err("invalid layer format %d\n",
-				layer->buffer.format);
+			       layer->buffer.format);
 			ret = -EINVAL;
 			goto exit_fail;
 		}
@@ -429,15 +429,15 @@ static int __validate_single_layer(struct msm_fb_data_type *mfd,
 	mixer = mdss_mdp_mixer_get(mdp5_data->ctl, mixer_mux);
 	if (!mixer) {
 		pr_err("unable to get %s mixer\n",
-			(mixer_mux == MDSS_MDP_MIXER_MUX_RIGHT) ?
-			"right" : "left");
+		       (mixer_mux == MDSS_MDP_MIXER_MUX_RIGHT) ?
+		       "right" : "left");
 		ret = -EPERM;
 		goto exit_fail;
 	}
 
 	if (fmt->is_yuv || (mdata->has_non_scalar_rgb &&
-		((layer->src_rect.w != layer->dst_rect.w) ||
-			(layer->src_rect.h != layer->dst_rect.h))))
+	                    ((layer->src_rect.w != layer->dst_rect.w) ||
+	                     (layer->src_rect.h != layer->dst_rect.h))))
 		is_vig_needed = true;
 
 	if (is_vig_needed && ptype != MDSS_MDP_PIPE_TYPE_VIG) {
@@ -447,11 +447,11 @@ static int __validate_single_layer(struct msm_fb_data_type *mfd,
 	}
 
 	if (((ptype == MDSS_MDP_PIPE_TYPE_DMA) ||
-		(ptype == MDSS_MDP_PIPE_TYPE_CURSOR)) &&
-		(layer->dst_rect.h != layer->src_rect.h ||
-		 layer->dst_rect.w != layer->src_rect.w)) {
+	     (ptype == MDSS_MDP_PIPE_TYPE_CURSOR)) &&
+	    (layer->dst_rect.h != layer->src_rect.h ||
+	     layer->dst_rect.w != layer->src_rect.w)) {
 		pr_err("no scaling supported on dma/cursor pipe, pipe num:%d\n",
-				layer->pipe_ndx);
+		       layer->pipe_ndx);
 		return -EINVAL;
 	}
 
@@ -460,9 +460,9 @@ exit_fail:
 }
 
 static int __configure_pipe_params(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_validate_info_t *vinfo, struct mdss_mdp_pipe *pipe,
-	struct mdss_mdp_pipe *left_blend_pipe, bool is_single_layer,
-	u32 mixer_mux)
+                                   struct mdss_mdp_validate_info_t *vinfo, struct mdss_mdp_pipe *pipe,
+                                   struct mdss_mdp_pipe *left_blend_pipe, bool is_single_layer,
+                                   u32 mixer_mux)
 {
 	int ret = 0;
 	u32 left_lm_w = left_lm_w_from_mfd(mfd);
@@ -478,7 +478,7 @@ static int __configure_pipe_params(struct msm_fb_data_type *mfd,
 	pipe->src_fmt = mdss_mdp_get_format_params(layer->buffer.format);
 	if (!pipe->src_fmt || !mixer) {
 		pr_err("invalid layer format:%d or mixer:%pK\n",
-				layer->buffer.format, pipe->mixer_left);
+		       layer->buffer.format, pipe->mixer_left);
 		ret = -EINVAL;
 		goto end;
 	}
@@ -535,15 +535,15 @@ static int __configure_pipe_params(struct msm_fb_data_type *mfd,
 		pipe->dst.x += mixer->ctl->border_x_off;
 		pipe->dst.y += mixer->ctl->border_y_off;
 		pr_debug("border{%d,%d}\n", mixer->ctl->border_x_off,
-				mixer->ctl->border_y_off);
+		         mixer->ctl->border_y_off);
 	}
 	pr_debug("src{%d,%d,%d,%d}, dst{%d,%d,%d,%d}\n",
-		pipe->src.x, pipe->src.y, pipe->src.w, pipe->src.h,
-		pipe->dst.x, pipe->dst.y, pipe->dst.w, pipe->dst.h);
+	         pipe->src.x, pipe->src.y, pipe->src.w, pipe->src.h,
+	         pipe->dst.x, pipe->dst.y, pipe->dst.w, pipe->dst.h);
 
 	if (layer->flags & SCALER_ENABLED)
 		memcpy(&pipe->scaler, layer->scale,
-			sizeof(struct mdp_scale_data_v2));
+		       sizeof(struct mdp_scale_data_v2));
 
 	pipe->scaler.enable = (layer->flags & SCALER_ENABLED);
 
@@ -556,7 +556,7 @@ static int __configure_pipe_params(struct msm_fb_data_type *mfd,
 	 * or dual LM with src_split enabled.
 	 */
 	if (pipe->async_update && ((is_split_lm(mfd) && !mdata->has_src_split)
-			|| (!mdp5_data->ctl->is_video_mode))) {
+	                           || (!mdp5_data->ctl->is_video_mode))) {
 		pr_err("async update allowed only in video mode panel with src_split\n");
 		ret = -EINVAL;
 		goto end;
@@ -579,8 +579,8 @@ static int __configure_pipe_params(struct msm_fb_data_type *mfd,
 		if (left_blend_pipe) {
 			if (pipe->priority <= left_blend_pipe->priority) {
 				pr_err("priority limitation. left:%d right%d\n",
-					left_blend_pipe->priority,
-					pipe->priority);
+				       left_blend_pipe->priority,
+				       pipe->priority);
 				ret = -EPERM;
 				goto end;
 			} else {
@@ -600,13 +600,13 @@ static int __configure_pipe_params(struct msm_fb_data_type *mfd,
 		if (is_split_lm(mfd) && __layer_needs_src_split(layer)) {
 			pipe->src_split_req = true;
 		} else if ((mixer_mux == MDSS_MDP_MIXER_MUX_LEFT) &&
-		    ((layer->dst_rect.x + layer->dst_rect.w) > mixer->width)) {
+		           ((layer->dst_rect.x + layer->dst_rect.w) > mixer->width)) {
 			if (layer->dst_rect.x >= mixer->width) {
 				pr_err("%pS: err dst_x can't lie in right half",
-					__builtin_return_address(0));
+				       __builtin_return_address(0));
 				pr_cont(" flags:0x%x dst x:%d w:%d lm_w:%d\n",
-					layer->flags, layer->dst_rect.x,
-					layer->dst_rect.w, mixer->width);
+				        layer->flags, layer->dst_rect.x,
+				        layer->dst_rect.w, mixer->width);
 				ret = -EINVAL;
 				goto end;
 			} else {
@@ -615,7 +615,7 @@ static int __configure_pipe_params(struct msm_fb_data_type *mfd,
 		} else {
 			if (pipe->src_split_req) {
 				mdss_mdp_mixer_pipe_unstage(pipe,
-					pipe->mixer_right);
+				                            pipe->mixer_right);
 				pipe->mixer_right = NULL;
 			}
 			pipe->src_split_req = false;
@@ -628,10 +628,10 @@ static int __configure_pipe_params(struct msm_fb_data_type *mfd,
 
 	if (mfd->panel_orientation & MDP_FLIP_LR)
 		pipe->dst.x = pipe->mixer_left->width - pipe->dst.x -
-			pipe->dst.w;
+		              pipe->dst.w;
 	if (mfd->panel_orientation & MDP_FLIP_UD)
 		pipe->dst.y = pipe->mixer_left->height - pipe->dst.y -
-			pipe->dst.h;
+		              pipe->dst.h;
 
 	memcpy(&pipe->layer, layer, sizeof(struct mdp_input_layer));
 
@@ -639,14 +639,14 @@ static int __configure_pipe_params(struct msm_fb_data_type *mfd,
 
 	if (pipe->blend_op == BLEND_OP_NOT_DEFINED)
 		pipe->blend_op = pipe->src_fmt->alpha_enable ?
-			BLEND_OP_PREMULTIPLIED : BLEND_OP_OPAQUE;
+		                 BLEND_OP_PREMULTIPLIED : BLEND_OP_OPAQUE;
 
 	if (pipe->src_fmt->is_yuv && !(pipe->flags & MDP_SOURCE_ROTATED_90) &&
-			!pipe->scaler.enable) {
+	    !pipe->scaler.enable) {
 		pipe->overfetch_disable = OVERFETCH_DISABLE_BOTTOM;
 
-	if (pipe->dst.x >= left_lm_w)
-		pipe->overfetch_disable |= OVERFETCH_DISABLE_RIGHT;
+		if (pipe->dst.x >= left_lm_w)
+			pipe->overfetch_disable |= OVERFETCH_DISABLE_RIGHT;
 		pr_debug("overfetch flags=%x\n", pipe->overfetch_disable);
 	} else {
 		pipe->overfetch_disable = 0;
@@ -677,7 +677,7 @@ static int __configure_pipe_params(struct msm_fb_data_type *mfd,
 
 	if (layer->flags & MDP_LAYER_PP) {
 		memcpy(&pipe->pp_cfg, layer->pp_info,
-				sizeof(struct mdp_overlay_pp_params));
+		       sizeof(struct mdp_overlay_pp_params));
 		ret = mdss_mdp_pp_sspp_config(pipe);
 		if (ret) {
 			pr_err("pp setup failed %d\n", ret);
@@ -697,7 +697,7 @@ static int __configure_pipe_params(struct msm_fb_data_type *mfd,
 	ret = mdss_mdp_smp_reserve(pipe);
 	if (ret) {
 		pr_err("mdss_mdp_smp_reserve failed. pnum:%d ret=%d\n",
-			pipe->num, ret);
+		       pipe->num, ret);
 		goto end;
 	}
 end:
@@ -705,8 +705,8 @@ end:
 }
 
 static struct sync_fence *__create_fence(struct msm_fb_data_type *mfd,
-	struct msm_sync_pt_data *sync_pt_data, u32 fence_type,
-	int *fence_fd, int value)
+        struct msm_sync_pt_data *sync_pt_data, u32 fence_type,
+        int *fence_fd, int value)
 {
 	struct mdss_overlay_private *mdp5_data;
 	struct mdss_mdp_ctl *ctl;
@@ -728,24 +728,24 @@ static struct sync_fence *__create_fence(struct msm_fb_data_type *mfd,
 
 	if (fence_type == MDSS_MDP_RETIRE_FENCE)
 		snprintf(fence_name, sizeof(fence_name), "fb%d_retire",
-			mfd->index);
+		         mfd->index);
 	else
 		snprintf(fence_name, sizeof(fence_name), "fb%d_release",
-			mfd->index);
+		         mfd->index);
 
 	if ((fence_type == MDSS_MDP_RETIRE_FENCE) &&
-		(mfd->panel.type == MIPI_CMD_PANEL)) {
+	    (mfd->panel.type == MIPI_CMD_PANEL)) {
 		if (mdp5_data->vsync_timeline) {
 			value = mdp5_data->vsync_timeline->value + 1 +
-				mdp5_data->retire_cnt++;
+			        mdp5_data->retire_cnt++;
 			sync_fence = mdss_fb_sync_get_fence(
-				mdp5_data->vsync_timeline, fence_name, value);
+			                 mdp5_data->vsync_timeline, fence_name, value);
 		} else {
 			return ERR_PTR(-EPERM);
 		}
 	} else {
 		sync_fence = mdss_fb_sync_get_fence(sync_pt_data->timeline,
-			fence_name, value);
+		                                    fence_name, value);
 	}
 
 	if (IS_ERR_OR_NULL(sync_fence)) {
@@ -757,7 +757,7 @@ static struct sync_fence *__create_fence(struct msm_fb_data_type *mfd,
 	*fence_fd = get_unused_fd_flags(0);
 	if (*fence_fd < 0) {
 		pr_err("%s: get_unused_fd_flags failed error:0x%x\n",
-			fence_name, *fence_fd);
+		       fence_name, *fence_fd);
 		sync_fence_put(sync_fence);
 		sync_fence = NULL;
 		goto end;
@@ -775,7 +775,7 @@ end:
  * returns release/retire fences to caller. It acts like buff_sync ioctl.
  */
 static int __handle_buffer_fences(struct msm_fb_data_type *mfd,
-	struct mdp_layer_commit_v1 *commit, struct mdp_input_layer *layer_list)
+                                  struct mdp_layer_commit_v1 *commit, struct mdp_input_layer *layer_list)
 {
 	struct sync_fence *fence, *release_fence, *retire_fence;
 	struct msm_sync_pt_data *sync_pt_data = NULL;
@@ -794,7 +794,7 @@ static int __handle_buffer_fences(struct msm_fb_data_type *mfd,
 	i = mdss_fb_wait_for_fence(sync_pt_data);
 	if (i > 0)
 		pr_warn("%s: waited on %d active fences\n",
-			sync_pt_data->fence_name, i);
+		        sync_pt_data->fence_name, i);
 
 	mutex_lock(&sync_pt_data->sync_mutex);
 	for (i = 0, acq_fen_count = 0; i < layer_count; i++) {
@@ -806,7 +806,7 @@ static int __handle_buffer_fences(struct msm_fb_data_type *mfd,
 		fence = sync_fence_fdget(layer->buffer.fence);
 		if (!fence) {
 			pr_err("%s: sync fence get failed! fd=%d\n",
-				sync_pt_data->fence_name, layer->buffer.fence);
+			       sync_pt_data->fence_name, layer->buffer.fence);
 			ret = -EINVAL;
 			break;
 		} else {
@@ -818,10 +818,10 @@ static int __handle_buffer_fences(struct msm_fb_data_type *mfd,
 		goto sync_fence_err;
 
 	value = sync_pt_data->timeline_value + sync_pt_data->threshold +
-			atomic_read(&sync_pt_data->commit_cnt);
+	        atomic_read(&sync_pt_data->commit_cnt);
 
 	release_fence = __create_fence(mfd, sync_pt_data,
-		MDSS_MDP_RELEASE_FENCE, &commit->release_fence, value);
+	                               MDSS_MDP_RELEASE_FENCE, &commit->release_fence, value);
 	if (IS_ERR_OR_NULL(release_fence)) {
 		pr_err("unable to retrieve release fence\n");
 		ret = PTR_ERR(release_fence);
@@ -829,7 +829,7 @@ static int __handle_buffer_fences(struct msm_fb_data_type *mfd,
 	}
 
 	retire_fence = __create_fence(mfd, sync_pt_data,
-		MDSS_MDP_RETIRE_FENCE, &commit->retire_fence, value);
+	                              MDSS_MDP_RETIRE_FENCE, &commit->retire_fence, value);
 	if (IS_ERR_OR_NULL(retire_fence)) {
 		pr_err("unable to retrieve retire fence\n");
 		ret = PTR_ERR(retire_fence);
@@ -865,9 +865,9 @@ sync_fence_err:
  * buffer mapping right now. This is case for all formats including UBWC.
  */
 static struct mdss_mdp_data *__map_layer_buffer(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_pipe *pipe,
-	struct mdss_mdp_validate_info_t *validate_info_list,
-	u32 layer_count)
+        struct mdss_mdp_pipe *pipe,
+        struct mdss_mdp_validate_info_t *validate_info_list,
+        u32 layer_count)
 {
 	struct mdss_mdp_data *src_data;
 	struct mdp_input_layer *layer = NULL;
@@ -900,7 +900,7 @@ static struct mdss_mdp_data *__map_layer_buffer(struct msm_fb_data_type *mfd,
 	}
 
 	flags = (pipe->flags & (MDP_SECURE_OVERLAY_SESSION |
-				MDP_SECURE_DISPLAY_OVERLAY_SESSION));
+	                        MDP_SECURE_DISPLAY_OVERLAY_SESSION));
 
 	if (buffer->planes[0].fd < 0) {
 		pr_err("invalid file descriptor for layer buffer\n");
@@ -919,8 +919,8 @@ static struct mdss_mdp_data *__map_layer_buffer(struct msm_fb_data_type *mfd,
 	image.memory_id = buffer->planes[0].fd;
 	image.offset = buffer->planes[0].offset;
 	ret = mdss_mdp_data_get_and_validate_size(src_data, &image, 1,
-			flags, &mfd->pdev->dev, false, DMA_TO_DEVICE,
-			buffer);
+	        flags, &mfd->pdev->dev, false, DMA_TO_DEVICE,
+	        buffer);
 	if (ret)
 		goto end_buf_free;
 
@@ -935,31 +935,31 @@ end:
 }
 
 static inline bool __compare_layer_config(struct mdp_input_layer *validate,
-	struct mdss_mdp_pipe *pipe)
+        struct mdss_mdp_pipe *pipe)
 {
 	struct mdp_input_layer *layer = &pipe->layer;
 	bool status = true;
 
 	status = !memcmp(&validate->src_rect, &layer->src_rect,
-			sizeof(validate->src_rect)) &&
-		!memcmp(&validate->dst_rect, &layer->dst_rect,
-			sizeof(validate->dst_rect)) &&
-		validate->flags == layer->flags &&
-		validate->horz_deci == layer->horz_deci &&
-		validate->vert_deci == layer->vert_deci &&
-		validate->alpha == layer->alpha &&
-		validate->color_space == layer->color_space &&
-		validate->z_order == (layer->z_order - MDSS_MDP_STAGE_0) &&
-		validate->transp_mask == layer->transp_mask &&
-		validate->bg_color == layer->bg_color &&
-		validate->blend_op == layer->blend_op &&
-		validate->buffer.width == layer->buffer.width &&
-		validate->buffer.height == layer->buffer.height &&
-		validate->buffer.format == layer->buffer.format;
+	                 sizeof(validate->src_rect)) &&
+	         !memcmp(&validate->dst_rect, &layer->dst_rect,
+	                 sizeof(validate->dst_rect)) &&
+	         validate->flags == layer->flags &&
+	         validate->horz_deci == layer->horz_deci &&
+	         validate->vert_deci == layer->vert_deci &&
+	         validate->alpha == layer->alpha &&
+	         validate->color_space == layer->color_space &&
+	         validate->z_order == (layer->z_order - MDSS_MDP_STAGE_0) &&
+	         validate->transp_mask == layer->transp_mask &&
+	         validate->bg_color == layer->bg_color &&
+	         validate->blend_op == layer->blend_op &&
+	         validate->buffer.width == layer->buffer.width &&
+	         validate->buffer.height == layer->buffer.height &&
+	         validate->buffer.format == layer->buffer.format;
 
 	if (status && (validate->flags & SCALER_ENABLED))
 		status = !memcmp(validate->scale, &pipe->scaler,
-			sizeof(pipe->scaler));
+		                 sizeof(pipe->scaler));
 
 	return status;
 }
@@ -972,8 +972,8 @@ static inline bool __compare_layer_config(struct mdp_input_layer *validate,
  * compares all input layer params except buffer handle, offset, fences.
  */
 static struct mdss_mdp_pipe *__find_layer_in_validate_q(
-	struct mdss_mdp_validate_info_t *vinfo,
-	struct mdss_overlay_private *mdp5_data)
+    struct mdss_mdp_validate_info_t *vinfo,
+    struct mdss_overlay_private *mdp5_data)
 {
 	bool found = false;
 	struct mdss_mdp_pipe *pipe;
@@ -994,8 +994,8 @@ static struct mdss_mdp_pipe *__find_layer_in_validate_q(
 }
 
 static bool __find_pipe_in_list(struct list_head *head,
-	int pipe_ndx, struct mdss_mdp_pipe **out_pipe,
-	enum mdss_mdp_pipe_rect rect_num)
+                                int pipe_ndx, struct mdss_mdp_pipe **out_pipe,
+                                enum mdss_mdp_pipe_rect rect_num)
 {
 	struct mdss_mdp_pipe *pipe;
 
@@ -1015,20 +1015,20 @@ static bool __find_pipe_in_list(struct list_head *head,
  * It is caller responsibility to hold the list lock before calling this API.
  */
 static struct mdss_mdp_pipe *__find_and_move_cleanup_pipe(
-	struct mdss_overlay_private *mdp5_data, u32 pipe_ndx,
-	enum mdss_mdp_pipe_rect rect_num)
+    struct mdss_overlay_private *mdp5_data, u32 pipe_ndx,
+    enum mdss_mdp_pipe_rect rect_num)
 {
 	struct mdss_mdp_pipe *pipe = NULL;
 
 	if (__find_pipe_in_list(&mdp5_data->pipes_destroy,
-				pipe_ndx, &pipe, rect_num)) {
+	                        pipe_ndx, &pipe, rect_num)) {
 		pr_debug("reuse destroy pipe id:%d ndx:%d rect:%d\n",
-				pipe->num, pipe_ndx, rect_num);
+		         pipe->num, pipe_ndx, rect_num);
 		list_move(&pipe->list, &mdp5_data->pipes_used);
 	} else if (__find_pipe_in_list(&mdp5_data->pipes_cleanup,
-				pipe_ndx, &pipe, rect_num)) {
+	                               pipe_ndx, &pipe, rect_num)) {
 		pr_debug("reuse cleanup pipe id:%d ndx:%d rect:%d\n",
-				pipe->num, pipe_ndx, rect_num);
+		         pipe->num, pipe_ndx, rect_num);
 		mdss_mdp_mixer_pipe_unstage(pipe, pipe->mixer_left);
 		mdss_mdp_mixer_pipe_unstage(pipe, pipe->mixer_right);
 		pipe->mixer_stage = MDSS_MDP_STAGE_UNUSED;
@@ -1048,10 +1048,10 @@ static struct mdss_mdp_pipe *__find_and_move_cleanup_pipe(
  * the null pipe.
  */
 static struct mdss_mdp_pipe *__assign_pipe_for_layer(
-	struct msm_fb_data_type *mfd,
-	struct mdss_mdp_mixer *mixer, u32 pipe_ndx,
-	enum layer_pipe_q *pipe_q_type,
-	enum mdss_mdp_pipe_rect rect_num)
+    struct msm_fb_data_type *mfd,
+    struct mdss_mdp_mixer *mixer, u32 pipe_ndx,
+    enum layer_pipe_q *pipe_q_type,
+    enum mdss_mdp_pipe_rect rect_num)
 {
 	struct mdss_mdp_pipe *pipe = NULL;
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
@@ -1061,7 +1061,7 @@ static struct mdss_mdp_pipe *__assign_pipe_for_layer(
 	__find_pipe_in_list(&mdp5_data->pipes_used, pipe_ndx, &pipe, rect_num);
 	if (IS_ERR_OR_NULL(pipe)) {
 		pipe = __find_and_move_cleanup_pipe(mdp5_data,
-				pipe_ndx, rect_num);
+		                                    pipe_ndx, rect_num);
 		if (IS_ERR_OR_NULL(pipe))
 			*pipe_q_type = LAYER_USES_NEW_PIPE_Q;
 		else
@@ -1076,15 +1076,15 @@ static struct mdss_mdp_pipe *__assign_pipe_for_layer(
 		if (pipe->mixer_left != mixer) {
 			if (!mixer->ctl || (mixer->ctl->mfd != mfd)) {
 				pr_err("Can't switch mixer %d->%d pnum %d!\n",
-					pipe->mixer_left->num, mixer->num,
-						pipe->num);
+				       pipe->mixer_left->num, mixer->num,
+				       pipe->num);
 				pipe = ERR_PTR(-EINVAL);
 				goto end;
 			}
 			pr_debug("switching pipe%d mixer %d->%d\n",
-				pipe->num,
-				pipe->mixer_left ? pipe->mixer_left->num : -1,
-				mixer->num);
+			         pipe->num,
+			         pipe->mixer_left ? pipe->mixer_left->num : -1,
+			         mixer->num);
 			mdss_mdp_mixer_pipe_unstage(pipe, pipe->mixer_left);
 			pipe->mixer_left = mixer;
 		}
@@ -1094,7 +1094,7 @@ static struct mdss_mdp_pipe *__assign_pipe_for_layer(
 	pipe = mdss_mdp_pipe_assign(mdata, mixer, pipe_ndx, rect_num);
 	if (IS_ERR_OR_NULL(pipe)) {
 		pr_err("error reserving pipe. pipe_ndx=0x%x rect_num=%d mfd ndx=%d\n",
-			pipe_ndx, rect_num, mfd->index);
+		       pipe_ndx, rect_num, mfd->index);
 		goto end;
 	}
 
@@ -1129,13 +1129,13 @@ end:
  *
  */
 static inline bool __is_sd_state_valid(uint32_t sd_pipes, uint32_t nonsd_pipes,
-	int panel_type, u32 sd_enabled)
+                                       int panel_type, u32 sd_enabled)
 {
 	if (panel_type == MIPI_CMD_PANEL) {
 		if ((((mdss_get_sd_client_cnt() > 1) && sd_enabled) ||
-			(mdss_get_sd_client_cnt() && !sd_enabled) ||
-			sd_pipes)
-			&& nonsd_pipes)
+		     (mdss_get_sd_client_cnt() && !sd_enabled) ||
+		     sd_pipes)
+		    && nonsd_pipes)
 			return false;
 	} else {
 		if ((sd_pipes || mdss_get_sd_client_cnt()) && nonsd_pipes)
@@ -1169,21 +1169,21 @@ static int __validate_secure_display(struct mdss_overlay_private *mdp5_data)
 	mutex_unlock(&mdp5_data->list_lock);
 
 	pr_debug("pipe count:: secure display:%d non-secure:%d\n",
-		sd_pipes, nonsd_pipes);
+	         sd_pipes, nonsd_pipes);
 
 	mdp5_data->sd_transition_state = SD_TRANSITION_NONE;
 	if (!__is_sd_state_valid(sd_pipes, nonsd_pipes, panel_type,
-		mdp5_data->sd_enabled)) {
+	                         mdp5_data->sd_enabled)) {
 		pr_err("non-secure layer validation request during secure display session\n");
 		pr_err(" secure client cnt:%d secure pipe cnt:%d non-secure pipe cnt:%d\n",
-			mdss_get_sd_client_cnt(), sd_pipes, nonsd_pipes);
+		       mdss_get_sd_client_cnt(), sd_pipes, nonsd_pipes);
 		ret = -EINVAL;
 	} else if (!mdp5_data->sd_enabled && sd_pipes) {
-			mdp5_data->sd_transition_state =
-				SD_TRANSITION_NON_SECURE_TO_SECURE;
+		mdp5_data->sd_transition_state =
+		    SD_TRANSITION_NON_SECURE_TO_SECURE;
 	} else if (mdp5_data->sd_enabled && !sd_pipes) {
-			mdp5_data->sd_transition_state =
-				SD_TRANSITION_SECURE_TO_NON_SECURE;
+		mdp5_data->sd_transition_state =
+		    SD_TRANSITION_SECURE_TO_NON_SECURE;
 	}
 	return ret;
 }
@@ -1199,7 +1199,7 @@ static int __validate_secure_display(struct mdss_overlay_private *mdp5_data)
  * Moving pipes before can affects staged pipe for previous cycle.
  */
 static void __handle_free_list(struct mdss_overlay_private *mdp5_data,
-	struct mdss_mdp_validate_info_t *validate_info_list, u32 layer_count)
+                               struct mdss_mdp_validate_info_t *validate_info_list, u32 layer_count)
 {
 	int i;
 	struct mdp_input_layer *layer;
@@ -1229,7 +1229,7 @@ static void __handle_free_list(struct mdss_overlay_private *mdp5_data,
 }
 
 static bool __multirect_validate_flip(struct mdp_input_layer **layers,
-		size_t count)
+                                      size_t count)
 {
 	/* not supporting more than 2 layers */
 	if (count != 2)
@@ -1239,7 +1239,7 @@ static bool __multirect_validate_flip(struct mdp_input_layer **layers,
 	if ((layers[0]->flags & MDP_LAYER_FLIP_LR) ||
 	    (layers[1]->flags & MDP_LAYER_FLIP_LR)) {
 		pr_err("multirect and HFLIP is not allowed. input layer flags=0x%x paired layer flags=0x%x\n",
-			layers[0]->flags, layers[1]->flags);
+		       layers[0]->flags, layers[1]->flags);
 		return false;
 	}
 	if ((layers[0]->flags & MDP_LAYER_FLIP_UD) !=
@@ -1252,7 +1252,7 @@ static bool __multirect_validate_flip(struct mdp_input_layer **layers,
 }
 
 static bool __multirect_validate_format(struct mdp_input_layer **layers,
-		size_t count)
+                                        size_t count)
 {
 	struct mdss_mdp_format_params *rec0_fmt, *rec1_fmt;
 	bool is_ubwc;
@@ -1265,23 +1265,23 @@ static bool __multirect_validate_format(struct mdp_input_layer **layers,
 	rec0_fmt = mdss_mdp_get_format_params(layers[0]->buffer.format);
 	if (!rec0_fmt) {
 		pr_err("invalid input layer format %d\n",
-			layers[0]->buffer.format);
+		       layers[0]->buffer.format);
 		return false;
 	}
 	rec1_fmt = mdss_mdp_get_format_params(layers[1]->buffer.format);
 	if (!rec1_fmt) {
 		pr_err("invalid paired layer format %d\n",
-			layers[1]->buffer.format);
+		       layers[1]->buffer.format);
 		return false;
 	}
 	if (rec0_fmt->is_yuv || rec1_fmt->is_yuv) {
 		pr_err("multirect on YUV format is not supported. input=%d paired=%d\n",
-			rec0_fmt->is_yuv, rec1_fmt->is_yuv);
+		       rec0_fmt->is_yuv, rec1_fmt->is_yuv);
 		return false;
 	}
 	if (rec0_fmt->fetch_mode != rec1_fmt->fetch_mode) {
 		pr_err("multirect fetch_mode mismatch is not allowed. input=%d paired=%d\n",
-			rec0_fmt->fetch_mode, rec1_fmt->fetch_mode);
+		       rec0_fmt->fetch_mode, rec1_fmt->fetch_mode);
 		return false;
 	}
 	is_ubwc = mdss_mdp_is_ubwc_format(rec0_fmt);
@@ -1290,16 +1290,16 @@ static bool __multirect_validate_format(struct mdp_input_layer **layers,
 		return false;
 	} else if (rec0_fmt->bpp != rec1_fmt->bpp) {
 		pr_err("multirect linear format bpp mismatch is not allowed. input=%d paired=%d\n",
-			rec0_fmt->bpp, rec1_fmt->bpp);
+		       rec0_fmt->bpp, rec1_fmt->bpp);
 		return false;
 	} else if (rec0_fmt->unpack_dx_format != rec1_fmt->unpack_dx_format) {
 		pr_err("multirect linear format 10bit vs 8bit mismatch is not allowed. input=%d paired=%d\n",
-			rec0_fmt->unpack_dx_format, rec1_fmt->unpack_dx_format);
+		       rec0_fmt->unpack_dx_format, rec1_fmt->unpack_dx_format);
 		return false;
 	}
 
 	if ((layers[0]->flags & MDP_LAYER_SOLID_FILL) !=
-			(layers[1]->flags & MDP_LAYER_SOLID_FILL)) {
+	    (layers[1]->flags & MDP_LAYER_SOLID_FILL)) {
 		pr_err("solid fill mismatch between multirect layers\n");
 		return false;
 	}
@@ -1308,7 +1308,7 @@ static bool __multirect_validate_format(struct mdp_input_layer **layers,
 }
 
 static bool __multirect_validate_rects(struct mdp_input_layer **layers,
-		size_t count)
+                                       size_t count)
 {
 	struct mdss_rect dst[MDSS_MDP_PIPE_MAX_RECTS];
 	int i;
@@ -1321,22 +1321,24 @@ static bool __multirect_validate_rects(struct mdp_input_layer **layers,
 		if ((layers[i]->src_rect.w != layers[i]->dst_rect.w) ||
 		    (layers[i]->src_rect.h != layers[i]->dst_rect.h)) {
 			pr_err("multirect layers cannot have scaling: src: %dx%d dst: %dx%d\n",
-				layers[i]->src_rect.w, layers[i]->src_rect.h,
-				layers[i]->dst_rect.w, layers[i]->dst_rect.h);
+			       layers[i]->src_rect.w, layers[i]->src_rect.h,
+			       layers[i]->dst_rect.w, layers[i]->dst_rect.h);
 			return false;
 		}
 
-		dst[i] = (struct mdss_rect) {layers[i]->dst_rect.x,
-					     layers[i]->dst_rect.y,
-					     layers[i]->dst_rect.w,
-					     layers[i]->dst_rect.h};
+		dst[i] = (struct mdss_rect) {
+			layers[i]->dst_rect.x,
+			       layers[i]->dst_rect.y,
+			       layers[i]->dst_rect.w,
+			       layers[i]->dst_rect.h
+		};
 	}
 
 	/* resolution related validation */
 	if (mdss_rect_overlap_check(&dst[0], &dst[1])) {
 		pr_err("multirect dst overlap is not allowed. input: %d,%d,%d,%d paired %d,%d,%d,%d\n",
-			dst[0].x, dst[0].y, dst[0].w, dst[0].y,
-			dst[1].x, dst[1].y, dst[1].w, dst[1].y);
+		       dst[0].x, dst[0].y, dst[0].w, dst[0].y,
+		       dst[1].x, dst[1].y, dst[1].w, dst[1].y);
 		return false;
 	}
 
@@ -1344,7 +1346,7 @@ static bool __multirect_validate_rects(struct mdp_input_layer **layers,
 }
 
 static bool __multirect_validate_properties(struct mdp_input_layer **layers,
-		size_t count)
+        size_t count)
 {
 	/* not supporting more than 2 layers */
 	if (count != 2)
@@ -1358,7 +1360,7 @@ static bool __multirect_validate_properties(struct mdp_input_layer **layers,
 
 	if (layers[0]->z_order == layers[1]->z_order) {
 		pr_err("multirect layers cannot have same z_order=%d\n",
-			layers[0]->z_order);
+		       layers[0]->z_order);
 		return false;
 	}
 
@@ -1366,7 +1368,7 @@ static bool __multirect_validate_properties(struct mdp_input_layer **layers,
 }
 
 static bool (*__multirect_validators[])(struct mdp_input_layer **layers,
-		size_t count) = {
+                                        size_t count) = {
 	__multirect_validate_flip,
 	__multirect_validate_format,
 	__multirect_validate_rects,
@@ -1394,8 +1396,8 @@ static inline int __multirect_layer_flags_to_mode(u32 flags)
 }
 
 static int __multirect_validate_mode(struct msm_fb_data_type *mfd,
-		struct mdp_input_layer **layers,
-		size_t count)
+                                     struct mdp_input_layer **layers,
+                                     size_t count)
 {
 	struct mdss_data_type *mdata = mfd_to_mdata(mfd);
 	struct mdss_mdp_format_params *rec0_fmt;
@@ -1416,7 +1418,7 @@ static int __multirect_validate_mode(struct msm_fb_data_type *mfd,
 	rec0_fmt = mdss_mdp_get_format_params(layers[0]->buffer.format);
 	if (!rec0_fmt) {
 		pr_err("invalid input layer format %d\n",
-			layers[0]->buffer.format);
+		       layers[0]->buffer.format);
 		return false;
 	}
 
@@ -1448,8 +1450,8 @@ static int __multirect_validate_mode(struct msm_fb_data_type *mfd,
 
 		if (yoffset < threshold) {
 			pr_err("Unable to operate in serial fetch mode with yoffset=%d dst[0]=%d,%d dst[1]=%d,%d\n",
-					yoffset, dst[0]->y, dst[0]->h,
-					dst[1]->y, dst[1]->h);
+			       yoffset, dst[0]->y, dst[0]->h,
+			       dst[1]->y, dst[1]->h);
 			return -EINVAL;
 		}
 	} else if (mode == MDSS_MDP_PIPE_MULTIRECT_PARALLEL) {
@@ -1468,11 +1470,11 @@ static int __multirect_validate_mode(struct msm_fb_data_type *mfd,
 		 * width rectangles in parrellel fetch mode.
 		 */
 		if (is_ubwc &&
-			((dst[0]->w > (mdata->max_mixer_width / 2)) ||
-			(dst[1]->w > (mdata->max_mixer_width / 2)))) {
+		    ((dst[0]->w > (mdata->max_mixer_width / 2)) ||
+		     (dst[1]->w > (mdata->max_mixer_width / 2)))) {
 			pr_err("in UBWC multirect parallel mode, max dst_w cannot be greater than %d. rec0_w=%d rec1_w=%d\n",
-				mdata->max_mixer_width / 2,
-				dst[0]->w, dst[1]->w);
+			       mdata->max_mixer_width / 2,
+			       dst[0]->w, dst[1]->w);
 			return -EINVAL;
 		}
 
@@ -1480,7 +1482,7 @@ static int __multirect_validate_mode(struct msm_fb_data_type *mfd,
 		if (dst[0]->x < left_lm_w) {
 			if (dst[0]->w > (left_lm_w - dst[0]->x)) {
 				pr_err("multirect parallel mode, rec0 dst (%d,%d) cannot cross lm boundary (%d)\n",
-					dst[0]->x, dst[0]->w, left_lm_w);
+				       dst[0]->x, dst[0]->w, left_lm_w);
 				return -EINVAL;
 			}
 			rec0_mixer = MDSS_MDP_MIXER_MUX_LEFT;
@@ -1491,7 +1493,7 @@ static int __multirect_validate_mode(struct msm_fb_data_type *mfd,
 		if (dst[1]->x < left_lm_w) {
 			if (dst[0]->w > (left_lm_w - dst[0]->x)) {
 				pr_err("multirect parallel mode, rec1 dst (%d,%d) cannot cross lm boundary (%d)\n",
-					dst[1]->x, dst[1]->w, left_lm_w);
+				       dst[1]->x, dst[1]->w, left_lm_w);
 				return -EINVAL;
 			}
 			rec1_mixer = MDSS_MDP_MIXER_MUX_LEFT;
@@ -1501,7 +1503,7 @@ static int __multirect_validate_mode(struct msm_fb_data_type *mfd,
 
 		if (rec0_mixer != rec1_mixer) {
 			pr_err("multirect parallel mode mixer mismatch. rec0_mix=%d rec1_mix=%d\n",
-				rec0_mixer, rec1_mixer);
+			       rec0_mixer, rec1_mixer);
 			return -EINVAL;
 		}
 	} else {
@@ -1514,8 +1516,8 @@ static int __multirect_validate_mode(struct msm_fb_data_type *mfd,
 }
 
 static int __update_multirect_info(struct msm_fb_data_type *mfd,
-		struct mdss_mdp_validate_info_t *validate_info_list,
-		struct mdp_input_layer *layer_list, int ndx, int layer_cnt)
+                                   struct mdss_mdp_validate_info_t *validate_info_list,
+                                   struct mdp_input_layer *layer_list, int ndx, int layer_cnt)
 {
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
 	struct mdss_mdp_validate_info_t *vinfo[MDSS_MDP_PIPE_MAX_RECTS];
@@ -1527,7 +1529,7 @@ static int __update_multirect_info(struct msm_fb_data_type *mfd,
 		return mode;
 
 	pr_debug("layer #%d pipe_ndx=%d multirect mode=%d\n",
-			ndx, layer_list[ndx].pipe_ndx, mode);
+	         ndx, layer_list[ndx].pipe_ndx, mode);
 
 	vinfo[0] = &validate_info_list[ndx];
 	vinfo[0]->layer = &layer_list[ndx];
@@ -1551,24 +1553,24 @@ static int __update_multirect_info(struct msm_fb_data_type *mfd,
 		if (layer_list[ndx].pipe_ndx == layer_list[i].pipe_ndx) {
 			if (cnt >= max_rects) {
 				pr_err("more than %d layers of type %d with same pipe_ndx=%d indexes=%d %d\n",
-					max_rects, ptype,
-					layer_list[ndx].pipe_ndx, ndx, i);
+				       max_rects, ptype,
+				       layer_list[ndx].pipe_ndx, ndx, i);
 				return -EINVAL;
 			}
 
 			mode = __multirect_layer_flags_to_mode(
-					layer_list[i].flags);
+			           layer_list[i].flags);
 			if (IS_ERR_VALUE(mode))
 				return mode;
 
 			if (mode != vinfo[0]->multirect.mode) {
 				pr_err("unable to set different multirect modes for pipe_ndx=%d (%d %d)\n",
-					layer_list[ndx].pipe_ndx, ndx, i);
+				       layer_list[ndx].pipe_ndx, ndx, i);
 				return -EINVAL;
 			}
 
 			pr_debug("found matching pair for pipe_ndx=%d (%d %d)\n",
-					layer_list[i].pipe_ndx, ndx, i);
+			         layer_list[i].pipe_ndx, ndx, i);
 
 			vinfo[cnt] = &validate_info_list[i];
 			vinfo[cnt]->multirect.num = cnt;
@@ -1583,7 +1585,7 @@ static int __update_multirect_info(struct msm_fb_data_type *mfd,
 
 	if (cnt == 1) {
 		pr_err("multirect mode enabled but unable to find extra rects for pipe_ndx=%x\n",
-			layer_list[ndx].pipe_ndx);
+		       layer_list[ndx].pipe_ndx);
 		return -EINVAL;
 	}
 
@@ -1591,14 +1593,14 @@ static int __update_multirect_info(struct msm_fb_data_type *mfd,
 }
 
 static int __validate_multirect(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_validate_info_t *validate_info_list,
-	struct mdp_input_layer *layer_list, int ndx, int layer_cnt)
+                                struct mdss_mdp_validate_info_t *validate_info_list,
+                                struct mdp_input_layer *layer_list, int ndx, int layer_cnt)
 {
 	struct mdp_input_layer *layers[MDSS_MDP_PIPE_MAX_RECTS] = { 0 };
 	int i, cnt, rc;
 
 	cnt = __update_multirect_info(mfd, validate_info_list,
-			layer_list, ndx, layer_cnt);
+	                              layer_list, ndx, layer_cnt);
 	if (IS_ERR_VALUE(cnt))
 		return cnt;
 
@@ -1607,7 +1609,7 @@ static int __validate_multirect(struct msm_fb_data_type *mfd,
 		return 0;
 	} else if (cnt > 2) {
 		pr_err("unsupported multirect configuration, multirect cnt=%d\n",
-				cnt);
+		       cnt);
 		return -EINVAL;
 	}
 
@@ -1636,7 +1638,7 @@ static int __validate_multirect(struct msm_fb_data_type *mfd,
  * to find failed layer from layer_list based on "error_code".
  */
 static int __validate_layers(struct msm_fb_data_type *mfd,
-	struct file *file, struct mdp_layer_commit_v1 *commit)
+                             struct file *file, struct mdp_layer_commit_v1 *commit)
 {
 	int ret, i = 0;
 	int rec_ndx[MDSS_MDP_PIPE_MAX_RECTS] = { 0 };
@@ -1671,7 +1673,7 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 	layer_list = commit->input_layers;
 
 	validate_info_list = kcalloc(layer_count, sizeof(*validate_info_list),
-				     GFP_KERNEL);
+	                             GFP_KERNEL);
 	if (!validate_info_list) {
 		ret = -ENOMEM;
 		goto end;
@@ -1686,17 +1688,17 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 		if (right_lm_layers >= MAX_PIPES_PER_LM ||
 		    left_lm_layers >= MAX_PIPES_PER_LM) {
 			pr_err("too many pipes stagged mixer left: %d mixer right:%d\n",
-				left_lm_layers, right_lm_layers);
+			       left_lm_layers, right_lm_layers);
 			ret = -EINVAL;
 			goto end;
 		}
 
 		if (!validate_info_list[i].layer) {
 			ret = __validate_multirect(mfd, validate_info_list,
-						   layer_list, i, layer_count);
+			                           layer_list, i, layer_count);
 			if (ret) {
 				pr_err("error validating multirect config. ret=%d i=%d\n",
-					ret, i);
+				       ret, i);
 				goto end;
 			}
 		}
@@ -1706,8 +1708,8 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 
 		if (rec_ndx[rect_num] & layer_list[i].pipe_ndx) {
 			pr_err("duplicate layer found pipe_ndx=%d rect=%d (0x%x)\n",
-					layer_list[i].pipe_ndx, rect_num,
-					rec_ndx[rect_num]);
+			       layer_list[i].pipe_ndx, rect_num,
+			       rec_ndx[rect_num]);
 			ret = -EINVAL;
 			goto end;
 		}
@@ -1750,7 +1752,7 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 			struct mdp_rect *right = &layer->dst_rect;
 
 			if ((layer->flags & MDP_LAYER_ASYNC)
-				|| (prev_layer->flags & MDP_LAYER_ASYNC)) {
+			    || (prev_layer->flags & MDP_LAYER_ASYNC)) {
 				ret = -EINVAL;
 				layer->error_code = ret;
 				pr_err("async layer should have unique z_order\n");
@@ -1785,9 +1787,9 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 			z = LAYER_ZORDER_BOTH;
 
 		if (!left_blend_pipe && (layer->z_order >= MDSS_MDP_MAX_STAGE ||
-				(z & zorder_used[layer->z_order]))) {
+		                         (z & zorder_used[layer->z_order]))) {
 			pr_err("invalid z_order=%d or already in use %x\n",
-					layer->z_order, z);
+			       layer->z_order, z);
 			ret = -EINVAL;
 			layer->error_code = ret;
 			goto validate_exit;
@@ -1796,7 +1798,7 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 		}
 
 		if ((layer->dst_rect.x < left_lm_w) ||
-				__layer_needs_src_split(layer)) {
+		    __layer_needs_src_split(layer)) {
 			is_single_layer = (left_lm_layers == 1);
 			mixer_mux = MDSS_MDP_MIXER_MUX_LEFT;
 		} else {
@@ -1810,8 +1812,8 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 		 * is changed.
 		 */
 		pipe = (force_validate) ? NULL :
-				__find_layer_in_validate_q(
-					&validate_info_list[i], mdp5_data);
+		       __find_layer_in_validate_q(
+		           &validate_info_list[i], mdp5_data);
 		if (pipe) {
 			if (mixer_mux == MDSS_MDP_MIXER_MUX_RIGHT)
 				right_plist[right_cnt++] = pipe;
@@ -1820,7 +1822,7 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 
 			if (layer->flags & MDP_LAYER_PP) {
 				memcpy(&pipe->pp_cfg, layer->pp_info,
-					sizeof(struct mdp_overlay_pp_params));
+				       sizeof(struct mdp_overlay_pp_params));
 				ret = mdss_mdp_pp_sspp_config(pipe);
 				if (ret)
 					pr_err("pp setup failed %d\n", ret);
@@ -1834,8 +1836,8 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 		mixer = mdss_mdp_mixer_get(mdp5_data->ctl, mixer_mux);
 		if (!mixer) {
 			pr_err("unable to get %s mixer\n",
-				(mixer_mux == MDSS_MDP_MIXER_MUX_RIGHT) ?
-				"right" : "left");
+			       (mixer_mux == MDSS_MDP_MIXER_MUX_RIGHT) ?
+			       "right" : "left");
 			ret = -EINVAL;
 			layer->error_code = ret;
 			goto validate_exit;
@@ -1843,7 +1845,7 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 
 		layer->z_order += MDSS_MDP_STAGE_0;
 		ret = __validate_single_layer(mfd, &validate_info_list[i],
-				mixer_mux);
+		                              mixer_mux);
 		if (ret) {
 			pr_err("layer:%d validation failed ret=%d\n", i, ret);
 			layer->error_code = ret;
@@ -1853,10 +1855,10 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 		rect_num = validate_info_list[i].multirect.num;
 
 		pipe = __assign_pipe_for_layer(mfd, mixer, layer->pipe_ndx,
-			&pipe_q_type, rect_num);
+		                               &pipe_q_type, rect_num);
 		if (IS_ERR_OR_NULL(pipe)) {
 			pr_err("error assigning pipe id=0x%x rc:%ld\n",
-				layer->pipe_ndx, PTR_ERR(pipe));
+			       layer->pipe_ndx, PTR_ERR(pipe));
 			ret = PTR_ERR(pipe);
 			layer->error_code = ret;
 			goto validate_exit;
@@ -1870,7 +1872,7 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 		ret = mdss_mdp_pipe_map(pipe);
 		if (IS_ERR_VALUE(ret)) {
 			pr_err("Unable to map used pipe%d ndx=%x\n",
-				pipe->num, pipe->ndx);
+			       pipe->num, pipe->ndx);
 			layer->error_code = ret;
 			goto validate_exit;
 		}
@@ -1883,7 +1885,7 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 			ret = __validate_layer_reconfig(layer, pipe);
 			if (ret) {
 				pr_err("layer reconfig validation failed=%d\n",
-					ret);
+				       ret);
 				mdss_mdp_pipe_unmap(pipe);
 				layer->error_code = ret;
 				goto validate_exit;
@@ -1891,10 +1893,10 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 		}
 
 		ret = __configure_pipe_params(mfd, &validate_info_list[i], pipe,
-			left_blend_pipe, is_single_layer, mixer_mux);
+		                              left_blend_pipe, is_single_layer, mixer_mux);
 		if (ret) {
 			pr_err("configure pipe param failed: pipe index= %d\n",
-				pipe->ndx);
+			       pipe->ndx);
 			mdss_mdp_pipe_unmap(pipe);
 			layer->error_code = ret;
 			goto validate_exit;
@@ -1911,12 +1913,12 @@ static int __validate_layers(struct msm_fb_data_type *mfd,
 			left_plist[left_cnt++] = pipe;
 
 		pr_debug("id:0x%x flags:0x%x dst_x:%d\n",
-			layer->pipe_ndx, layer->flags, layer->dst_rect.x);
+		         layer->pipe_ndx, layer->flags, layer->dst_rect.x);
 		layer->z_order -= MDSS_MDP_STAGE_0;
 	}
 
 	ret = mdss_mdp_perf_bw_check(mdp5_data->ctl, left_plist, left_cnt,
-		right_plist, right_cnt);
+	                             right_plist, right_cnt);
 	if (ret) {
 		pr_err("bw validation check failed: %d\n", ret);
 		goto validate_exit;
@@ -1929,20 +1931,20 @@ validate_skip:
 
 validate_exit:
 	pr_debug("err=%d total_layer:%d left:%d right:%d rec0_rel_ndx=0x%x rec1_rel_ndx=0x%x rec0_destroy_ndx=0x%x rec1_destroy_ndx=0x%x processed=%d\n",
-		ret, layer_count, left_lm_layers, right_lm_layers,
-		rec_release_ndx[0], rec_release_ndx[1],
-		rec_destroy_ndx[0], rec_destroy_ndx[1], i);
+	         ret, layer_count, left_lm_layers, right_lm_layers,
+	         rec_release_ndx[0], rec_release_ndx[1],
+	         rec_destroy_ndx[0], rec_destroy_ndx[1], i);
 	MDSS_XLOG(rec_ndx[0], rec_ndx[1], layer_count,
-			left_lm_layers, right_lm_layers,
-			rec_release_ndx[0], rec_release_ndx[1],
-			rec_destroy_ndx[0], rec_destroy_ndx[1], ret);
+	          left_lm_layers, right_lm_layers,
+	          rec_release_ndx[0], rec_release_ndx[1],
+	          rec_destroy_ndx[0], rec_destroy_ndx[1], ret);
 	mutex_lock(&mdp5_data->list_lock);
 	list_for_each_entry_safe(pipe, tmp, &mdp5_data->pipes_used, list) {
 		if (IS_ERR_VALUE(ret)) {
 			if (((pipe->ndx & rec_release_ndx[0]) &&
-						(pipe->multirect.num == 0)) ||
-					((pipe->ndx & rec_release_ndx[1]) &&
-					 (pipe->multirect.num == 1))) {
+			     (pipe->multirect.num == 0)) ||
+			    ((pipe->ndx & rec_release_ndx[1]) &&
+			     (pipe->multirect.num == 1))) {
 				mdss_mdp_smp_unreserve(pipe);
 				pipe->params_changed = 0;
 				pipe->dirty = true;
@@ -1950,9 +1952,9 @@ validate_exit:
 					list_del_init(&pipe->list);
 				mdss_mdp_pipe_destroy(pipe);
 			} else if (((pipe->ndx & rec_destroy_ndx[0]) &&
-						(pipe->multirect.num == 0)) ||
-					((pipe->ndx & rec_destroy_ndx[1]) &&
-					 (pipe->multirect.num == 1))) {
+			            (pipe->multirect.num == 0)) ||
+			           ((pipe->ndx & rec_destroy_ndx[1]) &&
+			            (pipe->multirect.num == 1))) {
 				/*
 				 * cleanup/destroy list pipes should move back
 				 * to destroy list. Next/current kickoff cycle
@@ -1960,12 +1962,12 @@ validate_exit:
 				 * acquires ov_lock.
 				 */
 				list_move(&pipe->list,
-					&mdp5_data->pipes_destroy);
+				          &mdp5_data->pipes_destroy);
 			}
 		} else {
 			pipe->file = file;
 			pr_debug("file pointer attached with pipe is %pK\n",
-				file);
+			         file);
 		}
 	}
 	mutex_unlock(&mdp5_data->list_lock);
@@ -1987,7 +1989,7 @@ end:
  * during following kickoff.
  */
 static void __parse_frc_info(struct mdss_overlay_private *mdp5_data,
-	struct mdp_frc_info *input_frc)
+                             struct mdp_frc_info *input_frc)
 {
 	struct mdss_mdp_ctl *ctl = mdp5_data->ctl;
 	struct mdss_mdp_frc_fsm *frc_fsm = mdp5_data->frc_fsm;
@@ -2000,7 +2002,7 @@ static void __parse_frc_info(struct mdss_overlay_private *mdp5_data,
 			mdss_mdp_frc_fsm_init_state(frc_fsm);
 			/* keep vsync on when FRC is enabled */
 			ctl->ops.add_vsync_handler(ctl,
-					&ctl->frc_vsync_handler);
+			                           &ctl->frc_vsync_handler);
 		}
 
 		frc_info->cur_frc.frame_cnt = input_frc->frame_cnt;
@@ -2028,7 +2030,7 @@ static void __parse_frc_info(struct mdss_overlay_private *mdp5_data,
  * This function is called from client context and can return the error.
  */
 int mdss_mdp_layer_pre_commit(struct msm_fb_data_type *mfd,
-	struct file *file, struct mdp_layer_commit_v1 *commit)
+                              struct file *file, struct mdp_layer_commit_v1 *commit)
 {
 	int ret, i;
 	int layer_count = commit->input_layer_cnt;
@@ -2055,17 +2057,17 @@ int mdss_mdp_layer_pre_commit(struct msm_fb_data_type *mfd,
 	}
 
 	validate_info_list = kcalloc(layer_count, sizeof(*validate_info_list),
-				     GFP_KERNEL);
+	                             GFP_KERNEL);
 	if (!validate_info_list)
 		return -ENOMEM;
 
 	for (i = 0; i < layer_count; i++) {
 		if (!validate_info_list[i].layer) {
 			ret = __update_multirect_info(mfd, validate_info_list,
-						   layer_list, i, layer_count);
+			                              layer_list, i, layer_count);
 			if (IS_ERR_VALUE(ret)) {
 				pr_err("error updating multirect config. ret=%d i=%d\n",
-					ret, i);
+				       ret, i);
 				goto end;
 			}
 		}
@@ -2073,7 +2075,7 @@ int mdss_mdp_layer_pre_commit(struct msm_fb_data_type *mfd,
 
 	for (i = 0; i < layer_count; i++) {
 		pipe =  __find_layer_in_validate_q(&validate_info_list[i],
-						   mdp5_data);
+		                                   mdp5_data);
 		if (!pipe) {
 			validate_failed = true;
 			break;
@@ -2103,7 +2105,7 @@ int mdss_mdp_layer_pre_commit(struct msm_fb_data_type *mfd,
 			continue;
 		}
 		src_data[i] = __map_layer_buffer(mfd, pipe, validate_info_list,
-			layer_count);
+		                                 layer_count);
 		if (IS_ERR_OR_NULL(src_data[i++])) {
 			i--;
 			mutex_unlock(&mdp5_data->list_lock);
@@ -2148,7 +2150,7 @@ end:
  * display.
  */
 int mdss_mdp_layer_atomic_validate(struct msm_fb_data_type *mfd,
-	struct file *file, struct mdp_layer_commit_v1 *commit)
+                                   struct file *file, struct mdp_layer_commit_v1 *commit)
 {
 	struct mdss_overlay_private *mdp5_data;
 
@@ -2166,7 +2168,7 @@ int mdss_mdp_layer_atomic_validate(struct msm_fb_data_type *mfd,
 
 	if (mdss_fb_is_power_off(mfd)) {
 		pr_err("display interface is in off state fb:%d\n",
-			mfd->index);
+		       mfd->index);
 		return -EPERM;
 	}
 
@@ -2174,7 +2176,7 @@ int mdss_mdp_layer_atomic_validate(struct msm_fb_data_type *mfd,
 }
 
 int mdss_mdp_layer_pre_commit_wfd(struct msm_fb_data_type *mfd,
-	struct file *file, struct mdp_layer_commit_v1 *commit)
+                                  struct file *file, struct mdp_layer_commit_v1 *commit)
 {
 	int rc, count;
 	struct mdss_overlay_private *mdp5_data;
@@ -2200,7 +2202,7 @@ int mdss_mdp_layer_pre_commit_wfd(struct msm_fb_data_type *mfd,
 
 		if (output_layer->buffer.plane_count > MAX_PLANES) {
 			pr_err("Output buffer plane_count exceeds MAX_PLANES limit:%d\n",
-					output_layer->buffer.plane_count);
+			       output_layer->buffer.plane_count);
 			return -EINVAL;
 		}
 
@@ -2258,7 +2260,7 @@ fence_get_err:
 }
 
 int mdss_mdp_layer_atomic_validate_wfd(struct msm_fb_data_type *mfd,
-	struct file *file, struct mdp_layer_commit_v1 *commit)
+                                       struct file *file, struct mdp_layer_commit_v1 *commit)
 {
 	int rc = 0;
 	struct mdss_overlay_private *mdp5_data;
@@ -2309,7 +2311,7 @@ validate_failed:
 }
 
 int mdss_mdp_async_position_update(struct msm_fb_data_type *mfd,
-		struct mdp_position_update *update_pos)
+                                   struct mdp_position_update *update_pos)
 {
 	int i, rc = 0;
 	struct mdss_mdp_pipe *pipe = NULL;
@@ -2324,31 +2326,35 @@ int mdss_mdp_async_position_update(struct msm_fb_data_type *mfd,
 		layer = &update_pos->input_layers[i];
 		mutex_lock(&mdp5_data->list_lock);
 		__find_pipe_in_list(&mdp5_data->pipes_used, layer->pipe_ndx,
-			&pipe, MDSS_MDP_PIPE_RECT0);
+		                    &pipe, MDSS_MDP_PIPE_RECT0);
 		mutex_unlock(&mdp5_data->list_lock);
 		if (!pipe) {
 			pr_err("invalid pipe ndx=0x%x for async update\n",
-					layer->pipe_ndx);
+			       layer->pipe_ndx);
 			rc = -ENODEV;
 			layer->error_code = rc;
 			goto done;
 		}
 
 		rc =  __async_update_position_check(mfd, pipe, &layer->src,
-				&layer->dst);
+		                                    &layer->dst);
 		if (rc) {
 			layer->error_code = rc;
 			goto done;
 		}
 
-		src = (struct mdss_rect) {layer->src.x, layer->src.y,
-				pipe->src.w, pipe->src.h};
-		dst = (struct mdss_rect) {layer->dst.x, layer->dst.y,
-				pipe->src.w, pipe->src.h};
+		src = (struct mdss_rect) {
+			layer->src.x, layer->src.y,
+			      pipe->src.w, pipe->src.h
+		};
+		dst = (struct mdss_rect) {
+			layer->dst.x, layer->dst.y,
+			      pipe->src.w, pipe->src.h
+		};
 
 		pr_debug("src:{%d,%d,%d,%d}, dst:{%d,%d,%d,%d}\n",
-				src.x, src.y, src.w, src.h,
-				dst.x, dst.y, dst.w, dst.h);
+		         src.x, src.y, src.w, src.h,
+		         dst.x, dst.y, dst.w, dst.h);
 
 		mdss_mdp_pipe_position_update(pipe, &src, &dst);
 

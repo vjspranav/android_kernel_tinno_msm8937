@@ -30,9 +30,9 @@
  */
 #define IPA_IPV6CT_DEV_NAME "ipaIpv6CTTable"
 
- /**
- * name of the default routing tables for v4 and v6
- */
+/**
+* name of the default routing tables for v4 and v6
+*/
 #define IPA_DFLT_RT_TBL_NAME "ipa_dflt_rt"
 
 /**
@@ -262,87 +262,87 @@ enum ipa_client_type {
 
 #define IPA_CLIENT_IS_APPS_CONS(client) \
 	((client) == IPA_CLIENT_APPS_LAN_CONS || \
-	(client) == IPA_CLIENT_APPS_WAN_CONS)
+	 (client) == IPA_CLIENT_APPS_WAN_CONS)
 
 #define IPA_CLIENT_IS_USB_CONS(client) \
 	((client) == IPA_CLIENT_USB_CONS || \
-	(client) == IPA_CLIENT_USB2_CONS || \
-	(client) == IPA_CLIENT_USB3_CONS || \
-	(client) == IPA_CLIENT_USB_DPL_CONS || \
-	(client) == IPA_CLIENT_USB4_CONS)
+	 (client) == IPA_CLIENT_USB2_CONS || \
+	 (client) == IPA_CLIENT_USB3_CONS || \
+	 (client) == IPA_CLIENT_USB_DPL_CONS || \
+	 (client) == IPA_CLIENT_USB4_CONS)
 
 #define IPA_CLIENT_IS_WLAN_CONS(client) \
 	((client) == IPA_CLIENT_WLAN1_CONS || \
-	(client) == IPA_CLIENT_WLAN2_CONS || \
-	(client) == IPA_CLIENT_WLAN3_CONS || \
-	(client) == IPA_CLIENT_WLAN4_CONS)
+	 (client) == IPA_CLIENT_WLAN2_CONS || \
+	 (client) == IPA_CLIENT_WLAN3_CONS || \
+	 (client) == IPA_CLIENT_WLAN4_CONS)
 
 #define IPA_CLIENT_IS_ODU_CONS(client) \
 	((client) == IPA_CLIENT_ODU_EMB_CONS || \
-	(client) == IPA_CLIENT_ODU_TETH_CONS)
+	 (client) == IPA_CLIENT_ODU_TETH_CONS)
 
 #define IPA_CLIENT_IS_Q6_CONS(client) \
 	((client) == IPA_CLIENT_Q6_LAN_CONS || \
-	(client) == IPA_CLIENT_Q6_WAN_CONS || \
-	(client) == IPA_CLIENT_Q6_DUN_CONS || \
-	(client) == IPA_CLIENT_Q6_DECOMP_CONS || \
-	(client) == IPA_CLIENT_Q6_DECOMP2_CONS || \
-	(client) == IPA_CLIENT_Q6_LTE_WIFI_AGGR_CONS)
+	 (client) == IPA_CLIENT_Q6_WAN_CONS || \
+	 (client) == IPA_CLIENT_Q6_DUN_CONS || \
+	 (client) == IPA_CLIENT_Q6_DECOMP_CONS || \
+	 (client) == IPA_CLIENT_Q6_DECOMP2_CONS || \
+	 (client) == IPA_CLIENT_Q6_LTE_WIFI_AGGR_CONS)
 
 #define IPA_CLIENT_IS_Q6_PROD(client) \
 	((client) == IPA_CLIENT_Q6_LAN_PROD || \
-	(client) == IPA_CLIENT_Q6_WAN_PROD || \
-	(client) == IPA_CLIENT_Q6_CMD_PROD || \
-	(client) == IPA_CLIENT_Q6_DECOMP_PROD || \
-	(client) == IPA_CLIENT_Q6_DECOMP2_PROD)
+	 (client) == IPA_CLIENT_Q6_WAN_PROD || \
+	 (client) == IPA_CLIENT_Q6_CMD_PROD || \
+	 (client) == IPA_CLIENT_Q6_DECOMP_PROD || \
+	 (client) == IPA_CLIENT_Q6_DECOMP2_PROD)
 
 #define IPA_CLIENT_IS_Q6_NON_ZIP_CONS(client) \
 	((client) == IPA_CLIENT_Q6_LAN_CONS || \
-	(client) == IPA_CLIENT_Q6_WAN_CONS || \
-	(client) == IPA_CLIENT_Q6_DUN_CONS || \
-	(client) == IPA_CLIENT_Q6_LTE_WIFI_AGGR_CONS)
+	 (client) == IPA_CLIENT_Q6_WAN_CONS || \
+	 (client) == IPA_CLIENT_Q6_DUN_CONS || \
+	 (client) == IPA_CLIENT_Q6_LTE_WIFI_AGGR_CONS)
 
 #define IPA_CLIENT_IS_Q6_ZIP_CONS(client) \
 	((client) == IPA_CLIENT_Q6_DECOMP_CONS || \
-	(client) == IPA_CLIENT_Q6_DECOMP2_CONS)
+	 (client) == IPA_CLIENT_Q6_DECOMP2_CONS)
 
 #define IPA_CLIENT_IS_Q6_NON_ZIP_PROD(client) \
 	((client) == IPA_CLIENT_Q6_LAN_PROD || \
-	(client) == IPA_CLIENT_Q6_WAN_PROD || \
-	(client) == IPA_CLIENT_Q6_CMD_PROD)
+	 (client) == IPA_CLIENT_Q6_WAN_PROD || \
+	 (client) == IPA_CLIENT_Q6_CMD_PROD)
 
 #define IPA_CLIENT_IS_Q6_ZIP_PROD(client) \
 	((client) == IPA_CLIENT_Q6_DECOMP_PROD || \
-	(client) == IPA_CLIENT_Q6_DECOMP2_PROD)
+	 (client) == IPA_CLIENT_Q6_DECOMP2_PROD)
 
 #define IPA_CLIENT_IS_MEMCPY_DMA_CONS(client) \
 	((client) == IPA_CLIENT_MEMCPY_DMA_SYNC_CONS || \
-	(client) == IPA_CLIENT_MEMCPY_DMA_ASYNC_CONS)
+	 (client) == IPA_CLIENT_MEMCPY_DMA_ASYNC_CONS)
 
 #define IPA_CLIENT_IS_MEMCPY_DMA_PROD(client) \
 	((client) == IPA_CLIENT_MEMCPY_DMA_SYNC_PROD || \
-	(client) == IPA_CLIENT_MEMCPY_DMA_ASYNC_PROD)
+	 (client) == IPA_CLIENT_MEMCPY_DMA_ASYNC_PROD)
 
 #define IPA_CLIENT_IS_MHI_CONS(client) \
 	((client) == IPA_CLIENT_MHI_CONS)
 
 #define IPA_CLIENT_IS_MHI(client) \
 	((client) == IPA_CLIENT_MHI_CONS || \
-	(client) == IPA_CLIENT_MHI_PROD)
+	 (client) == IPA_CLIENT_MHI_PROD)
 
 #define IPA_CLIENT_IS_TEST_PROD(client) \
 	((client) == IPA_CLIENT_TEST_PROD || \
-	(client) == IPA_CLIENT_TEST1_PROD || \
-	(client) == IPA_CLIENT_TEST2_PROD || \
-	(client) == IPA_CLIENT_TEST3_PROD || \
-	(client) == IPA_CLIENT_TEST4_PROD)
+	 (client) == IPA_CLIENT_TEST1_PROD || \
+	 (client) == IPA_CLIENT_TEST2_PROD || \
+	 (client) == IPA_CLIENT_TEST3_PROD || \
+	 (client) == IPA_CLIENT_TEST4_PROD)
 
 #define IPA_CLIENT_IS_TEST_CONS(client) \
 	((client) == IPA_CLIENT_TEST_CONS || \
-	(client) == IPA_CLIENT_TEST1_CONS || \
-	(client) == IPA_CLIENT_TEST2_CONS || \
-	(client) == IPA_CLIENT_TEST3_CONS || \
-	(client) == IPA_CLIENT_TEST4_CONS)
+	 (client) == IPA_CLIENT_TEST1_CONS || \
+	 (client) == IPA_CLIENT_TEST2_CONS || \
+	 (client) == IPA_CLIENT_TEST3_CONS || \
+	 (client) == IPA_CLIENT_TEST4_CONS)
 
 #define IPA_CLIENT_IS_TEST(client) \
 	(IPA_CLIENT_IS_TEST_PROD(client) || IPA_CLIENT_IS_TEST_CONS(client))
@@ -1791,180 +1791,180 @@ struct ipa_tether_device_info {
  *   actual IOCTLs supported by IPA driver
  */
 #define IPA_IOC_ADD_HDR _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_ADD_HDR, \
-					struct ipa_ioc_add_hdr *)
+                              IPA_IOCTL_ADD_HDR, \
+                              struct ipa_ioc_add_hdr *)
 #define IPA_IOC_DEL_HDR _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_DEL_HDR, \
-					struct ipa_ioc_del_hdr *)
+                              IPA_IOCTL_DEL_HDR, \
+                              struct ipa_ioc_del_hdr *)
 #define IPA_IOC_ADD_RT_RULE _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_ADD_RT_RULE, \
-					struct ipa_ioc_add_rt_rule *)
+                                  IPA_IOCTL_ADD_RT_RULE, \
+                                  struct ipa_ioc_add_rt_rule *)
 #define IPA_IOC_ADD_RT_RULE_EXT _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_ADD_RT_RULE_EXT, \
-					struct ipa_ioc_add_rt_rule_ext *)
+                                      IPA_IOCTL_ADD_RT_RULE_EXT, \
+                                      struct ipa_ioc_add_rt_rule_ext *)
 #define IPA_IOC_ADD_RT_RULE_AFTER _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_ADD_RT_RULE_AFTER, \
-					struct ipa_ioc_add_rt_rule_after *)
+                                        IPA_IOCTL_ADD_RT_RULE_AFTER, \
+                                        struct ipa_ioc_add_rt_rule_after *)
 #define IPA_IOC_DEL_RT_RULE _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_DEL_RT_RULE, \
-					struct ipa_ioc_del_rt_rule *)
+                                  IPA_IOCTL_DEL_RT_RULE, \
+                                  struct ipa_ioc_del_rt_rule *)
 #define IPA_IOC_ADD_FLT_RULE _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_ADD_FLT_RULE, \
-					struct ipa_ioc_add_flt_rule *)
+                                   IPA_IOCTL_ADD_FLT_RULE, \
+                                   struct ipa_ioc_add_flt_rule *)
 #define IPA_IOC_ADD_FLT_RULE_AFTER _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_ADD_FLT_RULE_AFTER, \
-					struct ipa_ioc_add_flt_rule_after *)
+        IPA_IOCTL_ADD_FLT_RULE_AFTER, \
+        struct ipa_ioc_add_flt_rule_after *)
 #define IPA_IOC_DEL_FLT_RULE _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_DEL_FLT_RULE, \
-					struct ipa_ioc_del_flt_rule *)
+                                   IPA_IOCTL_DEL_FLT_RULE, \
+                                   struct ipa_ioc_del_flt_rule *)
 #define IPA_IOC_COMMIT_HDR _IO(IPA_IOC_MAGIC,\
-					IPA_IOCTL_COMMIT_HDR)
+                               IPA_IOCTL_COMMIT_HDR)
 #define IPA_IOC_RESET_HDR _IO(IPA_IOC_MAGIC,\
-					IPA_IOCTL_RESET_HDR)
+                              IPA_IOCTL_RESET_HDR)
 #define IPA_IOC_COMMIT_RT _IOW(IPA_IOC_MAGIC, \
-					IPA_IOCTL_COMMIT_RT, \
-					enum ipa_ip_type)
+                               IPA_IOCTL_COMMIT_RT, \
+                               enum ipa_ip_type)
 #define IPA_IOC_RESET_RT _IOW(IPA_IOC_MAGIC, \
-					IPA_IOCTL_RESET_RT, \
-					enum ipa_ip_type)
+                              IPA_IOCTL_RESET_RT, \
+                              enum ipa_ip_type)
 #define IPA_IOC_COMMIT_FLT _IOW(IPA_IOC_MAGIC, \
-					IPA_IOCTL_COMMIT_FLT, \
-					enum ipa_ip_type)
+                                IPA_IOCTL_COMMIT_FLT, \
+                                enum ipa_ip_type)
 #define IPA_IOC_RESET_FLT _IOW(IPA_IOC_MAGIC, \
-			IPA_IOCTL_RESET_FLT, \
-			enum ipa_ip_type)
+                               IPA_IOCTL_RESET_FLT, \
+                               enum ipa_ip_type)
 #define IPA_IOC_DUMP _IO(IPA_IOC_MAGIC, \
-			IPA_IOCTL_DUMP)
+                         IPA_IOCTL_DUMP)
 #define IPA_IOC_GET_RT_TBL _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_GET_RT_TBL, \
-				struct ipa_ioc_get_rt_tbl *)
+                                 IPA_IOCTL_GET_RT_TBL, \
+                                 struct ipa_ioc_get_rt_tbl *)
 #define IPA_IOC_PUT_RT_TBL _IOW(IPA_IOC_MAGIC, \
-				IPA_IOCTL_PUT_RT_TBL, \
-				uint32_t)
+                                IPA_IOCTL_PUT_RT_TBL, \
+                                uint32_t)
 #define IPA_IOC_COPY_HDR _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_COPY_HDR, \
-				struct ipa_ioc_copy_hdr *)
+                               IPA_IOCTL_COPY_HDR, \
+                               struct ipa_ioc_copy_hdr *)
 #define IPA_IOC_QUERY_INTF _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_QUERY_INTF, \
-				struct ipa_ioc_query_intf *)
+                                 IPA_IOCTL_QUERY_INTF, \
+                                 struct ipa_ioc_query_intf *)
 #define IPA_IOC_QUERY_INTF_TX_PROPS _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_QUERY_INTF_TX_PROPS, \
-				struct ipa_ioc_query_intf_tx_props *)
+        IPA_IOCTL_QUERY_INTF_TX_PROPS, \
+        struct ipa_ioc_query_intf_tx_props *)
 #define IPA_IOC_QUERY_INTF_RX_PROPS _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_QUERY_INTF_RX_PROPS, \
-					struct ipa_ioc_query_intf_rx_props *)
+        IPA_IOCTL_QUERY_INTF_RX_PROPS, \
+        struct ipa_ioc_query_intf_rx_props *)
 #define IPA_IOC_QUERY_INTF_EXT_PROPS _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_QUERY_INTF_EXT_PROPS, \
-					struct ipa_ioc_query_intf_ext_props *)
+        IPA_IOCTL_QUERY_INTF_EXT_PROPS, \
+        struct ipa_ioc_query_intf_ext_props *)
 #define IPA_IOC_GET_HDR _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_GET_HDR, \
-				struct ipa_ioc_get_hdr *)
+                              IPA_IOCTL_GET_HDR, \
+                              struct ipa_ioc_get_hdr *)
 #define IPA_IOC_PUT_HDR _IOW(IPA_IOC_MAGIC, \
-				IPA_IOCTL_PUT_HDR, \
-				uint32_t)
+                             IPA_IOCTL_PUT_HDR, \
+                             uint32_t)
 #define IPA_IOC_ALLOC_NAT_MEM _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_ALLOC_NAT_MEM, \
-				struct ipa_ioc_nat_alloc_mem *)
+                                    IPA_IOCTL_ALLOC_NAT_MEM, \
+                                    struct ipa_ioc_nat_alloc_mem *)
 #define IPA_IOC_ALLOC_NAT_TABLE _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_ALLOC_NAT_TABLE, \
-				struct ipa_ioc_nat_ipv6ct_table_alloc *)
+                                      IPA_IOCTL_ALLOC_NAT_TABLE, \
+                                      struct ipa_ioc_nat_ipv6ct_table_alloc *)
 #define IPA_IOC_ALLOC_IPV6CT_TABLE _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_ALLOC_IPV6CT_TABLE, \
-				struct ipa_ioc_nat_ipv6ct_table_alloc *)
+        IPA_IOCTL_ALLOC_IPV6CT_TABLE, \
+        struct ipa_ioc_nat_ipv6ct_table_alloc *)
 #define IPA_IOC_V4_INIT_NAT _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_V4_INIT_NAT, \
-				struct ipa_ioc_v4_nat_init *)
+                                  IPA_IOCTL_V4_INIT_NAT, \
+                                  struct ipa_ioc_v4_nat_init *)
 #define IPA_IOC_INIT_IPV6CT_TABLE _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_INIT_IPV6CT_TABLE, \
-				struct ipa_ioc_ipv6ct_init *)
+                                        IPA_IOCTL_INIT_IPV6CT_TABLE, \
+                                        struct ipa_ioc_ipv6ct_init *)
 #define IPA_IOC_NAT_DMA _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_NAT_DMA, \
-				struct ipa_ioc_nat_dma_cmd *)
+                              IPA_IOCTL_NAT_DMA, \
+                              struct ipa_ioc_nat_dma_cmd *)
 #define IPA_IOC_TABLE_DMA_CMD _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_TABLE_DMA_CMD, \
-				struct ipa_ioc_nat_dma_cmd *)
+                                    IPA_IOCTL_TABLE_DMA_CMD, \
+                                    struct ipa_ioc_nat_dma_cmd *)
 #define IPA_IOC_V4_DEL_NAT _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_V4_DEL_NAT, \
-				struct ipa_ioc_v4_nat_del *)
+                                 IPA_IOCTL_V4_DEL_NAT, \
+                                 struct ipa_ioc_v4_nat_del *)
 #define IPA_IOC_DEL_NAT_TABLE _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_DEL_NAT_TABLE, \
-				struct ipa_ioc_nat_ipv6ct_table_del *)
+                                    IPA_IOCTL_DEL_NAT_TABLE, \
+                                    struct ipa_ioc_nat_ipv6ct_table_del *)
 #define IPA_IOC_DEL_IPV6CT_TABLE _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_DEL_IPV6CT_TABLE, \
-				struct ipa_ioc_nat_ipv6ct_table_del *)
+                                       IPA_IOCTL_DEL_IPV6CT_TABLE, \
+                                       struct ipa_ioc_nat_ipv6ct_table_del *)
 #define IPA_IOC_GET_NAT_OFFSET _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_GET_NAT_OFFSET, \
-				uint32_t *)
+                                     IPA_IOCTL_GET_NAT_OFFSET, \
+                                     uint32_t *)
 #define IPA_IOC_NAT_MODIFY_PDN _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_NAT_MODIFY_PDN, \
-				struct ipa_ioc_nat_pdn_entry *)
+                                     IPA_IOCTL_NAT_MODIFY_PDN, \
+                                     struct ipa_ioc_nat_pdn_entry *)
 #define IPA_IOC_SET_FLT _IOW(IPA_IOC_MAGIC, \
-			IPA_IOCTL_SET_FLT, \
-			uint32_t)
+                             IPA_IOCTL_SET_FLT, \
+                             uint32_t)
 #define IPA_IOC_PULL_MSG _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_PULL_MSG, \
-				struct ipa_msg_meta *)
+                               IPA_IOCTL_PULL_MSG, \
+                               struct ipa_msg_meta *)
 #define IPA_IOC_RM_ADD_DEPENDENCY _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_RM_ADD_DEPENDENCY, \
-				struct ipa_ioc_rm_dependency *)
+                                        IPA_IOCTL_RM_ADD_DEPENDENCY, \
+                                        struct ipa_ioc_rm_dependency *)
 #define IPA_IOC_RM_DEL_DEPENDENCY _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_RM_DEL_DEPENDENCY, \
-				struct ipa_ioc_rm_dependency *)
+                                        IPA_IOCTL_RM_DEL_DEPENDENCY, \
+                                        struct ipa_ioc_rm_dependency *)
 #define IPA_IOC_GENERATE_FLT_EQ _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_GENERATE_FLT_EQ, \
-				struct ipa_ioc_generate_flt_eq *)
+                                      IPA_IOCTL_GENERATE_FLT_EQ, \
+                                      struct ipa_ioc_generate_flt_eq *)
 #define IPA_IOC_QUERY_EP_MAPPING _IOR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_QUERY_EP_MAPPING, \
-				uint32_t)
+                                      IPA_IOCTL_QUERY_EP_MAPPING, \
+                                      uint32_t)
 #define IPA_IOC_QUERY_RT_TBL_INDEX _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_QUERY_RT_TBL_INDEX, \
-				struct ipa_ioc_get_rt_tbl_indx *)
+        IPA_IOCTL_QUERY_RT_TBL_INDEX, \
+        struct ipa_ioc_get_rt_tbl_indx *)
 #define IPA_IOC_WRITE_QMAPID  _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_WRITE_QMAPID, \
-				struct ipa_ioc_write_qmapid *)
+                                    IPA_IOCTL_WRITE_QMAPID, \
+                                    struct ipa_ioc_write_qmapid *)
 #define IPA_IOC_MDFY_FLT_RULE _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_MDFY_FLT_RULE, \
-					struct ipa_ioc_mdfy_flt_rule *)
+                                    IPA_IOCTL_MDFY_FLT_RULE, \
+                                    struct ipa_ioc_mdfy_flt_rule *)
 #define IPA_IOC_MDFY_RT_RULE _IOWR(IPA_IOC_MAGIC, \
-					IPA_IOCTL_MDFY_RT_RULE, \
-					struct ipa_ioc_mdfy_rt_rule *)
+                                   IPA_IOCTL_MDFY_RT_RULE, \
+                                   struct ipa_ioc_mdfy_rt_rule *)
 
 #define IPA_IOC_NOTIFY_WAN_UPSTREAM_ROUTE_ADD _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_NOTIFY_WAN_UPSTREAM_ROUTE_ADD, \
-				struct ipa_wan_msg *)
+        IPA_IOCTL_NOTIFY_WAN_UPSTREAM_ROUTE_ADD, \
+        struct ipa_wan_msg *)
 
 #define IPA_IOC_NOTIFY_WAN_UPSTREAM_ROUTE_DEL _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_NOTIFY_WAN_UPSTREAM_ROUTE_DEL, \
-				struct ipa_wan_msg *)
+        IPA_IOCTL_NOTIFY_WAN_UPSTREAM_ROUTE_DEL, \
+        struct ipa_wan_msg *)
 #define IPA_IOC_NOTIFY_WAN_EMBMS_CONNECTED _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_NOTIFY_WAN_EMBMS_CONNECTED, \
-				struct ipa_wan_msg *)
+        IPA_IOCTL_NOTIFY_WAN_EMBMS_CONNECTED, \
+        struct ipa_wan_msg *)
 #define IPA_IOC_ADD_HDR_PROC_CTX _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_ADD_HDR_PROC_CTX, \
-				struct ipa_ioc_add_hdr_proc_ctx *)
+                                       IPA_IOCTL_ADD_HDR_PROC_CTX, \
+                                       struct ipa_ioc_add_hdr_proc_ctx *)
 #define IPA_IOC_DEL_HDR_PROC_CTX _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_DEL_HDR_PROC_CTX, \
-				struct ipa_ioc_del_hdr_proc_ctx *)
+                                       IPA_IOCTL_DEL_HDR_PROC_CTX, \
+                                       struct ipa_ioc_del_hdr_proc_ctx *)
 
 #define IPA_IOC_GET_HW_VERSION _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_GET_HW_VERSION, \
-				enum ipa_hw_type *)
+                                     IPA_IOCTL_GET_HW_VERSION, \
+                                     enum ipa_hw_type *)
 
 #define IPA_IOC_ADD_VLAN_IFACE _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_ADD_VLAN_IFACE, \
-				struct ipa_ioc_vlan_iface_info *)
+                                     IPA_IOCTL_ADD_VLAN_IFACE, \
+                                     struct ipa_ioc_vlan_iface_info *)
 
 #define IPA_IOC_DEL_VLAN_IFACE _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_DEL_VLAN_IFACE, \
-				struct ipa_ioc_vlan_iface_info *)
+                                     IPA_IOCTL_DEL_VLAN_IFACE, \
+                                     struct ipa_ioc_vlan_iface_info *)
 
 #define IPA_IOC_ADD_L2TP_VLAN_MAPPING _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_ADD_L2TP_VLAN_MAPPING, \
-				struct ipa_ioc_l2tp_vlan_mapping_info *)
+        IPA_IOCTL_ADD_L2TP_VLAN_MAPPING, \
+        struct ipa_ioc_l2tp_vlan_mapping_info *)
 
 #define IPA_IOC_DEL_L2TP_VLAN_MAPPING _IOWR(IPA_IOC_MAGIC, \
-				IPA_IOCTL_DEL_L2TP_VLAN_MAPPING, \
-				struct ipa_ioc_l2tp_vlan_mapping_info *)
+        IPA_IOCTL_DEL_L2TP_VLAN_MAPPING, \
+        struct ipa_ioc_l2tp_vlan_mapping_info *)
 /*
  * unique magic number of the Tethering bridge ioctls
  */
@@ -2056,17 +2056,17 @@ struct teth_ioc_aggr_params {
 
 
 #define TETH_BRIDGE_IOC_SET_BRIDGE_MODE _IOW(TETH_BRIDGE_IOC_MAGIC, \
-				TETH_BRIDGE_IOCTL_SET_BRIDGE_MODE, \
-				struct teth_ioc_set_bridge_mode *)
+        TETH_BRIDGE_IOCTL_SET_BRIDGE_MODE, \
+        struct teth_ioc_set_bridge_mode *)
 #define TETH_BRIDGE_IOC_SET_AGGR_PARAMS _IOW(TETH_BRIDGE_IOC_MAGIC, \
-				TETH_BRIDGE_IOCTL_SET_AGGR_PARAMS, \
-				struct teth_ioc_aggr_params *)
+        TETH_BRIDGE_IOCTL_SET_AGGR_PARAMS, \
+        struct teth_ioc_aggr_params *)
 #define TETH_BRIDGE_IOC_GET_AGGR_PARAMS _IOR(TETH_BRIDGE_IOC_MAGIC, \
-				TETH_BRIDGE_IOCTL_GET_AGGR_PARAMS, \
-				struct teth_ioc_aggr_params *)
+        TETH_BRIDGE_IOCTL_GET_AGGR_PARAMS, \
+        struct teth_ioc_aggr_params *)
 #define TETH_BRIDGE_IOC_GET_AGGR_CAPABILITIES _IOWR(TETH_BRIDGE_IOC_MAGIC, \
-				TETH_BRIDGE_IOCTL_GET_AGGR_CAPABILITIES, \
-				struct teth_aggr_capabilities *)
+        TETH_BRIDGE_IOCTL_GET_AGGR_CAPABILITIES, \
+        struct teth_aggr_capabilities *)
 
 /*
  * unique magic number of the ODU bridge ioctls
@@ -2091,11 +2091,11 @@ enum odu_bridge_mode {
 };
 
 #define ODU_BRIDGE_IOC_SET_MODE _IOW(ODU_BRIDGE_IOC_MAGIC, \
-				ODU_BRIDGE_IOCTL_SET_MODE, \
-				enum odu_bridge_mode)
+                                     ODU_BRIDGE_IOCTL_SET_MODE, \
+                                     enum odu_bridge_mode)
 
 #define ODU_BRIDGE_IOC_SET_LLV6_ADDR _IOW(ODU_BRIDGE_IOC_MAGIC, \
-				ODU_BRIDGE_IOCTL_SET_LLV6_ADDR, \
-				struct in6_addr *)
+        ODU_BRIDGE_IOCTL_SET_LLV6_ADDR, \
+        struct in6_addr *)
 
 #endif /* _UAPI_MSM_IPA_H_ */

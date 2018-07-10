@@ -62,18 +62,18 @@ static void __overlay_kickoff_requeue(struct msm_fb_data_type *mfd);
 static void __vsync_retire_signal(struct msm_fb_data_type *mfd, int val);
 static int __vsync_set_vsync_handler(struct msm_fb_data_type *mfd);
 static int mdss_mdp_update_panel_info(struct msm_fb_data_type *mfd,
-		int mode, int dest_ctrl);
+                                      int mode, int dest_ctrl);
 static int mdss_mdp_set_cfg(struct msm_fb_data_type *mfd,
-		struct mdp_set_cfg *cfg);
+                            struct mdp_set_cfg *cfg);
 
 static inline bool is_ov_right_blend(struct mdp_rect *left_blend,
-	struct mdp_rect *right_blend, u32 left_lm_w)
+                                     struct mdp_rect *right_blend, u32 left_lm_w)
 {
 	return (((left_blend->x + left_blend->w) == right_blend->x)	&&
-		((left_blend->x + left_blend->w) != left_lm_w)		&&
-		(left_blend->x != right_blend->x)			&&
-		(left_blend->y == right_blend->y)			&&
-		(left_blend->h == right_blend->h));
+	        ((left_blend->x + left_blend->w) != left_lm_w)		&&
+	        (left_blend->x != right_blend->x)			&&
+	        (left_blend->y == right_blend->y)			&&
+	        (left_blend->h == right_blend->h));
 }
 
 /**
@@ -113,14 +113,14 @@ static inline bool __is_more_decimation_doable(struct mdss_mdp_pipe *pipe)
 	if (!mfd->split_mode && !pipe->vert_deci)
 		return false;
 	else if (mfd->split_mode && (!mdata->has_src_split ||
-	   (mdata->has_src_split && !pipe->vert_deci)))
+	                             (mdata->has_src_split && !pipe->vert_deci)))
 		return false;
 	else
 		return true;
 }
 
 static struct mdss_mdp_pipe *__overlay_find_pipe(
-		struct msm_fb_data_type *mfd, u32 ndx)
+    struct msm_fb_data_type *mfd, u32 ndx)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_mdp_pipe *tmp, *pipe = NULL;
@@ -138,7 +138,7 @@ static struct mdss_mdp_pipe *__overlay_find_pipe(
 }
 
 static int mdss_mdp_overlay_get(struct msm_fb_data_type *mfd,
-				struct mdp_overlay *req)
+                                struct mdp_overlay *req)
 {
 	struct mdss_mdp_pipe *pipe;
 
@@ -154,7 +154,7 @@ static int mdss_mdp_overlay_get(struct msm_fb_data_type *mfd,
 }
 
 static int mdss_mdp_ov_xres_check(struct msm_fb_data_type *mfd,
-	struct mdp_overlay *req)
+                                  struct mdp_overlay *req)
 {
 	u32 xres = 0;
 	u32 left_lm_w = left_lm_w_from_mfd(mfd);
@@ -216,7 +216,7 @@ static int mdss_mdp_ov_xres_check(struct msm_fb_data_type *mfd,
 
 	if (CHECK_BOUNDS(req->dst_rect.x, req->dst_rect.w, xres)) {
 		pr_err("dst_xres is invalid. dst_x:%d, dst_w:%d, xres:%d\n",
-			req->dst_rect.x, req->dst_rect.w, xres);
+		       req->dst_rect.x, req->dst_rect.w, xres);
 		return -EOVERFLOW;
 	}
 
@@ -224,8 +224,8 @@ static int mdss_mdp_ov_xres_check(struct msm_fb_data_type *mfd,
 }
 
 int mdss_mdp_overlay_req_check(struct msm_fb_data_type *mfd,
-			       struct mdp_overlay *req,
-			       struct mdss_mdp_format_params *fmt)
+                               struct mdp_overlay *req,
+                               struct mdss_mdp_format_params *fmt)
 {
 	u32 yres;
 	u32 min_src_size, min_dst_size;
@@ -237,7 +237,7 @@ int mdss_mdp_overlay_req_check(struct msm_fb_data_type *mfd,
 
 	content_secure = (req->flags & MDP_SECURE_OVERLAY_SESSION);
 	if (!ctl->is_secure && content_secure &&
-				 (mfd->panel.type == WRITEBACK_PANEL)) {
+	    (mfd->panel.type == WRITEBACK_PANEL)) {
 		pr_debug("return due to security concerns\n");
 		return -EPERM;
 	}
@@ -259,11 +259,11 @@ int mdss_mdp_overlay_req_check(struct msm_fb_data_type *mfd,
 	 * with dedicated cursors within VP
 	 */
 	if ((req->pipe_type == MDSS_MDP_PIPE_TYPE_CURSOR) &&
-		((req->z_order != HW_CURSOR_STAGE(mdata)) ||
-		 !mdata->ncursor_pipes ||
-		 (req->src_rect.w > mdata->max_cursor_size))) {
+	    ((req->z_order != HW_CURSOR_STAGE(mdata)) ||
+	     !mdata->ncursor_pipes ||
+	     (req->src_rect.w > mdata->max_cursor_size))) {
 		pr_err("Incorrect cursor overlay cursor_pipes=%d zorder=%d\n",
-			mdata->ncursor_pipes, req->z_order);
+		       mdata->ncursor_pipes, req->z_order);
 		return -EINVAL;
 	}
 
@@ -290,9 +290,9 @@ int mdss_mdp_overlay_req_check(struct msm_fb_data_type *mfd,
 			pr_err("No Decimation in MDP V=%x\n", mdata->mdp_rev);
 			return -EINVAL;
 		} else if ((req->horz_deci > MAX_DECIMATION) ||
-				(req->vert_deci > MAX_DECIMATION))  {
+		           (req->vert_deci > MAX_DECIMATION))  {
 			pr_err("Invalid decimation factors horz=%d vert=%d\n",
-					req->horz_deci, req->vert_deci);
+			       req->horz_deci, req->vert_deci);
 			return -EINVAL;
 		} else if (req->flags & MDP_BWC_EN) {
 			pr_err("Decimation can't be enabled with BWC\n");
@@ -308,7 +308,7 @@ int mdss_mdp_overlay_req_check(struct msm_fb_data_type *mfd,
 
 		if (CHECK_BOUNDS(req->dst_rect.y, req->dst_rect.h, yres)) {
 			pr_err("invalid vertical destination: y=%d, h=%d\n",
-				req->dst_rect.y, req->dst_rect.h);
+			       req->dst_rect.y, req->dst_rect.h);
 			return -EOVERFLOW;
 		}
 
@@ -325,7 +325,7 @@ int mdss_mdp_overlay_req_check(struct msm_fb_data_type *mfd,
 
 		if (src_w > mdata->max_pipe_width) {
 			pr_err("invalid source width=%d HDec=%d\n",
-					req->src_rect.w, req->horz_deci);
+			       req->src_rect.w, req->horz_deci);
 			return -EINVAL;
 		}
 
@@ -357,20 +357,20 @@ int mdss_mdp_overlay_req_check(struct msm_fb_data_type *mfd,
 			if ((req->src.width != req->src_rect.w) ||
 			    (req->src.height != req->src_rect.h)) {
 				pr_err("BWC: mismatch of src img=%dx%d rect=%dx%d\n",
-					req->src.width, req->src.height,
-					req->src_rect.w, req->src_rect.h);
+				       req->src.width, req->src.height,
+				       req->src_rect.w, req->src_rect.h);
 				return -EINVAL;
 			}
 
 			if ((req->flags & MDP_DECIMATION_EN) ||
-					req->vert_deci || req->horz_deci) {
+			    req->vert_deci || req->horz_deci) {
 				pr_err("Can't enable BWC and decimation\n");
 				return -EINVAL;
 			}
 		}
 
 		if ((req->flags & MDP_DEINTERLACE) &&
-					!req->scale.enable_pxl_ext) {
+		    !req->scale.enable_pxl_ext) {
 			if (req->flags & MDP_SOURCE_ROTATED_90) {
 				if ((req->src_rect.w % 4) != 0) {
 					pr_err("interlaced rect not h/4\n");
@@ -402,7 +402,7 @@ int mdss_mdp_overlay_req_check(struct msm_fb_data_type *mfd,
 }
 
 int mdp_pipe_tune_perf(struct mdss_mdp_pipe *pipe,
-	u32 flags)
+                       u32 flags)
 {
 	struct mdss_data_type *mdata = pipe->mixer_left->ctl->mdata;
 	struct mdss_mdp_perf_params perf;
@@ -411,20 +411,20 @@ int mdp_pipe_tune_perf(struct mdss_mdp_pipe *pipe,
 	memset(&perf, 0, sizeof(perf));
 
 	flags |= PERF_CALC_PIPE_APPLY_CLK_FUDGE |
-		PERF_CALC_PIPE_CALC_SMP_SIZE;
+	         PERF_CALC_PIPE_CALC_SMP_SIZE;
 
 	for (;;) {
 		rc = mdss_mdp_perf_calc_pipe(pipe, &perf, NULL,
-			flags);
+		                             flags);
 
 		if (!rc && (perf.mdp_clk_rate <= mdata->max_mdp_clk_rate)) {
 			rc = mdss_mdp_perf_bw_check_pipe(&perf, pipe);
 			if (!rc) {
 				break;
 			} else if (rc == -E2BIG &&
-				   !__is_more_decimation_doable(pipe)) {
+			           !__is_more_decimation_doable(pipe)) {
 				pr_debug("pipe%d exceeded per pipe BW\n",
-					pipe->num);
+				         pipe->num);
 				return rc;
 			}
 		}
@@ -435,8 +435,8 @@ int mdp_pipe_tune_perf(struct mdss_mdp_pipe *pipe,
 		 * mdp clock requirement
 		 */
 		if (mdata->has_decimation && (pipe->vert_deci < MAX_DECIMATION)
-			&& !pipe->bwc_mode && !pipe->scaler.enable &&
-			mdss_mdp_is_linear_format(pipe->src_fmt))
+		    && !pipe->bwc_mode && !pipe->scaler.enable &&
+		    mdss_mdp_is_linear_format(pipe->src_fmt))
 			pipe->vert_deci++;
 		else
 			return -E2BIG;
@@ -481,43 +481,43 @@ static int __mdss_mdp_validate_pxl_extn(struct mdss_mdp_pipe *pipe)
 			src_h >>= 1;
 
 		hor_req_pixels = pipe->scaler.roi_w[plane] +
-			pipe->scaler.num_ext_pxls_left[plane] +
-			pipe->scaler.num_ext_pxls_right[plane];
+		                 pipe->scaler.num_ext_pxls_left[plane] +
+		                 pipe->scaler.num_ext_pxls_right[plane];
 
 		hor_fetch_pixels = src_w +
-			(pipe->scaler.left_ftch[plane] >> pipe->horz_deci) +
-			pipe->scaler.left_rpt[plane] +
-			(pipe->scaler.right_ftch[plane] >> pipe->horz_deci) +
-			pipe->scaler.right_rpt[plane];
+		                   (pipe->scaler.left_ftch[plane] >> pipe->horz_deci) +
+		                   pipe->scaler.left_rpt[plane] +
+		                   (pipe->scaler.right_ftch[plane] >> pipe->horz_deci) +
+		                   pipe->scaler.right_rpt[plane];
 
 		hor_ov_fetch = src_w +
-			(pipe->scaler.left_ftch[plane] >> pipe->horz_deci)+
-			(pipe->scaler.right_ftch[plane] >> pipe->horz_deci);
+		               (pipe->scaler.left_ftch[plane] >> pipe->horz_deci)+
+		               (pipe->scaler.right_ftch[plane] >> pipe->horz_deci);
 
 		vert_req_pixels = pipe->scaler.num_ext_pxls_top[plane] +
-			pipe->scaler.num_ext_pxls_btm[plane];
+		                  pipe->scaler.num_ext_pxls_btm[plane];
 
 		vert_fetch_pixels =
-			(pipe->scaler.top_ftch[plane] >> pipe->vert_deci) +
-			pipe->scaler.top_rpt[plane] +
-			(pipe->scaler.btm_ftch[plane] >> pipe->vert_deci)+
-			pipe->scaler.btm_rpt[plane];
+		    (pipe->scaler.top_ftch[plane] >> pipe->vert_deci) +
+		    pipe->scaler.top_rpt[plane] +
+		    (pipe->scaler.btm_ftch[plane] >> pipe->vert_deci)+
+		    pipe->scaler.btm_rpt[plane];
 
 		vert_ov_fetch = src_h +
-			(pipe->scaler.top_ftch[plane] >> pipe->vert_deci)+
-			(pipe->scaler.btm_ftch[plane] >> pipe->vert_deci);
+		                (pipe->scaler.top_ftch[plane] >> pipe->vert_deci)+
+		                (pipe->scaler.btm_ftch[plane] >> pipe->vert_deci);
 
 		if ((hor_req_pixels != hor_fetch_pixels) ||
-			(hor_ov_fetch > pipe->img_width) ||
-			(vert_req_pixels != vert_fetch_pixels) ||
-			(vert_ov_fetch > pipe->img_height)) {
+		    (hor_ov_fetch > pipe->img_width) ||
+		    (vert_req_pixels != vert_fetch_pixels) ||
+		    (vert_ov_fetch > pipe->img_height)) {
 			pr_err("err: plane=%d h_req:%d h_fetch:%d v_req:%d v_fetch:%d\n",
-					plane,
-					hor_req_pixels, hor_fetch_pixels,
-					vert_req_pixels, vert_fetch_pixels);
+			       plane,
+			       hor_req_pixels, hor_fetch_pixels,
+			       vert_req_pixels, vert_fetch_pixels);
 			pr_err("roi_w[%d]=%d, src_img:[%d, %d]\n",
-					plane, pipe->scaler.roi_w[plane],
-					pipe->img_width, pipe->img_height);
+			       plane, pipe->scaler.roi_w[plane],
+			       pipe->img_width, pipe->img_height);
 			pipe->scaler.enable = 0;
 			return -EINVAL;
 		}
@@ -542,19 +542,19 @@ int mdss_mdp_overlay_setup_scaling(struct mdss_mdp_pipe *pipe)
 	memset(&pipe->scaler, 0, sizeof(struct mdp_scale_data_v2));
 	src = DECIMATED_DIMENSION(pipe->src.w, pipe->horz_deci);
 	rc = mdss_mdp_calc_phase_step(src, pipe->dst.w,
-			&pipe->scaler.phase_step_x[0]);
+	                              &pipe->scaler.phase_step_x[0]);
 	if (rc == -EOVERFLOW) {
 		/* overflow on horizontal direction is acceptable */
 		rc = 0;
 	} else if (rc) {
 		pr_err("Horizontal scaling calculation failed=%d! %d->%d\n",
-				rc, src, pipe->dst.w);
+		       rc, src, pipe->dst.w);
 		return rc;
 	}
 
 	src = DECIMATED_DIMENSION(pipe->src.h, pipe->vert_deci);
 	rc = mdss_mdp_calc_phase_step(src, pipe->dst.h,
-			&pipe->scaler.phase_step_y[0]);
+	                              &pipe->scaler.phase_step_y[0]);
 
 	if ((rc == -EOVERFLOW) && (pipe->type == MDSS_MDP_PIPE_TYPE_VIG)) {
 		/* overflow on Qseed2 scaler is acceptable */
@@ -564,7 +564,7 @@ int mdss_mdp_overlay_setup_scaling(struct mdss_mdp_pipe *pipe)
 		rc = -ECANCELED;
 	} else if (rc) {
 		pr_err("Vertical scaling calculation failed=%d! %d->%d\n",
-				rc, src, pipe->dst.h);
+		       rc, src, pipe->dst.h);
 	}
 
 	if (test_bit(MDSS_CAPS_QSEED3, mdata->mdss_caps_map))
@@ -576,7 +576,7 @@ int mdss_mdp_overlay_setup_scaling(struct mdss_mdp_pipe *pipe)
 }
 
 inline void mdss_mdp_overlay_set_chroma_sample(
-	struct mdss_mdp_pipe *pipe)
+    struct mdss_mdp_pipe *pipe)
 {
 	pipe->chroma_sample_v = pipe->chroma_sample_h = 0;
 
@@ -599,8 +599,8 @@ inline void mdss_mdp_overlay_set_chroma_sample(
 }
 
 int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
-	struct mdp_overlay *req, struct mdss_mdp_pipe **ppipe,
-	struct mdss_mdp_pipe *left_blend_pipe, bool is_single_layer)
+                                struct mdp_overlay *req, struct mdss_mdp_pipe **ppipe,
+                                struct mdss_mdp_pipe *left_blend_pipe, bool is_single_layer)
 {
 	struct mdss_mdp_format_params *fmt;
 	struct mdss_mdp_pipe *pipe;
@@ -624,9 +624,9 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 	}
 
 	if ((req->dst_rect.w > mdata->max_mixer_width) ||
-		(req->dst_rect.h > MAX_DST_H)) {
+	    (req->dst_rect.h > MAX_DST_H)) {
 		pr_err("exceeded max mixer supported resolution %dx%d\n",
-				req->dst_rect.w, req->dst_rect.h);
+		       req->dst_rect.w, req->dst_rect.h);
 		return -EOVERFLOW;
 	}
 
@@ -636,8 +636,8 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 		mixer_mux = MDSS_MDP_MIXER_MUX_LEFT;
 
 	pr_debug("ctl=%u req id=%x mux=%d z_order=%d flags=0x%x dst_x:%d\n",
-		mdp5_data->ctl->num, req->id, mixer_mux, req->z_order,
-		req->flags, req->dst_rect.x);
+	         mdp5_data->ctl->num, req->id, mixer_mux, req->z_order,
+	         req->flags, req->dst_rect.x);
 
 	fmt = mdss_mdp_get_format_params(req->src.format);
 	if (!fmt) {
@@ -653,8 +653,8 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 	 */
 	if (bwc_enabled || rot90) {
 		req->src.format =
-			mdss_mdp_get_rotator_dst_format(req->src.format, rot90,
-				bwc_enabled);
+		    mdss_mdp_get_rotator_dst_format(req->src.format, rot90,
+		                                    bwc_enabled);
 		fmt = mdss_mdp_get_format_params(req->src.format);
 		if (!fmt) {
 			pr_err("invalid pipe format %d\n", req->src.format);
@@ -677,8 +677,8 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 	}
 
 	if ((mdata->has_non_scalar_rgb) &&
-		((req->src_rect.w != req->dst_rect.w) ||
-			(req->src_rect.h != req->dst_rect.h)))
+	    ((req->src_rect.w != req->dst_rect.w) ||
+	     (req->src_rect.h != req->dst_rect.h)))
 		is_vig_needed = true;
 
 	if (req->id == MSMFB_NEW_REQUEST) {
@@ -700,8 +700,8 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 			if (req->flags & MDP_OV_PIPE_FORCE_DMA)
 				pipe_type = MDSS_MDP_PIPE_TYPE_DMA;
 			else if (fmt->is_yuv ||
-				(req->flags & MDP_OV_PIPE_SHARE) ||
-				is_vig_needed)
+			         (req->flags & MDP_OV_PIPE_SHARE) ||
+			         is_vig_needed)
 				pipe_type = MDSS_MDP_PIPE_TYPE_VIG;
 			else
 				pipe_type = MDSS_MDP_PIPE_TYPE_RGB;
@@ -715,10 +715,10 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 		    (req->pipe_type == PIPE_TYPE_AUTO) &&
 		    (pipe_type == MDSS_MDP_PIPE_TYPE_DMA)) {
 			pr_debug("giving RGB pipe for fb%d. flags:0x%x\n",
-				mfd->index, req->flags);
+			         mfd->index, req->flags);
 			pipe_type = MDSS_MDP_PIPE_TYPE_RGB;
 			pipe = mdss_mdp_pipe_alloc(mixer, pipe_type,
-				left_blend_pipe);
+			                           left_blend_pipe);
 		}
 
 		/* VIG pipes can also support RGB format */
@@ -726,17 +726,17 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 		    (req->pipe_type == PIPE_TYPE_AUTO) &&
 		    (pipe_type == MDSS_MDP_PIPE_TYPE_RGB)) {
 			pr_debug("giving ViG pipe for fb%d. flags:0x%x\n",
-				mfd->index, req->flags);
+			         mfd->index, req->flags);
 			pipe_type = MDSS_MDP_PIPE_TYPE_VIG;
 			pipe = mdss_mdp_pipe_alloc(mixer, pipe_type,
-				left_blend_pipe);
+			                           left_blend_pipe);
 		}
 
 		if (IS_ERR(pipe)) {
 			return PTR_ERR(pipe);
 		} else if (!pipe) {
 			pr_err("error allocating pipe. flags=0x%x req->pipe_type=%d pipe_type=%d\n",
-				req->flags, req->pipe_type, pipe_type);
+			       req->flags, req->pipe_type, pipe_type);
 			return -ENODEV;
 		}
 
@@ -762,7 +762,7 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 		ret = mdss_mdp_pipe_map(pipe);
 		if (IS_ERR_VALUE(ret)) {
 			pr_err("Unable to map used pipe%d ndx=%x\n",
-					pipe->num, pipe->ndx);
+			       pipe->num, pipe->ndx);
 			return ret;
 		}
 
@@ -773,18 +773,18 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 		}
 
 		if ((pipe->mixer_left != mixer) &&
-				(pipe->type != MDSS_MDP_PIPE_TYPE_CURSOR)) {
+		    (pipe->type != MDSS_MDP_PIPE_TYPE_CURSOR)) {
 			if (!mixer->ctl || (mixer->ctl->mfd != mfd)) {
 				pr_err("Can't switch mixer %d->%d pnum %d!\n",
-					pipe->mixer_left->num, mixer->num,
-						pipe->num);
+				       pipe->mixer_left->num, mixer->num,
+				       pipe->num);
 				ret = -EINVAL;
 				goto exit_fail;
 			}
 			pr_debug("switching pipe%d mixer %d->%d stage%d\n",
-				pipe->num,
-				pipe->mixer_left ? pipe->mixer_left->num : -1,
-				mixer->num, req->z_order);
+			         pipe->num,
+			         pipe->mixer_left ? pipe->mixer_left->num : -1,
+			         mixer->num, req->z_order);
 			mdss_mdp_mixer_pipe_unstage(pipe, pipe->mixer_left);
 			pipe->mixer_left = mixer;
 		}
@@ -793,7 +793,7 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 	if (left_blend_pipe) {
 		if (pipe->priority <= left_blend_pipe->priority) {
 			pr_err("priority limitation. left:%d right%d\n",
-				left_blend_pipe->priority, pipe->priority);
+			       left_blend_pipe->priority, pipe->priority);
 			ret = -EBADSLT;
 			goto exit_fail;
 		} else {
@@ -822,11 +822,11 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 	pipe->flags = req->flags;
 	if (bwc_enabled  &&  !mdp5_data->mdata->has_bwc) {
 		pr_err("BWC is not supported in MDP version %x\n",
-			mdp5_data->mdata->mdp_rev);
+		       mdp5_data->mdata->mdp_rev);
 		pipe->bwc_mode = 0;
 	} else {
 		pipe->bwc_mode = pipe->mixer_left->rotator_mode ?
-			0 : (bwc_enabled ? 1 : 0) ;
+		                 0 : (bwc_enabled ? 1 : 0) ;
 	}
 	pipe->img_width = req->src.width & 0x3fff;
 	pipe->img_height = req->src.height & 0x3fff;
@@ -846,10 +846,10 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 
 	if (mfd->panel_orientation & MDP_FLIP_LR)
 		pipe->dst.x = pipe->mixer_left->width
-			- pipe->dst.x - pipe->dst.w;
+		              - pipe->dst.x - pipe->dst.w;
 	if (mfd->panel_orientation & MDP_FLIP_UD)
 		pipe->dst.y = pipe->mixer_left->height
-			- pipe->dst.y - pipe->dst.h;
+		              - pipe->dst.y - pipe->dst.h;
 
 	pipe->horz_deci = req->horz_deci;
 	pipe->vert_deci = req->vert_deci;
@@ -861,16 +861,16 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 	 */
 	if (mdata->has_src_split) {
 		if ((pipe->type == MDSS_MDP_PIPE_TYPE_CURSOR) &&
-				is_split_lm(mfd)) {
+		    is_split_lm(mfd)) {
 			pipe->src_split_req = true;
 		} else if ((mixer_mux == MDSS_MDP_MIXER_MUX_LEFT) &&
-		    ((req->dst_rect.x + req->dst_rect.w) > mixer->width)) {
+		           ((req->dst_rect.x + req->dst_rect.w) > mixer->width)) {
 			if (req->dst_rect.x >= mixer->width) {
 				pr_err("%pS: err dst_x can't lie in right half",
-					__builtin_return_address(0));
+				       __builtin_return_address(0));
 				pr_cont(" flags:0x%x dst x:%d w:%d lm_w:%d\n",
-					req->flags, req->dst_rect.x,
-					req->dst_rect.w, mixer->width);
+				        req->flags, req->dst_rect.x,
+				        req->dst_rect.w, mixer->width);
 				ret = -EINVAL;
 				goto exit_fail;
 			} else {
@@ -879,7 +879,7 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 		} else {
 			if (pipe->src_split_req) {
 				mdss_mdp_mixer_pipe_unstage(pipe,
-					pipe->mixer_right);
+				                            pipe->mixer_right);
 				pipe->mixer_right = NULL;
 			}
 			pipe->src_split_req = false;
@@ -897,15 +897,15 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 	pipe->blend_op = req->blend_op;
 	if (pipe->blend_op == BLEND_OP_NOT_DEFINED)
 		pipe->blend_op = fmt->alpha_enable ?
-					BLEND_OP_PREMULTIPLIED :
-					BLEND_OP_OPAQUE;
+		                 BLEND_OP_PREMULTIPLIED :
+		                 BLEND_OP_OPAQUE;
 
 	if (!fmt->alpha_enable && (pipe->blend_op != BLEND_OP_OPAQUE))
 		pr_debug("Unintended blend_op %d on layer with no alpha plane\n",
-			pipe->blend_op);
+		         pipe->blend_op);
 
 	if (fmt->is_yuv && !(pipe->flags & MDP_SOURCE_ROTATED_90) &&
-			!pipe->scaler.enable) {
+	    !pipe->scaler.enable) {
 		pipe->overfetch_disable = OVERFETCH_DISABLE_BOTTOM;
 
 		if (!(pipe->flags & MDSS_MDP_DUAL_PIPE) ||
@@ -923,7 +923,7 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 	mdss_mdp_pipe_pp_clear(pipe);
 	if (pipe->flags & MDP_OVERLAY_PP_CFG_EN) {
 		memcpy(&pipe->pp_cfg, &req->overlay_pp_cfg,
-					sizeof(struct mdp_overlay_pp_params));
+		       sizeof(struct mdp_overlay_pp_params));
 		ret = mdss_mdp_pp_sspp_config(pipe);
 		if (ret) {
 			pr_err("failed to configure pp params ret %d\n", ret);
@@ -967,13 +967,13 @@ int mdss_mdp_overlay_pipe_setup(struct msm_fb_data_type *mfd,
 		goto exit_fail;
 
 	if ((mixer->type == MDSS_MDP_MIXER_TYPE_WRITEBACK) &&
-		(mdp5_data->mdata->wfd_mode == MDSS_MDP_WFD_SHARED))
+	    (mdp5_data->mdata->wfd_mode == MDSS_MDP_WFD_SHARED))
 		mdss_mdp_smp_release(pipe);
 
 	ret = mdss_mdp_smp_reserve(pipe);
 	if (ret) {
 		pr_debug("mdss_mdp_smp_reserve failed. pnum:%d ret=%d\n",
-			pipe->num, ret);
+		         pipe->num, ret);
 		goto exit_fail;
 	}
 
@@ -1016,7 +1016,7 @@ exit_fail:
 }
 
 static int mdss_mdp_overlay_set(struct msm_fb_data_type *mfd,
-				struct mdp_overlay *req)
+                                struct mdp_overlay *req)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	int ret;
@@ -1053,7 +1053,7 @@ static int mdss_mdp_overlay_set(struct msm_fb_data_type *mfd,
  * this function
  */
 struct mdss_mdp_data *mdss_mdp_overlay_buf_alloc(struct msm_fb_data_type *mfd,
-		struct mdss_mdp_pipe *pipe)
+        struct mdss_mdp_pipe *pipe)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_mdp_data *buf;
@@ -1061,7 +1061,7 @@ struct mdss_mdp_data *mdss_mdp_overlay_buf_alloc(struct msm_fb_data_type *mfd,
 
 	if (list_empty(&mdp5_data->bufs_pool)) {
 		pr_debug("allocating %u bufs for fb%d\n",
-					BUF_POOL_SIZE, mfd->index);
+		         BUF_POOL_SIZE, mfd->index);
 
 		buf = kzalloc(sizeof(*buf) * BUF_POOL_SIZE, GFP_KERNEL);
 		if (!buf) {
@@ -1079,7 +1079,7 @@ struct mdss_mdp_data *mdss_mdp_overlay_buf_alloc(struct msm_fb_data_type *mfd,
 	}
 
 	buf = list_first_entry(&mdp5_data->bufs_pool,
-			struct mdss_mdp_data, buf_list);
+	                       struct mdss_mdp_data, buf_list);
 	BUG_ON(buf->state != MDP_BUF_STATE_UNUSED);
 	buf->state = MDP_BUF_STATE_READY;
 	buf->last_alloc = local_clock();
@@ -1095,7 +1095,7 @@ struct mdss_mdp_data *mdss_mdp_overlay_buf_alloc(struct msm_fb_data_type *mfd,
 
 static
 struct mdss_mdp_data *__mdp_overlay_buf_alloc(struct msm_fb_data_type *mfd,
-		struct mdss_mdp_pipe *pipe)
+        struct mdss_mdp_pipe *pipe)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_mdp_data *buf;
@@ -1117,7 +1117,7 @@ static void mdss_mdp_overlay_buf_deinit(struct msm_fb_data_type *mfd)
 	BUG_ON(!list_empty(&mdp5_data->bufs_used));
 
 	list_for_each_entry_safe(buf, t, &mdp5_data->bufs_pool, buf_list)
-		list_del(&buf->buf_list);
+	list_del(&buf->buf_list);
 
 	list_for_each_entry_safe(buf, t, &mdp5_data->bufs_chunks, chunk_list) {
 		list_del(&buf->chunk_list);
@@ -1130,7 +1130,7 @@ static void mdss_mdp_overlay_buf_deinit(struct msm_fb_data_type *mfd)
  * this function
  */
 void mdss_mdp_overlay_buf_free(struct msm_fb_data_type *mfd,
-		struct mdss_mdp_data *buf)
+                               struct mdss_mdp_data *buf)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 
@@ -1148,7 +1148,7 @@ void mdss_mdp_overlay_buf_free(struct msm_fb_data_type *mfd,
 }
 
 static void __mdp_overlay_buf_free(struct msm_fb_data_type *mfd,
-		struct mdss_mdp_data *buf)
+                                   struct mdss_mdp_data *buf)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 
@@ -1158,7 +1158,7 @@ static void __mdp_overlay_buf_free(struct msm_fb_data_type *mfd,
 }
 
 static inline void __pipe_buf_mark_cleanup(struct msm_fb_data_type *mfd,
-		struct mdss_mdp_data *buf)
+        struct mdss_mdp_data *buf)
 {
 	/* buffer still in bufs_used, marking it as cleanup will clean it up */
 	buf->state = MDP_BUF_STATE_CLEANUP;
@@ -1179,11 +1179,11 @@ static void __mdss_mdp_overlay_free_list_purge(struct msm_fb_data_type *mfd)
 	pr_debug("purging fb%d free list\n", mfd->index);
 
 	list_for_each_entry_safe(buf, t, &mdp5_data->bufs_freelist, buf_list)
-		mdss_mdp_overlay_buf_free(mfd, buf);
+	mdss_mdp_overlay_buf_free(mfd, buf);
 }
 
 static void __overlay_pipe_cleanup(struct msm_fb_data_type *mfd,
-		struct mdss_mdp_pipe *pipe)
+                                   struct mdss_mdp_pipe *pipe)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_mdp_data *buf, *tmpbuf;
@@ -1212,7 +1212,7 @@ static void __overlay_pipe_cleanup(struct msm_fb_data_type *mfd,
  * and cleaned up. Also cleanup of any pipe buffers after flip.
  */
 static void mdss_mdp_overlay_cleanup(struct msm_fb_data_type *mfd,
-		struct list_head *destroy_pipes)
+                                     struct list_head *destroy_pipes)
 {
 	struct mdss_mdp_pipe *pipe, *tmp;
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
@@ -1244,7 +1244,7 @@ static void mdss_mdp_overlay_cleanup(struct msm_fb_data_type *mfd,
 			tmp = (struct mdss_mdp_pipe *)pipe->multirect.next;
 			if (tmp)
 				skip_fetch_halt =
-					atomic_read(&tmp->kref.refcount);
+				    atomic_read(&tmp->kref.refcount);
 		}
 
 		/* make sure pipe fetch has been halted before freeing buffer */
@@ -1302,7 +1302,7 @@ static void mdss_mdp_overlay_cleanup(struct msm_fb_data_type *mfd,
 }
 
 void mdss_mdp_handoff_cleanup_pipes(struct msm_fb_data_type *mfd,
-	u32 type)
+                                    u32 type)
 {
 	u32 i, npipes;
 	struct mdss_mdp_pipe *pipe;
@@ -1368,13 +1368,13 @@ int mdss_mdp_overlay_start(struct msm_fb_data_type *mfd)
 			mutex_unlock(&mdp5_data->list_lock);
 			if (rc) {
 				pr_debug("empty kickoff on fb%d during cont splash\n",
-					mfd->index);
+				         mfd->index);
 				return -EPERM;
 			}
 		}
 	} else if (mdata->handoff_pending) {
 		pr_warn("fb%d: commit while splash handoff pending\n",
-				mfd->index);
+		        mfd->index);
 		return -EPERM;
 	}
 
@@ -1387,11 +1387,11 @@ int mdss_mdp_overlay_start(struct msm_fb_data_type *mfd)
 	 * runtime device which will be released when overlay is turned off
 	 */
 	if (!mdp5_data->mdata->idle_pc_enabled ||
-		(mfd->panel_info->type != MIPI_CMD_PANEL)) {
+	    (mfd->panel_info->type != MIPI_CMD_PANEL)) {
 		rc = pm_runtime_get_sync(&mfd->pdev->dev);
 		if (IS_ERR_VALUE(rc)) {
 			pr_err("unable to resume with pm_runtime_get_sync rc=%d\n",
-				rc);
+			       rc);
 			goto end;
 		}
 	}
@@ -1423,7 +1423,7 @@ int mdss_mdp_overlay_start(struct msm_fb_data_type *mfd)
 	rc = mdss_mdp_ctl_start(ctl, false);
 	if (rc == 0) {
 		mdss_mdp_ctl_notifier_register(mdp5_data->ctl,
-				&mfd->mdp_sync_pt_data.notifier);
+		                               &mfd->mdp_sync_pt_data.notifier);
 	} else {
 		pr_err("mdp ctl start failed.\n");
 		goto ctl_error;
@@ -1464,11 +1464,11 @@ static void mdss_mdp_overlay_update_pm(struct mdss_overlay_private *mdp5_data)
 }
 
 static void __unstage_pipe_and_clean_buf(struct msm_fb_data_type *mfd,
-		struct mdss_mdp_pipe *pipe, struct mdss_mdp_data *buf)
+        struct mdss_mdp_pipe *pipe, struct mdss_mdp_data *buf)
 {
 
 	pr_debug("unstaging pipe:%d rect:%d buf:%d\n",
-			pipe->num, pipe->multirect.num, !buf);
+	         pipe->num, pipe->multirect.num, !buf);
 	MDSS_XLOG(pipe->num, pipe->multirect.num, !buf);
 	mdss_mdp_mixer_pipe_unstage(pipe, pipe->mixer_left);
 	mdss_mdp_mixer_pipe_unstage(pipe, pipe->mixer_right);
@@ -1491,7 +1491,7 @@ static int __overlay_queue_pipes(struct msm_fb_data_type *mfd)
 
 		if (pipe->dirty) {
 			pr_err("fb%d: pipe %d dirty! skipping configuration\n",
-					mfd->index, pipe->num);
+			       mfd->index, pipe->num);
 			continue;
 		}
 
@@ -1500,9 +1500,9 @@ static int __overlay_queue_pipes(struct msm_fb_data_type *mfd)
 		 * display pipe, skip that
 		 */
 		if (mdss_get_sd_client_cnt() &&
-			!(pipe->flags & MDP_SECURE_DISPLAY_OVERLAY_SESSION)) {
+		    !(pipe->flags & MDP_SECURE_DISPLAY_OVERLAY_SESSION)) {
 			pr_warn("Non secure pipe during secure display: %u: %08X, skip\n",
-					pipe->num, pipe->flags);
+			        pipe->num, pipe->flags);
 			continue;
 		}
 		/*
@@ -1512,40 +1512,40 @@ static int __overlay_queue_pipes(struct msm_fb_data_type *mfd)
 		 */
 		if ((pipe->type == MDSS_MDP_PIPE_TYPE_DMA) &&
 		    (ctl->shared_lock &&
-		    (ctl->mdata->wfd_mode == MDSS_MDP_WFD_SHARED))) {
+		     (ctl->mdata->wfd_mode == MDSS_MDP_WFD_SHARED))) {
 			if (ctl->mdata->mixer_switched) {
 				ret = mdss_mdp_overlay_pipe_setup(mfd,
-					&pipe->req_data, &pipe, NULL, false);
+				                                  &pipe->req_data, &pipe, NULL, false);
 				pr_debug("reseting DMA pipe for ctl=%d",
-					 ctl->num);
+				         ctl->num);
 			}
 			if (ret) {
 				pr_err("can't reset DMA pipe ret=%d ctl=%d\n",
-					ret, ctl->num);
+				       ret, ctl->num);
 				return ret;
 			}
 
 			tmp = mdss_mdp_ctl_mixer_switch(ctl,
-					MDSS_MDP_WB_CTL_TYPE_LINE);
+			                                MDSS_MDP_WB_CTL_TYPE_LINE);
 			if (!tmp)
 				return -EINVAL;
 			pipe->mixer_left = mdss_mdp_mixer_get(tmp,
-					MDSS_MDP_MIXER_MUX_DEFAULT);
+			                                      MDSS_MDP_MIXER_MUX_DEFAULT);
 		}
 
 		buf = list_first_entry_or_null(&pipe->buf_queue,
-				struct mdss_mdp_data, pipe_list);
+		                               struct mdss_mdp_data, pipe_list);
 		if (buf) {
 			switch (buf->state) {
 			case MDP_BUF_STATE_READY:
 				pr_debug("pnum=%d buf=%pK first buffer ready\n",
-						pipe->num, buf);
+				         pipe->num, buf);
 				break;
 			case MDP_BUF_STATE_ACTIVE:
 				if (list_is_last(&buf->pipe_list,
-						&pipe->buf_queue)) {
+				                 &pipe->buf_queue)) {
 					pr_debug("pnum=%d no buf update\n",
-							pipe->num);
+					         pipe->num);
 				} else {
 					struct mdss_mdp_data *tmp = buf;
 					/*
@@ -1559,7 +1559,7 @@ static int __overlay_queue_pipes(struct msm_fb_data_type *mfd)
 				break;
 			default:
 				pr_err("invalid state of buf %pK=%d\n",
-						buf, buf->state);
+				       buf, buf->state);
 				BUG();
 				break;
 			}
@@ -1573,7 +1573,7 @@ static int __overlay_queue_pipes(struct msm_fb_data_type *mfd)
 			buf->state = MDP_BUF_STATE_ACTIVE;
 			ret = mdss_mdp_data_map(buf, false, DMA_TO_DEVICE);
 		} else if (!pipe->params_changed &&
-			   !mdss_mdp_is_roi_changed(pipe->mfd)) {
+		           !mdss_mdp_is_roi_changed(pipe->mfd)) {
 
 			/*
 			 * no update for the given pipe nor any change in the
@@ -1583,10 +1583,10 @@ static int __overlay_queue_pipes(struct msm_fb_data_type *mfd)
 		} else if (buf) {
 			BUG_ON(buf->state != MDP_BUF_STATE_ACTIVE);
 			pr_debug("requeueing active buffer on pnum=%d\n",
-					pipe->num);
+			         pipe->num);
 		} else if ((pipe->flags & MDP_SOLID_FILL) == 0) {
 			pr_warn("commit without buffer on pipe %d\n",
-				pipe->num);
+			        pipe->num);
 			ret = -EINVAL;
 		}
 		/*
@@ -1598,7 +1598,7 @@ static int __overlay_queue_pipes(struct msm_fb_data_type *mfd)
 
 		if (IS_ERR_VALUE(ret)) {
 			pr_warn("Unable to queue data for pnum=%d rect=%d\n",
-					pipe->num, pipe->multirect.num);
+			        pipe->num, pipe->multirect.num);
 
 			/*
 			 * If we fail for a multi-rect pipe, unstage both rects
@@ -1606,23 +1606,23 @@ static int __overlay_queue_pipes(struct msm_fb_data_type *mfd)
 			 * mode with only one rectangle staged.
 			 */
 			if (pipe->multirect.mode !=
-					MDSS_MDP_PIPE_MULTIRECT_NONE) {
+			    MDSS_MDP_PIPE_MULTIRECT_NONE) {
 				struct mdss_mdp_pipe *next_pipe =
-					(struct mdss_mdp_pipe *)
-					pipe->multirect.next;
+				    (struct mdss_mdp_pipe *)
+				    pipe->multirect.next;
 
 				if (next_pipe) {
 					struct mdss_mdp_data *next_buf =
-						list_first_entry_or_null(
-							&next_pipe->buf_queue,
-							struct mdss_mdp_data,
-							pipe_list);
+					    list_first_entry_or_null(
+					        &next_pipe->buf_queue,
+					        struct mdss_mdp_data,
+					        pipe_list);
 
 					__unstage_pipe_and_clean_buf(mfd,
-							next_pipe, next_buf);
+					                             next_pipe, next_buf);
 				} else {
 					pr_warn("cannot find rect pnum=%d\n",
-							pipe->num);
+					        pipe->num);
 				}
 			}
 
@@ -1651,7 +1651,7 @@ static void __overlay_kickoff_requeue(struct msm_fb_data_type *mfd)
 }
 
 static int mdss_mdp_commit_cb(enum mdp_commit_stage_type commit_stage,
-	void *data)
+                              void *data)
 {
 	int ret = 0;
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)data;
@@ -1691,7 +1691,7 @@ static int mdss_mdp_commit_cb(enum mdp_commit_stage_type commit_stage,
  *    not be part of used list and should have been omitted by user program.
  */
 static bool __is_roi_valid(struct mdss_mdp_pipe *pipe,
-	struct mdss_rect *l_roi, struct mdss_rect *r_roi)
+                           struct mdss_rect *l_roi, struct mdss_rect *r_roi)
 {
 	bool ret = true;
 	bool is_right_mixer = pipe->mixer_left->is_right_mixer;
@@ -1734,10 +1734,10 @@ static bool __is_roi_valid(struct mdss_mdp_pipe *pipe,
 
 		if (!mdss_rect_cmp(&res, &dst)) {
 			pr_err("error. pipe%d has scaling and its output is interesecting with roi.\n",
-				pipe->num);
+			       pipe->num);
 			pr_err("pipe_dst:-> %d %d %d %d roi:-> %d %d %d %d\n",
-				dst.x, dst.y, dst.w, dst.h,
-				roi.x, roi.y, roi.w, roi.h);
+			       dst.x, dst.y, dst.w, dst.h,
+			       roi.x, roi.y, roi.w, roi.h);
 			ret = false;
 			goto end;
 		}
@@ -1746,7 +1746,7 @@ static bool __is_roi_valid(struct mdss_mdp_pipe *pipe,
 	/* condition #2 above */
 	if (!mdss_rect_overlap_check(&dst, &roi)) {
 		pr_err("error. pipe%d's output is outside of ROI.\n",
-			pipe->num);
+		       pipe->num);
 		ret = false;
 	}
 end:
@@ -1790,16 +1790,20 @@ int mdss_mode_switch(struct msm_fb_data_type *mfd, u32 mode)
 			* full frame update.
 			*/
 			if (ctl->mixer_left) {
-				l_roi = (struct mdss_rect) {0, 0,
+				l_roi = (struct mdss_rect) {
+					0, 0,
 					ctl->mixer_left->width,
-					ctl->mixer_left->height};
+					ctl->mixer_left->height
+				};
 				ctl->mixer_left->roi_changed = true;
 				ctl->mixer_left->valid_roi = true;
 			}
 			if (ctl->mixer_right) {
-				r_roi = (struct mdss_rect) {0, 0,
+				r_roi = (struct mdss_rect) {
+					0, 0,
 					ctl->mixer_right->width,
-					ctl->mixer_right->height};
+					ctl->mixer_right->height
+				};
 				ctl->mixer_right->roi_changed = true;
 				ctl->mixer_right->valid_roi = true;
 			}
@@ -1808,11 +1812,11 @@ int mdss_mode_switch(struct msm_fb_data_type *mfd, u32 mode)
 			mutex_lock(&mdp5_data->ov_lock);
 			ctl->ops.reconfigure(ctl, mode, 1);
 			mutex_unlock(&mdp5_data->ov_lock);
-		/*
-		 * For Video mode panels, reconfigure is not defined.
-		 * So doing an explicit ctrl stop during resolution switch
-		 * to balance the ctrl start at the end of this function.
-		 */
+			/*
+			 * For Video mode panels, reconfigure is not defined.
+			 * So doing an explicit ctrl stop during resolution switch
+			 * to balance the ctrl start at the end of this function.
+			 */
 		} else {
 			mdss_mdp_ctl_stop(ctl, MDSS_PANEL_POWER_OFF);
 		}
@@ -1821,13 +1825,17 @@ int mdss_mode_switch(struct msm_fb_data_type *mfd, u32 mode)
 		 * Need to reset roi if there was partial update in previous
 		 * Command frame
 		 */
-		l_roi = (struct mdss_rect){0, 0,
-				ctl->mixer_left->width,
-				ctl->mixer_left->height};
+		l_roi = (struct mdss_rect) {
+			0, 0,
+			ctl->mixer_left->width,
+			ctl->mixer_left->height
+		};
 		if (ctl->mixer_right) {
-			r_roi = (struct mdss_rect) {0, 0,
+			r_roi = (struct mdss_rect) {
+				0, 0,
 				ctl->mixer_right->width,
-				ctl->mixer_right->height};
+				ctl->mixer_right->height
+			};
 		}
 		mdss_mdp_set_roi(ctl, &l_roi, &r_roi);
 		mdss_mdp_switch_roi_reset(ctl);
@@ -1869,8 +1877,8 @@ int mdss_mode_switch_post(struct msm_fb_data_type *mfd, u32 mode)
 		 * DCS to panel.
 		 */
 		frame_rate = mdss_panel_get_framerate
-			(&(ctl->panel_data->panel_info),
-			FPS_RESOLUTION_HZ);
+		             (&(ctl->panel_data->panel_info),
+		              FPS_RESOLUTION_HZ);
 		if (!(frame_rate >= 24 && frame_rate <= 240))
 			frame_rate = 24;
 		frame_rate = ((1000/frame_rate) + 1);
@@ -1878,8 +1886,8 @@ int mdss_mode_switch_post(struct msm_fb_data_type *mfd, u32 mode)
 
 		pr_debug("%s, start\n", __func__);
 		rc = mdss_mdp_ctl_intf_event(ctl,
-			MDSS_EVENT_DSI_DYNAMIC_SWITCH,
-			(void *) MIPI_VIDEO_PANEL, CTL_INTF_EVENT_FLAG_DEFAULT);
+		                             MDSS_EVENT_DSI_DYNAMIC_SWITCH,
+		                             (void *) MIPI_VIDEO_PANEL, CTL_INTF_EVENT_FLAG_DEFAULT);
 		pr_debug("%s, end\n", __func__);
 	} else if (mode == MIPI_CMD_PANEL) {
 		/*
@@ -1891,11 +1899,11 @@ int mdss_mode_switch_post(struct msm_fb_data_type *mfd, u32 mode)
 		clk_ctrl.client = DSI_CLK_REQ_DSI_CLIENT;
 		if (sctl)
 			mdss_mdp_ctl_intf_event(sctl,
-				MDSS_EVENT_PANEL_CLK_CTRL, (void *)&clk_ctrl,
-				CTL_INTF_EVENT_FLAG_SKIP_BROADCAST);
+			                        MDSS_EVENT_PANEL_CLK_CTRL, (void *)&clk_ctrl,
+			                        CTL_INTF_EVENT_FLAG_SKIP_BROADCAST);
 
 		mdss_mdp_ctl_intf_event(ctl, MDSS_EVENT_PANEL_CLK_CTRL,
-			(void *)&clk_ctrl, CTL_INTF_EVENT_FLAG_SKIP_BROADCAST);
+		                        (void *)&clk_ctrl, CTL_INTF_EVENT_FLAG_SKIP_BROADCAST);
 	} else if (mode == SWITCH_RESOLUTION) {
 		if (ctl->ops.reconfigure)
 			rc = ctl->ops.reconfigure(ctl, mode, 0);
@@ -1908,7 +1916,7 @@ int mdss_mode_switch_post(struct msm_fb_data_type *mfd, u32 mode)
 }
 
 static void __validate_and_set_roi(struct msm_fb_data_type *mfd,
-	struct mdp_display_commit *commit)
+                                   struct mdp_display_commit *commit)
 {
 	struct mdss_mdp_pipe *pipe;
 	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
@@ -1928,8 +1936,8 @@ static void __validate_and_set_roi(struct msm_fb_data_type *mfd,
 	rect_copy_mdp_to_mdss(&commit->r_roi, &r_roi);
 
 	pr_debug("input: l_roi:-> %d %d %d %d r_roi:-> %d %d %d %d\n",
-		l_roi.x, l_roi.y, l_roi.w, l_roi.h,
-		r_roi.x, r_roi.y, r_roi.w, r_roi.h);
+	         l_roi.x, l_roi.y, l_roi.w, l_roi.h,
+	         r_roi.x, r_roi.y, r_roi.w, r_roi.h);
 
 	/*
 	 * Configure full ROI
@@ -1937,7 +1945,7 @@ static void __validate_and_set_roi(struct msm_fb_data_type *mfd,
 	 * - If it is the first frame update after dynamic resolution switch
 	 */
 	if (!ctl->panel_data->panel_info.partial_update_enabled
-			|| (ctl->pending_mode_switch == SWITCH_RESOLUTION))
+	    || (ctl->pending_mode_switch == SWITCH_RESOLUTION))
 		goto set_roi;
 
 	skip_partial_update = false;
@@ -1964,8 +1972,8 @@ static void __validate_and_set_roi(struct msm_fb_data_type *mfd,
 		if (l_roi.w && r_roi.w && (l_roi.w != r_roi.w)) {
 			pr_err("error. ROI's do not match. violating src_split requirement\n");
 			pr_err("l_roi:-> %d %d %d %d r_roi:-> %d %d %d %d\n",
-				l_roi.x, l_roi.y, l_roi.w, l_roi.h,
-				r_roi.x, r_roi.y, r_roi.w, r_roi.h);
+			       l_roi.x, l_roi.y, l_roi.w, l_roi.h,
+			       r_roi.x, r_roi.y, r_roi.w, r_roi.h);
 			skip_partial_update = true;
 			goto set_roi;
 		}
@@ -1975,30 +1983,34 @@ static void __validate_and_set_roi(struct msm_fb_data_type *mfd,
 		if (!__is_roi_valid(pipe, &l_roi, &r_roi)) {
 			skip_partial_update = true;
 			pr_err("error. invalid pu config for pipe%d: %d,%d,%d,%d\n",
-				pipe->num,
-				pipe->dst.x, pipe->dst.y,
-				pipe->dst.w, pipe->dst.h);
+			       pipe->num,
+			       pipe->dst.x, pipe->dst.y,
+			       pipe->dst.w, pipe->dst.h);
 			break;
 		}
 	}
 
 set_roi:
 	if (skip_partial_update) {
-		l_roi = (struct mdss_rect){0, 0,
-				ctl->mixer_left->width,
-				ctl->mixer_left->height};
+		l_roi = (struct mdss_rect) {
+			0, 0,
+			ctl->mixer_left->width,
+			ctl->mixer_left->height
+		};
 		if (ctl->mixer_right) {
-			r_roi = (struct mdss_rect) {0, 0,
-					ctl->mixer_right->width,
-					ctl->mixer_right->height};
+			r_roi = (struct mdss_rect) {
+				0, 0,
+				ctl->mixer_right->width,
+				ctl->mixer_right->height
+			};
 		}
 	}
 
 	pr_debug("after processing: %s l_roi:-> %d %d %d %d r_roi:-> %d %d %d %d\n",
-		(l_roi.w && l_roi.h && r_roi.w && r_roi.h) ? "left+right" :
-			((l_roi.w && l_roi.h) ? "left-only" : "right-only"),
-		l_roi.x, l_roi.y, l_roi.w, l_roi.h,
-		r_roi.x, r_roi.y, r_roi.w, r_roi.h);
+	         (l_roi.w && l_roi.h && r_roi.w && r_roi.h) ? "left+right" :
+	         ((l_roi.w && l_roi.h) ? "left-only" : "right-only"),
+	         l_roi.x, l_roi.y, l_roi.w, l_roi.h,
+	         r_roi.x, r_roi.y, r_roi.w, r_roi.h);
 
 	mdss_mdp_set_roi(ctl, &l_roi, &r_roi);
 }
@@ -2006,13 +2018,13 @@ set_roi:
 static bool __is_supported_candence(int cadence)
 {
 	return (cadence == FRC_CADENCE_22) ||
-		(cadence == FRC_CADENCE_23) ||
-		(cadence == FRC_CADENCE_23223);
+	       (cadence == FRC_CADENCE_23) ||
+	       (cadence == FRC_CADENCE_23223);
 }
 
 /* compute how many vsyncs between these 2 timestamp */
 static int __compute_vsync_diff(s64 cur_ts,
-	s64 base_ts, int display_fp1000s)
+                                s64 base_ts, int display_fp1000s)
 {
 	int vsync_diff;
 	int round_up = 0;
@@ -2040,14 +2052,14 @@ static bool __validate_frc_info(struct mdss_mdp_frc_info *frc_info)
 	struct mdss_mdp_frc_data *base_frc = &frc_info->base_frc;
 
 	pr_debug("frc: cur_fcnt=%d, cur_ts=%lld, last_fcnt=%d, last_ts=%lld, base_fcnt=%d, base_ts=%lld last_v_cnt=%d, last_repeat=%d base_v_cnt=%d\n",
-		cur_frc->frame_cnt, cur_frc->timestamp,
-		last_frc->frame_cnt, last_frc->timestamp,
-		base_frc->frame_cnt, base_frc->timestamp,
-		frc_info->last_vsync_cnt, frc_info->last_repeat,
-		frc_info->base_vsync_cnt);
+	         cur_frc->frame_cnt, cur_frc->timestamp,
+	         last_frc->frame_cnt, last_frc->timestamp,
+	         base_frc->frame_cnt, base_frc->timestamp,
+	         frc_info->last_vsync_cnt, frc_info->last_repeat,
+	         frc_info->base_vsync_cnt);
 
 	if ((cur_frc->frame_cnt == last_frc->frame_cnt) &&
-			(cur_frc->timestamp == last_frc->timestamp)) {
+	    (cur_frc->timestamp == last_frc->timestamp)) {
 		/* ignore repeated frame: video w/ UI layers */
 		pr_debug("repeated frame input\n");
 		return false;
@@ -2067,10 +2079,10 @@ static int __calculate_cadence_id(struct mdss_mdp_frc_info *frc_info, int cnt)
 	struct mdss_mdp_frc_data *first = &calc->samples[0];
 	struct mdss_mdp_frc_data *last = &calc->samples[cnt-1];
 	s64 ts_diff =
-		(last->timestamp - first->timestamp)
-				* frc_info->display_fp1000s;
+	    (last->timestamp - first->timestamp)
+	    * frc_info->display_fp1000s;
 	u32 fcnt_diff =
-		last->frame_cnt - first->frame_cnt;
+	    last->frame_cnt - first->frame_cnt;
 	u32 fps_ratio;
 	u32 cadence_id = FRC_CADENCE_NONE;
 
@@ -2078,18 +2090,18 @@ static int __calculate_cadence_id(struct mdss_mdp_frc_info *frc_info, int cnt)
 	fps_ratio = (u32)ts_diff;
 
 	if ((fps_ratio > FRC_CADENCE_23_RATIO_LOW) &&
-			(fps_ratio < FRC_CADENCE_23_RATIO_HIGH))
+	    (fps_ratio < FRC_CADENCE_23_RATIO_HIGH))
 		cadence_id = FRC_CADENCE_23;
 	else if ((fps_ratio > FRC_CADENCE_22_RATIO_LOW) &&
-			(fps_ratio < FRC_CADENCE_22_RATIO_HIGH))
+	         (fps_ratio < FRC_CADENCE_22_RATIO_HIGH))
 		cadence_id = FRC_CADENCE_22;
 	else if ((fps_ratio > FRC_CADENCE_23223_RATIO_LOW) &&
-			(fps_ratio < FRC_CADENCE_23223_RATIO_HIGH))
+	         (fps_ratio < FRC_CADENCE_23223_RATIO_HIGH))
 		cadence_id = FRC_CADENCE_23223;
 
 	pr_debug("frc: first=%lld, last=%lld, cnt=%d, fps_ratio=%u, cadence_id=%d\n",
-			first->timestamp, last->timestamp, fcnt_diff,
-			fps_ratio, cadence_id);
+	         first->timestamp, last->timestamp, fcnt_diff,
+	         fps_ratio, cadence_id);
 
 	return cadence_id;
 }
@@ -2144,7 +2156,7 @@ static int __match_sequence(struct mdss_mdp_frc_seq_gen *gen)
 	for (pos = 0; pos < len; pos++) {
 		for (i = 0; i < len; i++) {
 			if (gen->cache[(i+len-1) % len]
-					!= gen->seq[(pos+i) % len])
+			    != gen->seq[(pos+i) % len])
 				break;
 		}
 		if (i == len)
@@ -2207,15 +2219,15 @@ static int __expected_repeat(struct mdss_mdp_frc_seq_gen *gen)
 }
 
 static bool __is_display_fps_changed(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_frc_info *frc_info)
+                                     struct mdss_mdp_frc_info *frc_info)
 {
 	bool display_fps_changed = false;
 	u32 display_fp1000s
-		= mdss_panel_get_framerate(mfd->panel_info, FPS_RESOLUTION_KHZ);
+	    = mdss_panel_get_framerate(mfd->panel_info, FPS_RESOLUTION_KHZ);
 
 	if (frc_info->display_fp1000s != display_fp1000s) {
 		pr_debug("fps changes from %d to %d\n",
-			frc_info->display_fp1000s, display_fp1000s);
+		         frc_info->display_fp1000s, display_fp1000s);
 		display_fps_changed = true;
 	}
 
@@ -2227,22 +2239,22 @@ static bool __is_video_fps_changed(struct mdss_mdp_frc_info *frc_info)
 	bool video_fps_changed = false;
 
 	if ((frc_info->cur_frc.frame_cnt - frc_info->video_stat.frame_cnt)
-			== FRC_VIDEO_FPS_DETECT_WINDOW) {
+	    == FRC_VIDEO_FPS_DETECT_WINDOW) {
 		s64 delta_t = frc_info->cur_frc.timestamp -
-			frc_info->video_stat.timestamp;
+		              frc_info->video_stat.timestamp;
 
 		if (frc_info->video_stat.last_delta) {
 			video_fps_changed =
-				abs64(delta_t - frc_info->video_stat.last_delta)
-				> (FRC_VIDEO_FPS_CHANGE_THRESHOLD_US *
-					FRC_VIDEO_FPS_DETECT_WINDOW);
+			    abs64(delta_t - frc_info->video_stat.last_delta)
+			    > (FRC_VIDEO_FPS_CHANGE_THRESHOLD_US *
+			       FRC_VIDEO_FPS_DETECT_WINDOW);
 
 			if (video_fps_changed)
 				pr_info("video fps changed from [%d]%lld to [%d]%lld\n",
-					frc_info->video_stat.frame_cnt,
-					frc_info->video_stat.last_delta,
-					frc_info->cur_frc.frame_cnt,
-					delta_t);
+				        frc_info->video_stat.frame_cnt,
+				        frc_info->video_stat.last_delta,
+				        frc_info->cur_frc.frame_cnt,
+				        delta_t);
 		}
 
 		frc_info->video_stat.frame_cnt = frc_info->cur_frc.frame_cnt;
@@ -2256,16 +2268,16 @@ static bool __is_video_fps_changed(struct mdss_mdp_frc_info *frc_info)
 static bool __is_video_seeking(struct mdss_mdp_frc_info *frc_info)
 {
 	s64 ts_diff =
-		frc_info->cur_frc.timestamp - frc_info->last_frc.timestamp;
+	    frc_info->cur_frc.timestamp - frc_info->last_frc.timestamp;
 	bool video_seek = false;
 
 	video_seek = (ts_diff < 0)
-		|| (ts_diff > FRC_VIDEO_TS_DELTA_THRESHOLD_US);
+	             || (ts_diff > FRC_VIDEO_TS_DELTA_THRESHOLD_US);
 
 	if (video_seek)
 		pr_debug("video seeking: %lld -> %lld\n",
-			frc_info->last_frc.timestamp,
-			frc_info->cur_frc.timestamp);
+		         frc_info->last_frc.timestamp,
+		         frc_info->cur_frc.timestamp);
 
 	return video_seek;
 }
@@ -2273,7 +2285,7 @@ static bool __is_video_seeking(struct mdss_mdp_frc_info *frc_info)
 static bool __is_buffer_dropped(struct mdss_mdp_frc_info *frc_info)
 {
 	int buffer_drop_cnt
-		= frc_info->cur_frc.frame_cnt - frc_info->last_frc.frame_cnt;
+	    = frc_info->cur_frc.frame_cnt - frc_info->last_frc.frame_cnt;
 
 	if (buffer_drop_cnt > 1) {
 		struct mdss_mdp_frc_drop_stat *drop_stat = &frc_info->drop_stat;
@@ -2285,8 +2297,8 @@ static bool __is_buffer_dropped(struct mdss_mdp_frc_info *frc_info)
 		drop_stat->drop_cnt++;
 
 		pr_info("video buffer drop from %d to %d\n",
-			frc_info->last_frc.frame_cnt,
-			frc_info->cur_frc.frame_cnt);
+		        frc_info->last_frc.frame_cnt,
+		        frc_info->cur_frc.frame_cnt);
 	}
 	return buffer_drop_cnt > 1;
 }
@@ -2298,7 +2310,7 @@ static bool __is_too_many_drops(struct mdss_mdp_frc_info *frc_info)
 
 	if (drop_stat->drop_cnt > FRC_MAX_VIDEO_DROPPING_CNT) {
 		too_many = (frc_info->cur_frc.frame_cnt - drop_stat->frame_cnt
-			< FRC_VIDEO_DROP_TOLERANCE_WINDOW);
+		            < FRC_VIDEO_DROP_TOLERANCE_WINDOW);
 		frc_info->drop_stat.drop_cnt = 0;
 	}
 
@@ -2309,31 +2321,31 @@ static bool __is_video_cnt_rollback(struct mdss_mdp_frc_info *frc_info)
 {
 	/* video frame_cnt is assumed to increase monotonically */
 	bool video_rollback
-		= (frc_info->cur_frc.frame_cnt < frc_info->last_frc.frame_cnt)
-			|| (frc_info->cur_frc.frame_cnt <
-				frc_info->base_frc.frame_cnt);
+	    = (frc_info->cur_frc.frame_cnt < frc_info->last_frc.frame_cnt)
+	      || (frc_info->cur_frc.frame_cnt <
+	          frc_info->base_frc.frame_cnt);
 
 	if (video_rollback)
 		pr_info("video frame_cnt rolls back from %d to %d\n",
-			frc_info->last_frc.frame_cnt,
-			frc_info->cur_frc.frame_cnt);
+		        frc_info->last_frc.frame_cnt,
+		        frc_info->cur_frc.frame_cnt);
 
 	return video_rollback;
 }
 
 static bool __is_video_pause(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_frc_info *frc_info)
+                             struct mdss_mdp_frc_info *frc_info)
 {
 	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
 	bool video_pause =
-		(frc_info->cur_frc.frame_cnt - frc_info->last_frc.frame_cnt
-				== 1)
-		&& (ctl->vsync_cnt - frc_info->last_vsync_cnt >
-				FRC_VIDEO_PAUSE_THRESHOLD);
+	    (frc_info->cur_frc.frame_cnt - frc_info->last_frc.frame_cnt
+	     == 1)
+	    && (ctl->vsync_cnt - frc_info->last_vsync_cnt >
+	        FRC_VIDEO_PAUSE_THRESHOLD);
 
 	if (video_pause)
 		pr_debug("video paused: vsync elapsed %d\n",
-			ctl->vsync_cnt - frc_info->last_vsync_cnt);
+		         ctl->vsync_cnt - frc_info->last_vsync_cnt);
 
 	return video_pause;
 }
@@ -2346,20 +2358,20 @@ static bool __is_video_pause(struct msm_fb_data_type *mfd,
 static bool __is_timestamp_duplicated(struct mdss_mdp_frc_info *frc_info)
 {
 	bool ts_dup =
-		(frc_info->cur_frc.frame_cnt != frc_info->last_frc.frame_cnt)
-			&& (frc_info->cur_frc.timestamp
-				== frc_info->last_frc.timestamp);
+	    (frc_info->cur_frc.frame_cnt != frc_info->last_frc.frame_cnt)
+	    && (frc_info->cur_frc.timestamp
+	        == frc_info->last_frc.timestamp);
 
 	if (ts_dup)
 		pr_info("timestamp of frame %d and %d are duplicated\n",
-			frc_info->last_frc.frame_cnt,
-			frc_info->cur_frc.frame_cnt);
+		        frc_info->last_frc.frame_cnt,
+		        frc_info->cur_frc.frame_cnt);
 
 	return ts_dup;
 }
 
 static void __set_frc_base(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_frc_info *frc_info)
+                           struct mdss_mdp_frc_info *frc_info)
 {
 	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
 
@@ -2373,17 +2385,17 @@ static void __set_frc_base(struct msm_fb_data_type *mfd,
 	frc_info->video_stat.frame_cnt = frc_info->cur_frc.frame_cnt;
 	frc_info->video_stat.timestamp = frc_info->cur_frc.timestamp;
 	frc_info->display_fp1000s =
-		mdss_panel_get_framerate(mfd->panel_info, FPS_RESOLUTION_KHZ);
+	    mdss_panel_get_framerate(mfd->panel_info, FPS_RESOLUTION_KHZ);
 
 
 	pr_debug("frc_base: vsync_cnt=%d frame_cnt=%d timestamp=%lld\n",
-		frc_info->base_vsync_cnt, frc_info->cur_frc.frame_cnt,
-		frc_info->cur_frc.timestamp);
+	         frc_info->base_vsync_cnt, frc_info->cur_frc.frame_cnt,
+	         frc_info->cur_frc.timestamp);
 }
 
 /* calculate when we'd like to kickoff current frame based on its timestamp */
 static int __calculate_remaining_vsync(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_frc_info *frc_info)
+                                       struct mdss_mdp_frc_info *frc_info)
 {
 	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
 	struct mdss_mdp_frc_data *cur_frc = &frc_info->cur_frc;
@@ -2392,7 +2404,7 @@ static int __calculate_remaining_vsync(struct msm_fb_data_type *mfd,
 
 	/* how many vsync intervals between current & base */
 	vsync_diff = __compute_vsync_diff(cur_frc->timestamp,
-			base_frc->timestamp, frc_info->display_fp1000s);
+	                                  base_frc->timestamp, frc_info->display_fp1000s);
 
 	/* expected vsync where we'd like to kickoff current frame */
 	expected_vsync_cnt = frc_info->base_vsync_cnt + vsync_diff;
@@ -2400,14 +2412,14 @@ static int __calculate_remaining_vsync(struct msm_fb_data_type *mfd,
 	remaining_vsync = expected_vsync_cnt - ctl->vsync_cnt;
 
 	pr_debug("frc: expected_vsync_cnt=%d, cur_vsync_cnt=%d, remaining=%d\n",
-		expected_vsync_cnt, ctl->vsync_cnt, remaining_vsync);
+	         expected_vsync_cnt, ctl->vsync_cnt, remaining_vsync);
 
 	return remaining_vsync;
 }
 
 /* tune latency computed previously if possible jitter exists */
 static int __tune_possible_jitter(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_frc_info *frc_info, int remaining_vsync)
+                                  struct mdss_mdp_frc_info *frc_info, int remaining_vsync)
 {
 	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
 	int cadence_id = frc_info->cadence_id;
@@ -2421,8 +2433,8 @@ static int __tune_possible_jitter(struct msm_fb_data_type *mfd,
 
 		remaining -= cur_repeat - expected_repeat;
 		pr_debug("frc: tune vsync, input=%d, output=%d, last_repeat=%d, cur_repeat=%d, expected_repeat=%d\n",
-			remaining_vsync, remaining, frc_info->last_repeat,
-			cur_repeat, expected_repeat);
+		         remaining_vsync, remaining, frc_info->last_repeat,
+		         cur_repeat, expected_repeat);
 	}
 
 	return remaining;
@@ -2430,12 +2442,12 @@ static int __tune_possible_jitter(struct msm_fb_data_type *mfd,
 
 /* compute how many vsync we still need to wait for keeping cadence */
 static int __calculate_remaining_repeat(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_frc_info *frc_info)
+                                        struct mdss_mdp_frc_info *frc_info)
 {
 	int remaining_vsync = __calculate_remaining_vsync(mfd, frc_info);
 
 	remaining_vsync =
-		__tune_possible_jitter(mfd, frc_info, remaining_vsync);
+	    __tune_possible_jitter(mfd, frc_info, remaining_vsync);
 
 	return remaining_vsync;
 }
@@ -2462,7 +2474,7 @@ static int __repeat_current_frame(struct mdss_mdp_ctl *ctl, int repeat)
 }
 
 static void __save_last_frc_info(struct mdss_mdp_ctl *ctl,
-	struct mdss_mdp_frc_info *frc_info)
+                                 struct mdss_mdp_frc_info *frc_info)
 {
 	/* save last data */
 	frc_info->last_frc = frc_info->cur_frc;
@@ -2493,7 +2505,7 @@ static void frc_disable_callback(struct mdss_mdp_frc_fsm *frc_fsm)
 
 /* default behavior of FRC FSM */
 static bool __is_frc_state_changed_in_default(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_frc_info *frc_info)
+        struct mdss_mdp_frc_info *frc_info)
 {
 	/*
 	 * Need change to INIT state in case of 2 changes:
@@ -2509,12 +2521,12 @@ static bool __is_frc_state_changed_in_default(struct msm_fb_data_type *mfd,
 	 * 7) duplicated timestamp of different frames which breaks FRC.
 	 */
 	return (__is_video_cnt_rollback(frc_info) ||
-		__is_video_seeking(frc_info) ||
-		__is_buffer_dropped(frc_info) ||
-		__is_display_fps_changed(mfd, frc_info) ||
-		__is_video_fps_changed(frc_info) ||
-		__is_video_pause(mfd, frc_info) ||
-		__is_timestamp_duplicated(frc_info));
+	        __is_video_seeking(frc_info) ||
+	        __is_buffer_dropped(frc_info) ||
+	        __is_display_fps_changed(mfd, frc_info) ||
+	        __is_video_fps_changed(frc_info) ||
+	        __is_video_pause(mfd, frc_info) ||
+	        __is_timestamp_duplicated(frc_info));
 }
 
 static void __pre_frc_in_default(struct mdss_mdp_frc_fsm *frc_fsm, void *arg)
@@ -2530,7 +2542,7 @@ static void __pre_frc_in_default(struct mdss_mdp_frc_fsm *frc_fsm, void *arg)
 		 */
 		pr_info("disable frc because there're too many drops\n");
 		mdss_mdp_frc_fsm_change_state(frc_fsm,
-			FRC_STATE_DISABLE, frc_disable_callback);
+		                              FRC_STATE_DISABLE, frc_disable_callback);
 		mdss_mdp_frc_fsm_update_state(frc_fsm);
 	} else if (__is_frc_state_changed_in_default(mfd, frc_info)) {
 		/* FRC status changed so reset to INIT state */
@@ -2565,12 +2577,12 @@ static void __do_frc_in_init_state(struct mdss_mdp_frc_fsm *frc_fsm, void *arg)
 	__set_frc_base(mfd, frc_info);
 
 	mdss_mdp_frc_fsm_change_state(frc_fsm,
-		FRC_STATE_CADENCE_DETECT, cadence_detect_callback);
+	                              FRC_STATE_CADENCE_DETECT, cadence_detect_callback);
 }
 
 /* behavior of FRC FSM in CADENCE_DETECT state */
 static void __do_frc_in_cadence_detect_state(struct mdss_mdp_frc_fsm *frc_fsm,
-	void *arg)
+        void *arg)
 {
 	struct mdss_mdp_frc_info *frc_info = &frc_fsm->frc_info;
 	struct mdss_mdp_frc_cadence_calc *calc = &frc_info->calc;
@@ -2588,8 +2600,8 @@ static void __do_frc_in_cadence_detect_state(struct mdss_mdp_frc_fsm *frc_fsm,
 
 		while (cadence_id < FRC_CADENCE_FREE_RUN) {
 			if (cadence_id ==
-					__calculate_cadence_id(frc_info,
-						sample_cnt[cadence_id]))
+			    __calculate_cadence_id(frc_info,
+			                           sample_cnt[cadence_id]))
 				break;
 			cadence_id++;
 		}
@@ -2600,16 +2612,16 @@ static void __do_frc_in_cadence_detect_state(struct mdss_mdp_frc_fsm *frc_fsm,
 		/* detected supported cadence, start sequence match */
 		if (__is_supported_candence(frc_info->cadence_id))
 			mdss_mdp_frc_fsm_change_state(frc_fsm,
-				FRC_STATE_SEQ_MATCH, seq_match_callback);
+			                              FRC_STATE_SEQ_MATCH, seq_match_callback);
 		else
 			mdss_mdp_frc_fsm_change_state(frc_fsm,
-					FRC_STATE_FREERUN, NULL);
+			                              FRC_STATE_FREERUN, NULL);
 	}
 }
 
 /* behavior of FRC FSM in SEQ_MATCH state */
 static void __do_frc_in_seq_match_state(struct mdss_mdp_frc_fsm *frc_fsm,
-	void *arg)
+                                        void *arg)
 {
 	struct mdss_mdp_frc_info *frc_info = &frc_fsm->frc_info;
 	struct mdss_mdp_frc_data *cur_frc = &frc_info->cur_frc;
@@ -2618,7 +2630,7 @@ static void __do_frc_in_seq_match_state(struct mdss_mdp_frc_fsm *frc_fsm,
 
 	/* how many vsync intervals between current & base */
 	vsync_diff = __compute_vsync_diff(cur_frc->timestamp,
-			base_frc->timestamp, frc_info->display_fp1000s);
+	                                  base_frc->timestamp, frc_info->display_fp1000s);
 
 	/* cache vsync diff to compute start pos in cadence */
 	__cache_last(&frc_info->gen, vsync_diff);
@@ -2629,8 +2641,8 @@ static void __do_frc_in_seq_match_state(struct mdss_mdp_frc_fsm *frc_fsm,
 
 /* behavior of FRC FSM in FREE_RUN state */
 static bool __is_frc_state_changed_in_freerun_state(
-	struct msm_fb_data_type *mfd,
-	struct mdss_mdp_frc_info *frc_info)
+    struct msm_fb_data_type *mfd,
+    struct mdss_mdp_frc_info *frc_info)
 {
 	/*
 	 * Only need change to INIT state in case of 2 changes:
@@ -2639,11 +2651,11 @@ static bool __is_frc_state_changed_in_freerun_state(
 	 * 2) video frame rate has changed.
 	 */
 	return (__is_display_fps_changed(mfd, frc_info) ||
-		__is_video_fps_changed(frc_info));
+	        __is_video_fps_changed(frc_info));
 }
 
 static void __pre_frc_in_freerun_state(struct mdss_mdp_frc_fsm *frc_fsm,
-	void *arg)
+                                       void *arg)
 {
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)arg;
 	struct mdss_mdp_frc_info *frc_info = &frc_fsm->frc_info;
@@ -2665,14 +2677,14 @@ static void __do_frc_in_ready_state(struct mdss_mdp_frc_fsm *frc_fsm, void *arg)
 	struct mdss_mdp_frc_data *cur_frc = &frc_info->cur_frc;
 
 	int remaining_repeat =
-		__calculate_remaining_repeat(mfd, frc_info);
+	    __calculate_remaining_repeat(mfd, frc_info);
 
 	mdss_debug_frc_add_kickoff_sample_pre(ctl, frc_info, remaining_repeat);
 
 	/* video arrives later than expected */
 	if (remaining_repeat < 0) {
 		pr_info("Frame %d lags behind %d vsync\n",
-				cur_frc->frame_cnt, -remaining_repeat);
+		        cur_frc->frame_cnt, -remaining_repeat);
 		mdss_mdp_frc_fsm_change_state(frc_fsm, FRC_STATE_INIT, NULL);
 		remaining_repeat = 0;
 	}
@@ -2687,13 +2699,13 @@ static void __do_frc_in_ready_state(struct mdss_mdp_frc_fsm *frc_fsm, void *arg)
 
 /* behavior of FRC FSM in DISABLE state */
 static void __pre_frc_in_disable_state(struct mdss_mdp_frc_fsm *frc_fsm,
-	void *arg)
+                                       void *arg)
 {
 	/* do nothing */
 }
 
 static void __post_frc_in_disable_state(struct mdss_mdp_frc_fsm *frc_fsm,
-	void *arg)
+                                        void *arg)
 {
 	/* do nothing */
 }
@@ -2712,7 +2724,7 @@ static int __config_secure_display(struct mdss_overlay_private *mdp5_data)
 	 * to secure display.
 	 */
 	if (mdp5_data->sd_transition_state ==
-			SD_TRANSITION_NON_SECURE_TO_SECURE)
+	    SD_TRANSITION_NON_SECURE_TO_SECURE)
 		sd_enable = 1;
 
 	/*
@@ -2721,8 +2733,8 @@ static int __config_secure_display(struct mdss_overlay_private *mdp5_data)
 	 * waited for the previous frame transfer.
 	 */
 	if ((panel_type == MIPI_CMD_PANEL) &&
-			(mdp5_data->sd_transition_state ==
-			 SD_TRANSITION_SECURE_TO_NON_SECURE))
+	    (mdp5_data->sd_transition_state ==
+	     SD_TRANSITION_SECURE_TO_NON_SECURE))
 		sd_enable = 0;
 
 	if (sd_enable != -1) {
@@ -2813,13 +2825,13 @@ void mdss_mdp_frc_fsm_init_state(struct mdss_mdp_frc_fsm *frc_fsm)
 }
 
 void mdss_mdp_frc_fsm_change_state(struct mdss_mdp_frc_fsm *frc_fsm,
-	enum mdss_mdp_frc_state_type state,
-	void (*cb)(struct mdss_mdp_frc_fsm *frc_fsm))
+                                   enum mdss_mdp_frc_state_type state,
+                                   void (*cb)(struct mdss_mdp_frc_fsm *frc_fsm))
 {
 	if (state != frc_fsm->state.state) {
 		pr_debug("frc_fsm: state changes from %s to %s\n",
-				frc_fsm->state.name,
-				frc_fsm_states[state].name);
+		         frc_fsm->state.name,
+		         frc_fsm_states[state].name);
 		frc_fsm->to_state = frc_fsm_states[state];
 		frc_fsm->cbs.update_state_cb = cb;
 	}
@@ -2829,8 +2841,8 @@ void mdss_mdp_frc_fsm_update_state(struct mdss_mdp_frc_fsm *frc_fsm)
 {
 	if (frc_fsm->to_state.state != frc_fsm->state.state) {
 		pr_debug("frc_fsm: state updates from %s to %s\n",
-				frc_fsm->state.name,
-				frc_fsm->to_state.name);
+		         frc_fsm->state.name,
+		         frc_fsm->to_state.name);
 
 		if (frc_fsm->cbs.update_state_cb)
 			frc_fsm->cbs.update_state_cb(frc_fsm);
@@ -2855,7 +2867,7 @@ static void mdss_mdp_overlay_update_frc(struct msm_fb_data_type *mfd)
 }
 
 int mdss_mdp_overlay_kickoff(struct msm_fb_data_type *mfd,
-				struct mdp_display_commit *data)
+                             struct mdp_display_commit *data)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_mdp_pipe *pipe, *tmp;
@@ -2950,7 +2962,7 @@ int mdss_mdp_overlay_kickoff(struct msm_fb_data_type *mfd,
 		commit_cb.commit_cb_fnc = mdss_mdp_commit_cb;
 		commit_cb.data = mfd;
 		ret = mdss_mdp_display_commit(mdp5_data->ctl, NULL,
-			&commit_cb);
+		                              &commit_cb);
 		ATRACE_END("display_commit");
 	}
 	__vsync_set_vsync_handler(mfd);
@@ -2998,7 +3010,7 @@ int mdss_mdp_overlay_kickoff(struct msm_fb_data_type *mfd,
 	 * disable the secure display.
 	 */
 	if (mdp5_data->sd_enabled && (sd_transition_state ==
-			SD_TRANSITION_SECURE_TO_NON_SECURE)) {
+	                              SD_TRANSITION_SECURE_TO_NON_SECURE)) {
 		ret = mdss_mdp_secure_display_ctrl(mdp5_data->mdata, 0);
 		if (!ret)
 			mdp5_data->sd_enabled = 0;
@@ -3034,7 +3046,7 @@ int mdss_mdp_overlay_release(struct msm_fb_data_type *mfd, int ndx)
 		if (pipe->ndx & ndx) {
 			if (mdss_mdp_pipe_map(pipe)) {
 				pr_err("Unable to map used pipe%d ndx=%x\n",
-						pipe->num, pipe->ndx);
+				       pipe->num, pipe->ndx);
 				continue;
 			}
 
@@ -3053,7 +3065,7 @@ int mdss_mdp_overlay_release(struct msm_fb_data_type *mfd, int ndx)
 
 	if (unset_ndx != ndx) {
 		pr_warn("Unable to unset pipe(s) ndx=0x%x unset=0x%x\n",
-				ndx, unset_ndx);
+		        ndx, unset_ndx);
 		return -ENOENT;
 	}
 
@@ -3110,7 +3122,7 @@ done:
  * Return number of resources released
  */
 static int __mdss_mdp_overlay_release_all(struct msm_fb_data_type *mfd,
-	struct file *file)
+        struct file *file)
 {
 	struct mdss_mdp_pipe *pipe, *tmp;
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
@@ -3118,13 +3130,13 @@ static int __mdss_mdp_overlay_release_all(struct msm_fb_data_type *mfd,
 	int cnt = 0;
 
 	pr_debug("releasing all resources for fb%d file:%pK\n",
-		mfd->index, file);
+	         mfd->index, file);
 
 	mutex_lock(&mdp5_data->ov_lock);
 	mutex_lock(&mdp5_data->list_lock);
 	if (!mfd->ref_cnt && !list_empty(&mdp5_data->pipes_cleanup)) {
 		pr_debug("fb%d:: free pipes present in cleanup list",
-			mfd->index);
+		         mfd->index);
 		cnt++;
 	}
 
@@ -3138,7 +3150,7 @@ static int __mdss_mdp_overlay_release_all(struct msm_fb_data_type *mfd,
 	}
 
 	pr_debug("mfd->ref_cnt=%d unset_ndx=0x%x cnt=%d\n",
-		mfd->ref_cnt, unset_ndx, cnt);
+	         mfd->ref_cnt, unset_ndx, cnt);
 
 	mutex_unlock(&mdp5_data->list_lock);
 	mutex_unlock(&mdp5_data->ov_lock);
@@ -3147,7 +3159,7 @@ static int __mdss_mdp_overlay_release_all(struct msm_fb_data_type *mfd,
 }
 
 static int mdss_mdp_overlay_queue(struct msm_fb_data_type *mfd,
-				  struct msmfb_overlay_data *req)
+                                  struct msmfb_overlay_data *req)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_mdp_pipe *pipe;
@@ -3170,7 +3182,7 @@ static int mdss_mdp_overlay_queue(struct msm_fb_data_type *mfd,
 	ret = mdss_mdp_pipe_map(pipe);
 	if (IS_ERR_VALUE(ret)) {
 		pr_err("Unable to map used pipe%d ndx=%x\n",
-				pipe->num, pipe->ndx);
+		       pipe->num, pipe->ndx);
 		return ret;
 	}
 
@@ -3180,7 +3192,7 @@ static int mdss_mdp_overlay_queue(struct msm_fb_data_type *mfd,
 		pr_warn("Unexpected buffer queue to a solid fill pipe\n");
 
 	flags = (pipe->flags & (MDP_SECURE_OVERLAY_SESSION |
-		MDP_SECURE_DISPLAY_OVERLAY_SESSION));
+	                        MDP_SECURE_DISPLAY_OVERLAY_SESSION));
 
 	mutex_lock(&mdp5_data->list_lock);
 	src_data = mdss_mdp_overlay_buf_alloc(mfd, pipe);
@@ -3192,8 +3204,8 @@ static int mdss_mdp_overlay_queue(struct msm_fb_data_type *mfd,
 		buffer.height = pipe->img_height;
 		buffer.format = pipe->src_fmt->format;
 		ret = mdss_mdp_data_get_and_validate_size(src_data, &req->data,
-			1, flags, &mfd->pdev->dev, false, DMA_TO_DEVICE,
-			&buffer);
+		        1, flags, &mfd->pdev->dev, false, DMA_TO_DEVICE,
+		        &buffer);
 		if (IS_ERR_VALUE(ret)) {
 			mdss_mdp_overlay_buf_free(mfd, src_data);
 			pr_err("src_data pmem error\n");
@@ -3207,7 +3219,7 @@ static int mdss_mdp_overlay_queue(struct msm_fb_data_type *mfd,
 }
 
 static int mdss_mdp_overlay_play(struct msm_fb_data_type *mfd,
-				 struct msmfb_overlay_data *req)
+                                 struct msmfb_overlay_data *req)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	int ret = 0;
@@ -3244,12 +3256,12 @@ static int mdss_mdp_overlay_free_fb_pipe(struct msm_fb_data_type *mfd)
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 
 	pipe = mdss_mdp_get_staged_pipe(mdp5_data->ctl,
-		MDSS_MDP_MIXER_MUX_LEFT, MDSS_MDP_STAGE_BASE, false);
+	                                MDSS_MDP_MIXER_MUX_LEFT, MDSS_MDP_STAGE_BASE, false);
 	if (pipe)
 		fb_ndx |= pipe->ndx;
 
 	pipe = mdss_mdp_get_staged_pipe(mdp5_data->ctl,
-		MDSS_MDP_MIXER_MUX_RIGHT, MDSS_MDP_STAGE_BASE, false);
+	                                MDSS_MDP_MIXER_MUX_RIGHT, MDSS_MDP_STAGE_BASE, false);
 	if (pipe)
 		fb_ndx |= pipe->ndx;
 
@@ -3261,8 +3273,8 @@ static int mdss_mdp_overlay_free_fb_pipe(struct msm_fb_data_type *mfd)
 }
 
 static int mdss_mdp_overlay_get_fb_pipe(struct msm_fb_data_type *mfd,
-					struct mdss_mdp_pipe **ppipe,
-					int mixer_mux, bool *pipe_allocated)
+                                        struct mdss_mdp_pipe **ppipe,
+                                        int mixer_mux, bool *pipe_allocated)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_mdp_pipe *pipe;
@@ -3271,7 +3283,7 @@ static int mdss_mdp_overlay_get_fb_pipe(struct msm_fb_data_type *mfd,
 
 	*pipe_allocated = false;
 	pipe = mdss_mdp_get_staged_pipe(mdp5_data->ctl, mixer_mux,
-		MDSS_MDP_STAGE_BASE, false);
+	                                MDSS_MDP_STAGE_BASE, false);
 
 	if (pipe == NULL) {
 		struct fb_info *fbi = mfd->fbi;
@@ -3280,11 +3292,11 @@ static int mdss_mdp_overlay_get_fb_pipe(struct msm_fb_data_type *mfd,
 		bool rotate_180 = (fbi->var.rotate == FB_ROTATE_UD);
 		struct mdss_data_type *mdata = mfd_to_mdata(mfd);
 		bool split_lm = (fbi->var.xres > mdata->max_mixer_width ||
-			is_split_lm(mfd));
+		                 is_split_lm(mfd));
 		struct mdp_rect left_rect, right_rect;
 
 		mixer = mdss_mdp_mixer_get(mdp5_data->ctl,
-					MDSS_MDP_MIXER_MUX_LEFT);
+		                           MDSS_MDP_MIXER_MUX_LEFT);
 		if (!mixer) {
 			pr_err("unable to retrieve mixer\n");
 			return -ENODEV;
@@ -3334,7 +3346,7 @@ static int mdss_mdp_overlay_get_fb_pipe(struct msm_fb_data_type *mfd,
 		pr_debug("allocating base pipe mux=%d\n", mixer_mux);
 
 		ret = mdss_mdp_overlay_pipe_setup(mfd, req, &pipe, NULL,
-			false);
+		                                  false);
 		if (ret)
 			goto done;
 
@@ -3380,7 +3392,7 @@ static void mdss_mdp_overlay_pan_display(struct msm_fb_data_type *mfd)
 	}
 
 	if (IS_ERR_OR_NULL(mfd->fbmem_buf) || fbi->fix.smem_len == 0 ||
-		mdp5_data->borderfill_enable) {
+	    mdp5_data->borderfill_enable) {
 		if (mdata->handoff_pending) {
 			/*
 			 * Move pipes to cleanup queue and avoid kickoff if
@@ -3388,9 +3400,9 @@ static void mdss_mdp_overlay_pan_display(struct msm_fb_data_type *mfd)
 			 */
 			mutex_lock(&mdp5_data->list_lock);
 			list_for_each_entry_safe(pipe, tmp,
-			    &mdp5_data->pipes_used, list) {
+			                         &mdp5_data->pipes_used, list) {
 				list_move(&pipe->list,
-					&mdp5_data->pipes_cleanup);
+				          &mdp5_data->pipes_cleanup);
 			}
 			mutex_unlock(&mdp5_data->list_lock);
 		}
@@ -3402,8 +3414,8 @@ static void mdss_mdp_overlay_pan_display(struct msm_fb_data_type *mfd)
 		return;
 
 	if ((mdss_fb_is_power_off(mfd)) &&
-		!((mfd->dcm_state == DCM_ENTER) &&
-		(mfd->panel.type == MIPI_CMD_PANEL))) {
+	    !((mfd->dcm_state == DCM_ENTER) &&
+	      (mfd->panel.type == MIPI_CMD_PANEL))) {
 		mutex_unlock(&mdp5_data->ov_lock);
 		return;
 	}
@@ -3412,7 +3424,7 @@ static void mdss_mdp_overlay_pan_display(struct msm_fb_data_type *mfd)
 
 	bpp = fbi->var.bits_per_pixel / 8;
 	offset = fbi->var.xoffset * bpp +
-		 fbi->var.yoffset * fbi->fix.line_length;
+	         fbi->var.yoffset * fbi->fix.line_length;
 
 	if (offset > fbi->fix.smem_len) {
 		pr_err("invalid fb offset=%u total length=%u\n",
@@ -3421,7 +3433,7 @@ static void mdss_mdp_overlay_pan_display(struct msm_fb_data_type *mfd)
 	}
 
 	ret = mdss_mdp_overlay_get_fb_pipe(mfd, &l_pipe,
-		MDSS_MDP_MIXER_MUX_LEFT, &l_pipe_allocated);
+	                                   MDSS_MDP_MIXER_MUX_LEFT, &l_pipe_allocated);
 	if (ret) {
 		pr_err("unable to allocate base pipe\n");
 		goto iommu_disable;
@@ -3468,7 +3480,7 @@ static void mdss_mdp_overlay_pan_display(struct msm_fb_data_type *mfd)
 		 * than max_pipe_width and less than max_mixer_width.
 		 */
 		ret = mdss_mdp_overlay_get_fb_pipe(mfd, &r_pipe,
-			MDSS_MDP_MIXER_MUX_RIGHT, &r_pipe_allocated);
+		                                   MDSS_MDP_MIXER_MUX_RIGHT, &r_pipe_allocated);
 		if (ret) {
 			pr_err("unable to allocate right base pipe\n");
 			goto pipe_release;
@@ -3519,7 +3531,7 @@ static void remove_underrun_vsync_handler(struct work_struct *work)
 {
 	int rc;
 	struct mdss_mdp_ctl *ctl =
-		container_of(work, typeof(*ctl), remove_underrun_handler);
+	    container_of(work, typeof(*ctl), remove_underrun_handler);
 
 	if (!ctl || !ctl->ops.remove_vsync_handler) {
 		pr_err("ctl or vsync handler is NULL\n");
@@ -3528,12 +3540,12 @@ static void remove_underrun_vsync_handler(struct work_struct *work)
 
 	mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_ON);
 	rc = ctl->ops.remove_vsync_handler(ctl,
-			&ctl->recover_underrun_handler);
+	                                   &ctl->recover_underrun_handler);
 	mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_OFF);
 }
 
 static void mdss_mdp_recover_underrun_handler(struct mdss_mdp_ctl *ctl,
-						ktime_t t)
+        ktime_t t)
 {
 	if (!ctl) {
 		pr_err("ctl is NULL\n");
@@ -3546,14 +3558,14 @@ static void mdss_mdp_recover_underrun_handler(struct mdss_mdp_ctl *ctl,
 
 /* do nothing in case of deterministic frame rate control, only keep vsync on */
 static void mdss_mdp_overlay_frc_handler(struct mdss_mdp_ctl *ctl,
-						ktime_t t)
+        ktime_t t)
 {
 	pr_debug("vsync on ctl%d vsync_cnt=%d\n", ctl->num, ctl->vsync_cnt);
 }
 
 /* function is called in irq context should have minimum processing */
 static void mdss_mdp_overlay_handle_vsync(struct mdss_mdp_ctl *ctl,
-						ktime_t t)
+        ktime_t t)
 {
 	struct msm_fb_data_type *mfd = NULL;
 	struct mdss_overlay_private *mdp5_data = NULL;
@@ -3583,7 +3595,7 @@ static void mdss_mdp_overlay_handle_vsync(struct mdss_mdp_ctl *ctl,
 
 /* function is called in irq context should have minimum processing */
 static void mdss_mdp_overlay_handle_lineptr(struct mdss_mdp_ctl *ctl,
-						ktime_t t)
+        ktime_t t)
 {
 	struct mdss_overlay_private *mdp5_data = NULL;
 
@@ -3599,7 +3611,7 @@ static void mdss_mdp_overlay_handle_lineptr(struct mdss_mdp_ctl *ctl,
 	}
 
 	pr_debug("lineptr irq on fb%d play_cnt=%d\n",
-			ctl->mfd->index, ctl->play_cnt);
+	         ctl->mfd->index, ctl->play_cnt);
 
 	mdp5_data->lineptr_time = t;
 	sysfs_notify_dirent(mdp5_data->lineptr_event_sd);
@@ -3618,15 +3630,15 @@ int mdss_mdp_overlay_vsync_ctrl(struct msm_fb_data_type *mfd, int en)
 	if (!ctl->ops.add_vsync_handler || !ctl->ops.remove_vsync_handler) {
 		rc = -EOPNOTSUPP;
 		pr_err_once("fb%d vsync handlers are not registered\n",
-			mfd->index);
+		            mfd->index);
 		goto end;
 	}
 
 	if (!ctl->panel_data->panel_info.cont_splash_enabled
-		&& (!mdss_mdp_ctl_is_power_on(ctl) ||
-		mdss_panel_is_power_on_ulp(ctl->power_state))) {
+	    && (!mdss_mdp_ctl_is_power_on(ctl) ||
+	        mdss_panel_is_power_on_ulp(ctl->power_state))) {
 		pr_debug("fb%d vsync pending first update en=%d, ctl power state:%d\n",
-				mfd->index, en, ctl->power_state);
+		         mfd->index, en, ctl->power_state);
 		rc = -EPERM;
 		goto end;
 	}
@@ -3646,7 +3658,7 @@ end:
 }
 
 static ssize_t dynamic_fps_sysfs_rda_dfps(struct device *dev,
-	struct device_attribute *attr, char *buf)
+        struct device_attribute *attr, char *buf)
 {
 	ssize_t ret;
 	struct mdss_panel_data *pdata;
@@ -3665,9 +3677,9 @@ static ssize_t dynamic_fps_sysfs_rda_dfps(struct device *dev,
 
 	mutex_lock(&mdp5_data->dfps_lock);
 	ret = snprintf(buf, PAGE_SIZE, "%d\n",
-		       pdata->panel_info.mipi.frame_rate);
+	               pdata->panel_info.mipi.frame_rate);
 	pr_debug("%s: '%d'\n", __func__,
-		pdata->panel_info.mipi.frame_rate);
+	         pdata->panel_info.mipi.frame_rate);
 	mutex_unlock(&mdp5_data->dfps_lock);
 
 	return ret;
@@ -3680,7 +3692,7 @@ static int calc_extra_blanking(struct mdss_panel_data *pdata, u32 new_fps)
 	/* calculate extra: lines for vfp-method, pixels for hfp-method */
 	diff = abs(pdata->panel_info.default_fps - new_fps);
 	add_porches = mult_frac(pdata->panel_info.saved_total,
-		diff, new_fps);
+	                        diff, new_fps);
 
 	return add_porches;
 }
@@ -3694,8 +3706,8 @@ static void cache_initial_timings(struct mdss_panel_data *pdata)
 		 * actual dfps update happen in hw.
 		 */
 		pdata->panel_info.current_fps =
-			mdss_panel_get_framerate(&pdata->panel_info,
-				FPS_RESOLUTION_DEFAULT);
+		    mdss_panel_get_framerate(&pdata->panel_info,
+		                             FPS_RESOLUTION_DEFAULT);
 
 		/*
 		 * Keep the initial fps and porch values for this panel before
@@ -3703,26 +3715,26 @@ static void cache_initial_timings(struct mdss_panel_data *pdata)
 		 * in further calculations.
 		 */
 		pdata->panel_info.default_fps =
-			mdss_panel_get_framerate(&pdata->panel_info,
-				FPS_RESOLUTION_DEFAULT);
+		    mdss_panel_get_framerate(&pdata->panel_info,
+		                             FPS_RESOLUTION_DEFAULT);
 
 		if (pdata->panel_info.dfps_update ==
-					DFPS_IMMEDIATE_PORCH_UPDATE_MODE_VFP) {
+		    DFPS_IMMEDIATE_PORCH_UPDATE_MODE_VFP) {
 			pdata->panel_info.saved_total =
-				mdss_panel_get_vtotal(&pdata->panel_info);
+			    mdss_panel_get_vtotal(&pdata->panel_info);
 			pdata->panel_info.saved_fporch =
-				pdata->panel_info.lcdc.v_front_porch;
+			    pdata->panel_info.lcdc.v_front_porch;
 
 		} else if (pdata->panel_info.dfps_update ==
-				DFPS_IMMEDIATE_PORCH_UPDATE_MODE_HFP ||
-			pdata->panel_info.dfps_update ==
-				DFPS_IMMEDIATE_MULTI_UPDATE_MODE_CLK_HFP ||
-			pdata->panel_info.dfps_update ==
-				DFPS_IMMEDIATE_MULTI_MODE_HFP_CALC_CLK) {
+		           DFPS_IMMEDIATE_PORCH_UPDATE_MODE_HFP ||
+		           pdata->panel_info.dfps_update ==
+		           DFPS_IMMEDIATE_MULTI_UPDATE_MODE_CLK_HFP ||
+		           pdata->panel_info.dfps_update ==
+		           DFPS_IMMEDIATE_MULTI_MODE_HFP_CALC_CLK) {
 			pdata->panel_info.saved_total =
-				mdss_panel_get_htotal(&pdata->panel_info, true);
+			    mdss_panel_get_htotal(&pdata->panel_info, true);
 			pdata->panel_info.saved_fporch =
-				pdata->panel_info.lcdc.h_front_porch;
+			    pdata->panel_info.lcdc.h_front_porch;
 		}
 	}
 }
@@ -3736,7 +3748,7 @@ static inline void dfps_update_fps(struct mdss_panel_info *pinfo, u32 fps)
 }
 
 static void dfps_update_panel_params(struct mdss_panel_data *pdata,
-	struct dynamic_fps_data *data)
+                                     struct dynamic_fps_data *data)
 {
 	u32 new_fps = data->fps;
 
@@ -3744,7 +3756,7 @@ static void dfps_update_panel_params(struct mdss_panel_data *pdata,
 	cache_initial_timings(pdata);
 
 	if (pdata->panel_info.dfps_update ==
-			DFPS_IMMEDIATE_PORCH_UPDATE_MODE_VFP) {
+	    DFPS_IMMEDIATE_PORCH_UPDATE_MODE_VFP) {
 		int add_v_lines;
 
 		/* calculate extra vfp lines */
@@ -3752,15 +3764,15 @@ static void dfps_update_panel_params(struct mdss_panel_data *pdata,
 
 		/* update panel info with new values */
 		pdata->panel_info.lcdc.v_front_porch =
-			pdata->panel_info.saved_fporch + add_v_lines;
+		    pdata->panel_info.saved_fporch + add_v_lines;
 
 		dfps_update_fps(&pdata->panel_info, new_fps);
 
 		pdata->panel_info.prg_fet =
-			mdss_mdp_get_prefetch_lines(&pdata->panel_info);
+		    mdss_mdp_get_prefetch_lines(&pdata->panel_info);
 
 	} else if (pdata->panel_info.dfps_update ==
-			DFPS_IMMEDIATE_PORCH_UPDATE_MODE_HFP) {
+	           DFPS_IMMEDIATE_PORCH_UPDATE_MODE_HFP) {
 		int add_h_pixels;
 
 		/* calculate extra hfp pixels */
@@ -3769,18 +3781,18 @@ static void dfps_update_panel_params(struct mdss_panel_data *pdata,
 		/* update panel info */
 		if (pdata->panel_info.default_fps > new_fps)
 			pdata->panel_info.lcdc.h_front_porch =
-				pdata->panel_info.saved_fporch + add_h_pixels;
+			    pdata->panel_info.saved_fporch + add_h_pixels;
 		else
 			pdata->panel_info.lcdc.h_front_porch =
-				pdata->panel_info.saved_fporch - add_h_pixels;
+			    pdata->panel_info.saved_fporch - add_h_pixels;
 
 		dfps_update_fps(&pdata->panel_info, new_fps);
 	} else if (pdata->panel_info.dfps_update ==
-		DFPS_IMMEDIATE_MULTI_UPDATE_MODE_CLK_HFP) {
+	           DFPS_IMMEDIATE_MULTI_UPDATE_MODE_CLK_HFP) {
 
 		pr_debug("hfp=%d, hbp=%d, hpw=%d, clk=%d, fps=%d\n",
-			data->hfp, data->hbp, data->hpw,
-			data->clk_rate, data->fps);
+		         data->hfp, data->hbp, data->hpw,
+		         data->clk_rate, data->fps);
 
 		pdata->panel_info.lcdc.h_front_porch = data->hfp;
 		pdata->panel_info.lcdc.h_back_porch  = data->hbp;
@@ -3792,11 +3804,11 @@ static void dfps_update_panel_params(struct mdss_panel_data *pdata,
 
 		dfps_update_fps(&pdata->panel_info, new_fps);
 	} else if (pdata->panel_info.dfps_update ==
-		DFPS_IMMEDIATE_MULTI_MODE_HFP_CALC_CLK) {
+	           DFPS_IMMEDIATE_MULTI_MODE_HFP_CALC_CLK) {
 
 		pr_debug("hfp=%d, hbp=%d, hpw=%d, clk=%d, fps=%d\n",
-			data->hfp, data->hbp, data->hpw,
-			data->clk_rate, data->fps);
+		         data->hfp, data->hbp, data->hpw,
+		         data->clk_rate, data->fps);
 
 		pdata->panel_info.lcdc.h_front_porch = data->hfp;
 		pdata->panel_info.lcdc.h_back_porch  = data->hbp;
@@ -3813,7 +3825,7 @@ static void dfps_update_panel_params(struct mdss_panel_data *pdata,
 }
 
 int mdss_mdp_dfps_update_params(struct msm_fb_data_type *mfd,
-	struct mdss_panel_data *pdata, struct dynamic_fps_data *dfps_data)
+                                struct mdss_panel_data *pdata, struct dynamic_fps_data *dfps_data)
 {
 	struct fb_var_screeninfo *var = &mfd->fbi->var;
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
@@ -3825,12 +3837,12 @@ int mdss_mdp_dfps_update_params(struct msm_fb_data_type *mfd,
 
 	if (dfps < pdata->panel_info.min_fps) {
 		pr_err("Unsupported FPS. min_fps = %d\n",
-				pdata->panel_info.min_fps);
+		       pdata->panel_info.min_fps);
 		mutex_unlock(&mdp5_data->dfps_lock);
 		return -EINVAL;
 	} else if (dfps > pdata->panel_info.max_fps) {
 		pr_warn("Unsupported FPS. Configuring to max_fps = %d\n",
-				pdata->panel_info.max_fps);
+		        pdata->panel_info.max_fps);
 		dfps = pdata->panel_info.max_fps;
 		dfps_data->fps = dfps;
 	}
@@ -3854,7 +3866,7 @@ int mdss_mdp_dfps_update_params(struct msm_fb_data_type *mfd,
 
 
 static ssize_t dynamic_fps_sysfs_wta_dfps(struct device *dev,
-	struct device_attribute *attr, const char *buf, size_t count)
+        struct device_attribute *attr, const char *buf, size_t count)
 {
 	int panel_fps, rc = 0;
 	struct mdss_panel_data *pdata;
@@ -3876,17 +3888,17 @@ static ssize_t dynamic_fps_sysfs_wta_dfps(struct device *dev,
 
 	if (!pdata->panel_info.dynamic_fps) {
 		pr_err_once("%s: Dynamic fps not enabled for this panel\n",
-				__func__);
+		            __func__);
 		return -EINVAL;
 	}
 
 	if (pdata->panel_info.dfps_update ==
-		DFPS_IMMEDIATE_MULTI_UPDATE_MODE_CLK_HFP ||
-		pdata->panel_info.dfps_update ==
-		DFPS_IMMEDIATE_MULTI_MODE_HFP_CALC_CLK) {
+	    DFPS_IMMEDIATE_MULTI_UPDATE_MODE_CLK_HFP ||
+	    pdata->panel_info.dfps_update ==
+	    DFPS_IMMEDIATE_MULTI_MODE_HFP_CALC_CLK) {
 		if (sscanf(buf, "%u %u %u %u %u",
-		    &data.hfp, &data.hbp, &data.hpw,
-		    &data.clk_rate, &data.fps) != 5) {
+		           &data.hfp, &data.hbp, &data.hpw,
+		           &data.clk_rate, &data.fps) != 5) {
 			pr_err("could not read input\n");
 			return -EINVAL;
 		}
@@ -3899,17 +3911,17 @@ static ssize_t dynamic_fps_sysfs_wta_dfps(struct device *dev,
 	}
 
 	panel_fps = mdss_panel_get_framerate(&pdata->panel_info,
-			FPS_RESOLUTION_DEFAULT);
+	                                     FPS_RESOLUTION_DEFAULT);
 
 	if (data.fps == panel_fps) {
 		pr_debug("%s: FPS is already %d\n",
-			__func__, data.fps);
+		         __func__, data.fps);
 		return count;
 	}
 
 	if (data.hfp > DFPS_DATA_MAX_HFP || data.hbp > DFPS_DATA_MAX_HBP ||
-		data.hpw > DFPS_DATA_MAX_HPW || data.fps > DFPS_DATA_MAX_FPS ||
-		data.clk_rate > DFPS_DATA_MAX_CLK_RATE){
+	    data.hpw > DFPS_DATA_MAX_HPW || data.fps > DFPS_DATA_MAX_FPS ||
+	    data.clk_rate > DFPS_DATA_MAX_CLK_RATE) {
 		pr_err("Data values out of bound.\n");
 		return -EINVAL;
 	}
@@ -3925,7 +3937,7 @@ static ssize_t dynamic_fps_sysfs_wta_dfps(struct device *dev,
 
 
 static DEVICE_ATTR(dynamic_fps, S_IRUGO | S_IWUSR, dynamic_fps_sysfs_rda_dfps,
-	dynamic_fps_sysfs_wta_dfps);
+                   dynamic_fps_sysfs_wta_dfps);
 
 static struct attribute *dynamic_fps_fs_attrs[] = {
 	&dev_attr_dynamic_fps.attr,
@@ -3936,7 +3948,7 @@ static struct attribute_group dynamic_fps_fs_attrs_group = {
 };
 
 static ssize_t mdss_mdp_vsync_show_event(struct device *dev,
-		struct device_attribute *attr, char *buf)
+        struct device_attribute *attr, char *buf)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
@@ -3945,8 +3957,8 @@ static ssize_t mdss_mdp_vsync_show_event(struct device *dev,
 	int ret;
 
 	if (!mdp5_data->ctl ||
-		(!mdp5_data->ctl->panel_data->panel_info.cont_splash_enabled
-			&& !mdss_mdp_ctl_is_power_on(mdp5_data->ctl)))
+	    (!mdp5_data->ctl->panel_data->panel_info.cont_splash_enabled
+	     && !mdss_mdp_ctl_is_power_on(mdp5_data->ctl)))
 		return -EAGAIN;
 
 	vsync_ticks = ktime_to_ns(mdp5_data->vsync_time);
@@ -3958,7 +3970,7 @@ static ssize_t mdss_mdp_vsync_show_event(struct device *dev,
 }
 
 static ssize_t mdss_mdp_lineptr_show_event(struct device *dev,
-		struct device_attribute *attr, char *buf)
+        struct device_attribute *attr, char *buf)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
@@ -3967,8 +3979,8 @@ static ssize_t mdss_mdp_lineptr_show_event(struct device *dev,
 	int ret;
 
 	if (!mdp5_data->ctl ||
-		(!mdp5_data->ctl->panel_data->panel_info.cont_splash_enabled
-			&& !mdss_mdp_ctl_is_power_on(mdp5_data->ctl)))
+	    (!mdp5_data->ctl->panel_data->panel_info.cont_splash_enabled
+	     && !mdss_mdp_ctl_is_power_on(mdp5_data->ctl)))
 		return -EPERM;
 
 	lineptr_ticks = ktime_to_ns(mdp5_data->lineptr_time);
@@ -3980,7 +3992,7 @@ static ssize_t mdss_mdp_lineptr_show_event(struct device *dev,
 }
 
 static ssize_t mdss_mdp_lineptr_show_value(struct device *dev,
-		struct device_attribute *attr, char *buf)
+        struct device_attribute *attr, char *buf)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
@@ -3988,8 +4000,8 @@ static ssize_t mdss_mdp_lineptr_show_value(struct device *dev,
 	int ret, lineptr_val;
 
 	if (!mdp5_data->ctl ||
-		(!mdp5_data->ctl->panel_data->panel_info.cont_splash_enabled
-			&& !mdss_mdp_ctl_is_power_on(mdp5_data->ctl)))
+	    (!mdp5_data->ctl->panel_data->panel_info.cont_splash_enabled
+	     && !mdss_mdp_ctl_is_power_on(mdp5_data->ctl)))
 		return -EPERM;
 
 	lineptr_val = mfd->panel_info->te.wr_ptr_irq;
@@ -4000,7 +4012,7 @@ static ssize_t mdss_mdp_lineptr_show_value(struct device *dev,
 }
 
 static ssize_t mdss_mdp_lineptr_set_value(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
+        struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = fbi->par;
@@ -4009,12 +4021,12 @@ static ssize_t mdss_mdp_lineptr_set_value(struct device *dev,
 	int ret, lineptr_value;
 
 	if (!ctl || (!ctl->panel_data->panel_info.cont_splash_enabled
-		&& !mdss_mdp_ctl_is_power_on(ctl)))
+	             && !mdss_mdp_ctl_is_power_on(ctl)))
 		return -EAGAIN;
 
 	ret = kstrtoint(buf, 10, &lineptr_value);
 	if (ret || (lineptr_value < 0)
-		|| (lineptr_value > mfd->panel_info->yres)) {
+	    || (lineptr_value > mfd->panel_info->yres)) {
 		pr_err("Invalid input for lineptr\n");
 		return -EINVAL;
 	}
@@ -4034,7 +4046,7 @@ static ssize_t mdss_mdp_lineptr_set_value(struct device *dev,
 }
 
 static ssize_t mdss_mdp_bl_show_event(struct device *dev,
-		struct device_attribute *attr, char *buf)
+                                      struct device_attribute *attr, char *buf)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
@@ -4046,7 +4058,7 @@ static ssize_t mdss_mdp_bl_show_event(struct device *dev,
 }
 
 static ssize_t mdss_mdp_hist_show_event(struct device *dev,
-		struct device_attribute *attr, char *buf)
+                                        struct device_attribute *attr, char *buf)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
@@ -4058,7 +4070,7 @@ static ssize_t mdss_mdp_hist_show_event(struct device *dev,
 }
 
 static ssize_t mdss_mdp_ad_show_event(struct device *dev,
-		struct device_attribute *attr, char *buf)
+                                      struct device_attribute *attr, char *buf)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
@@ -4070,7 +4082,7 @@ static ssize_t mdss_mdp_ad_show_event(struct device *dev,
 }
 
 static ssize_t mdss_mdp_ad_bl_show_event(struct device *dev,
-		struct device_attribute *attr, char *buf)
+        struct device_attribute *attr, char *buf)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
@@ -4097,7 +4109,7 @@ static inline int mdss_mdp_ad_is_supported(struct msm_fb_data_type *mfd)
 			pr_warn("there is no mixer attached to fb\n");
 		else
 			pr_debug("mixer attached (%d) doesnt support ad\n",
-				 mixer->num);
+			         mixer->num);
 		return 0;
 	}
 
@@ -4109,7 +4121,7 @@ static inline int mdss_mdp_ad_is_supported(struct msm_fb_data_type *mfd)
 }
 
 static ssize_t mdss_mdp_ad_show(struct device *dev,
-		struct device_attribute *attr, char *buf)
+                                struct device_attribute *attr, char *buf)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = fbi->par;
@@ -4124,7 +4136,7 @@ static ssize_t mdss_mdp_ad_show(struct device *dev,
 }
 
 static ssize_t mdss_mdp_ad_store(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
+                                 struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = fbi->par;
@@ -4144,7 +4156,7 @@ static ssize_t mdss_mdp_ad_store(struct device *dev,
 }
 
 static ssize_t mdss_mdp_dyn_pu_show(struct device *dev,
-		struct device_attribute *attr, char *buf)
+                                    struct device_attribute *attr, char *buf)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = fbi->par;
@@ -4159,7 +4171,7 @@ static ssize_t mdss_mdp_dyn_pu_show(struct device *dev,
 }
 
 static ssize_t mdss_mdp_dyn_pu_store(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
+                                     struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = fbi->par;
@@ -4178,7 +4190,7 @@ static ssize_t mdss_mdp_dyn_pu_store(struct device *dev,
 	return count;
 }
 static ssize_t mdss_mdp_cmd_autorefresh_show(struct device *dev,
-	struct device_attribute *attr, char *buf)
+        struct device_attribute *attr, char *buf)
 {
 	ssize_t ret = 0;
 	struct fb_info *fbi = dev_get_drvdata(dev);
@@ -4202,13 +4214,13 @@ static ssize_t mdss_mdp_cmd_autorefresh_show(struct device *dev,
 		ret = -EINVAL;
 	} else {
 		ret = snprintf(buf, PAGE_SIZE, "%d\n",
-			mdss_mdp_ctl_cmd_get_autorefresh(ctl));
+		               mdss_mdp_ctl_cmd_get_autorefresh(ctl));
 	}
 	return ret;
 }
 
 static ssize_t mdss_mdp_cmd_autorefresh_store(struct device *dev,
-	struct device_attribute *attr, const char *buf, size_t len)
+        struct device_attribute *attr, const char *buf, size_t len)
 {
 	int frame_cnt, rc;
 	struct fb_info *fbi = dev_get_drvdata(dev);
@@ -4243,7 +4255,7 @@ static ssize_t mdss_mdp_cmd_autorefresh_store(struct device *dev,
 	rc = mdss_mdp_ctl_cmd_set_autorefresh(ctl, frame_cnt);
 	if (rc) {
 		pr_err("cmd_set_autorefresh failed, rc=%d, frame_cnt=%d\n",
-			rc, frame_cnt);
+		       rc, frame_cnt);
 		return rc;
 	}
 
@@ -4265,7 +4277,7 @@ static ssize_t mdss_mdp_cmd_autorefresh_store(struct device *dev,
 
 /* Print the last CRC Value read for batch mode */
 static ssize_t mdss_mdp_misr_show(struct device *dev,
-	struct device_attribute *attr, char *buf)
+                                  struct device_attribute *attr, char *buf)
 {
 	ssize_t ret = 0;
 	struct fb_info *fbi = dev_get_drvdata(dev);
@@ -4294,7 +4306,7 @@ static ssize_t mdss_mdp_misr_show(struct device *dev,
  * until disabled.
  */
 static ssize_t mdss_mdp_misr_store(struct device *dev,
-	struct device_attribute *attr, const char *buf, size_t len)
+                                   struct device_attribute *attr, const char *buf, size_t len)
 {
 	int enable_misr, rc;
 	struct fb_info *fbi = dev_get_drvdata(dev);
@@ -4349,16 +4361,16 @@ static ssize_t mdss_mdp_misr_store(struct device *dev,
 	}
 
 	if (enable_misr) {
-		mdss_misr_set(mdata, &req , ctl);
+		mdss_misr_set(mdata, &req, ctl);
 
 		if ((ctl->intf_type == MDSS_INTF_DSI) && is_panel_split(mfd))
-			mdss_misr_set(mdata, &sreq , ctl);
+			mdss_misr_set(mdata, &sreq, ctl);
 
 	} else {
 		mdss_misr_disable(mdata, &req, ctl);
 
 		if ((ctl->intf_type == MDSS_INTF_DSI) && is_panel_split(mfd))
-			mdss_misr_disable(mdata, &sreq , ctl);
+			mdss_misr_disable(mdata, &sreq, ctl);
 	}
 
 	pr_debug("misr %s\n", enable_misr ? "enabled" : "disabled");
@@ -4367,17 +4379,17 @@ static ssize_t mdss_mdp_misr_store(struct device *dev,
 }
 
 static DEVICE_ATTR(msm_misr_en, S_IRUGO | S_IWUSR,
-	mdss_mdp_misr_show, mdss_mdp_misr_store);
+                   mdss_mdp_misr_show, mdss_mdp_misr_store);
 static DEVICE_ATTR(msm_cmd_autorefresh_en, S_IRUGO | S_IWUSR,
-	mdss_mdp_cmd_autorefresh_show, mdss_mdp_cmd_autorefresh_store);
+                   mdss_mdp_cmd_autorefresh_show, mdss_mdp_cmd_autorefresh_store);
 static DEVICE_ATTR(vsync_event, S_IRUGO, mdss_mdp_vsync_show_event, NULL);
 static DEVICE_ATTR(lineptr_event, S_IRUGO, mdss_mdp_lineptr_show_event, NULL);
 static DEVICE_ATTR(lineptr_value, S_IRUGO | S_IWUSR | S_IWGRP,
-		mdss_mdp_lineptr_show_value, mdss_mdp_lineptr_set_value);
+                   mdss_mdp_lineptr_show_value, mdss_mdp_lineptr_set_value);
 static DEVICE_ATTR(ad, S_IRUGO | S_IWUSR | S_IWGRP, mdss_mdp_ad_show,
-	mdss_mdp_ad_store);
+                   mdss_mdp_ad_store);
 static DEVICE_ATTR(dyn_pu, S_IRUGO | S_IWUSR | S_IWGRP, mdss_mdp_dyn_pu_show,
-	mdss_mdp_dyn_pu_store);
+                   mdss_mdp_dyn_pu_store);
 static DEVICE_ATTR(hist_event, S_IRUGO, mdss_mdp_hist_show_event, NULL);
 static DEVICE_ATTR(bl_event, S_IRUGO, mdss_mdp_bl_show_event, NULL);
 static DEVICE_ATTR(ad_event, S_IRUGO, mdss_mdp_ad_show_event, NULL);
@@ -4403,7 +4415,7 @@ static struct attribute_group mdp_overlay_sysfs_group = {
 };
 
 static void mdss_mdp_hw_cursor_setpos(struct mdss_mdp_mixer *mixer,
-		struct mdss_rect *roi, u32 start_x, u32 start_y)
+                                      struct mdss_rect *roi, u32 start_x, u32 start_y)
 {
 	int roi_xy = (roi->y << 16) | roi->x;
 	int start_xy = (start_y << 16) | start_x;
@@ -4419,7 +4431,7 @@ static void mdss_mdp_hw_cursor_setpos(struct mdss_mdp_mixer *mixer,
 }
 
 static void mdss_mdp_hw_cursor_setimage(struct mdss_mdp_mixer *mixer,
-	struct fb_cursor *cursor, u32 cursor_addr, struct mdss_rect *roi)
+                                        struct fb_cursor *cursor, u32 cursor_addr, struct mdss_rect *roi)
 {
 	int calpha_en, transp_en, alpha, size;
 	struct fb_image *img = &cursor->image;
@@ -4448,38 +4460,38 @@ static void mdss_mdp_hw_cursor_setimage(struct mdss_mdp_mixer *mixer,
 	mdp_mixer_write(mixer, MDSS_MDP_REG_LM_CURSOR_IMG_SIZE, size);
 	mdp_mixer_write(mixer, MDSS_MDP_REG_LM_CURSOR_SIZE, roi_size);
 	mdp_mixer_write(mixer, MDSS_MDP_REG_LM_CURSOR_STRIDE,
-				img->width * 4);
+	                img->width * 4);
 	mdp_mixer_write(mixer, MDSS_MDP_REG_LM_CURSOR_BASE_ADDR,
-				cursor_addr);
+	                cursor_addr);
 	blendcfg = mdp_mixer_read(mixer, MDSS_MDP_REG_LM_CURSOR_BLEND_CONFIG);
 	blendcfg &= ~0x1;
 	blendcfg |= (transp_en << 3) | (calpha_en << 1);
 	mdp_mixer_write(mixer, MDSS_MDP_REG_LM_CURSOR_BLEND_CONFIG,
-				blendcfg);
+	                blendcfg);
 	if (calpha_en)
 		mdp_mixer_write(mixer, MDSS_MDP_REG_LM_CURSOR_BLEND_PARAM,
-				alpha);
+		                alpha);
 
 	if (transp_en) {
 		mdp_mixer_write(mixer,
-				MDSS_MDP_REG_LM_CURSOR_BLEND_TRANSP_LOW0,
-				((img->bg_color & 0xff00) << 8) |
-				(img->bg_color & 0xff));
+		                MDSS_MDP_REG_LM_CURSOR_BLEND_TRANSP_LOW0,
+		                ((img->bg_color & 0xff00) << 8) |
+		                (img->bg_color & 0xff));
 		mdp_mixer_write(mixer,
-				MDSS_MDP_REG_LM_CURSOR_BLEND_TRANSP_LOW1,
-				((img->bg_color & 0xff0000) >> 16));
+		                MDSS_MDP_REG_LM_CURSOR_BLEND_TRANSP_LOW1,
+		                ((img->bg_color & 0xff0000) >> 16));
 		mdp_mixer_write(mixer,
-				MDSS_MDP_REG_LM_CURSOR_BLEND_TRANSP_HIGH0,
-				((img->bg_color & 0xff00) << 8) |
-				(img->bg_color & 0xff));
+		                MDSS_MDP_REG_LM_CURSOR_BLEND_TRANSP_HIGH0,
+		                ((img->bg_color & 0xff00) << 8) |
+		                (img->bg_color & 0xff));
 		mdp_mixer_write(mixer,
-				MDSS_MDP_REG_LM_CURSOR_BLEND_TRANSP_HIGH1,
-				((img->bg_color & 0xff0000) >> 16));
+		                MDSS_MDP_REG_LM_CURSOR_BLEND_TRANSP_HIGH1,
+		                ((img->bg_color & 0xff0000) >> 16));
 	}
 }
 
 static void mdss_mdp_hw_cursor_blend_config(struct mdss_mdp_mixer *mixer,
-		struct fb_cursor *cursor)
+        struct fb_cursor *cursor)
 {
 	u32 blendcfg;
 	if (!mixer) {
@@ -4498,7 +4510,7 @@ static void mdss_mdp_hw_cursor_blend_config(struct mdss_mdp_mixer *mixer,
 		}
 
 		mdp_mixer_write(mixer, MDSS_MDP_REG_LM_CURSOR_BLEND_CONFIG,
-				   blendcfg);
+		                blendcfg);
 		mixer->cursor_enabled = cursor->enable;
 		mixer->params_changed++;
 	}
@@ -4506,7 +4518,7 @@ static void mdss_mdp_hw_cursor_blend_config(struct mdss_mdp_mixer *mixer,
 }
 
 static void mdss_mdp_set_rect(struct mdp_rect *rect, u16 x, u16 y, u16 w,
-		u16 h)
+                              u16 h)
 {
 	rect->x = x;
 	rect->y = y;
@@ -4515,19 +4527,19 @@ static void mdss_mdp_set_rect(struct mdp_rect *rect, u16 x, u16 y, u16 w,
 }
 
 static void mdss_mdp_curor_pipe_cleanup(struct msm_fb_data_type *mfd,
-		int cursor_pipe)
+                                        int cursor_pipe)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 
 	if (mdp5_data->cursor_ndx[cursor_pipe] != MSMFB_NEW_REQUEST) {
 		mdss_mdp_overlay_release(mfd,
-				mdp5_data->cursor_ndx[cursor_pipe]);
+		                         mdp5_data->cursor_ndx[cursor_pipe]);
 		mdp5_data->cursor_ndx[cursor_pipe] = MSMFB_NEW_REQUEST;
 	}
 }
 
 int mdss_mdp_cursor_flush(struct msm_fb_data_type *mfd,
-		struct mdss_mdp_pipe *pipe, int cursor_pipe)
+                          struct mdss_mdp_pipe *pipe, int cursor_pipe)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_mdp_ctl *ctl = mdp5_data->ctl;
@@ -4554,7 +4566,8 @@ int mdss_mdp_cursor_flush(struct msm_fb_data_type *mfd,
 }
 
 static int mdss_mdp_cursor_pipe_setup(struct msm_fb_data_type *mfd,
-		struct mdp_overlay *req, int cursor_pipe) {
+                                      struct mdp_overlay *req, int cursor_pipe)
+{
 	struct mdss_mdp_pipe *pipe;
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
@@ -4566,13 +4579,13 @@ static int mdss_mdp_cursor_pipe_setup(struct msm_fb_data_type *mfd,
 	ret = mdss_mdp_overlay_pipe_setup(mfd, req, &pipe, NULL, false);
 	if (ret) {
 		pr_err("cursor pipe setup failed, cursor_pipe:%d, ret:%d\n",
-				cursor_pipe, ret);
+		       cursor_pipe, ret);
 		mdp5_data->cursor_ndx[cursor_pipe] = MSMFB_NEW_REQUEST;
 		return ret;
 	}
 
 	pr_debug("req id:%d cursor_pipe:%d pnum:%d\n",
-		req->id, cursor_pipe, pipe->ndx);
+	         req->id, cursor_pipe, pipe->ndx);
 
 	if (mdata->mdss_util->iommu_attached()) {
 		cursor_addr = mfd->cursor_buf_iova;
@@ -4616,7 +4629,7 @@ done:
 }
 
 static int mdss_mdp_hw_cursor_pipe_update(struct msm_fb_data_type *mfd,
-				     struct fb_cursor *cursor)
+        struct fb_cursor *cursor)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_mdp_mixer *mixer;
@@ -4657,9 +4670,9 @@ static int mdss_mdp_hw_cursor_pipe_update(struct msm_fb_data_type *mfd,
 
 	if (!mfd->cursor_buf && (cursor->set & FB_CUR_SETIMAGE)) {
 		ret = mdss_smmu_dma_alloc_coherent(&pdev->dev,
-			cursor_frame_size, (dma_addr_t *) &mfd->cursor_buf_phys,
-			&mfd->cursor_buf_iova, &mfd->cursor_buf,
-			GFP_KERNEL, MDSS_IOMMU_DOMAIN_UNSECURE);
+		                                   cursor_frame_size, (dma_addr_t *) &mfd->cursor_buf_phys,
+		                                   &mfd->cursor_buf_iova, &mfd->cursor_buf,
+		                                   GFP_KERNEL, MDSS_IOMMU_DOMAIN_UNSECURE);
 		if (ret) {
 			pr_err("can't allocate cursor buffer rc:%d\n", ret);
 			goto done;
@@ -4670,14 +4683,14 @@ static int mdss_mdp_hw_cursor_pipe_update(struct msm_fb_data_type *mfd,
 	}
 
 	pr_debug("mixer=%d enable=%x set=%x\n", mixer->num, cursor->enable,
-			cursor->set);
+	         cursor->set);
 
 	if (cursor->set & FB_CUR_SETHOT) {
 		if ((cursor->hot.x < img->width) &&
-			(cursor->hot.y < img->height)) {
+		    (cursor->hot.y < img->height)) {
 			mixer->cursor_hotx = cursor->hot.x;
 			mixer->cursor_hoty = cursor->hot.y;
-			 /* Update cursor position */
+			/* Update cursor position */
 			cursor->set |= FB_CUR_SETPOS;
 		} else {
 			pr_err("Invalid cursor hotspot coordinates\n");
@@ -4701,9 +4714,9 @@ static int mdss_mdp_hw_cursor_pipe_update(struct msm_fb_data_type *mfd,
 	}
 
 	if ((img->width > mdata->max_cursor_size) ||
-		(img->height > mdata->max_cursor_size) ||
-		(img->depth != 32) || (start_x >= xres) ||
-		(start_y >= yres)) {
+	    (img->height > mdata->max_cursor_size) ||
+	    (img->depth != 32) || (start_x >= xres) ||
+	    (start_y >= yres)) {
 		pr_err("Invalid cursor image coordinates\n");
 		ret = -EINVAL;
 		goto done;
@@ -4713,7 +4726,7 @@ static int mdss_mdp_hw_cursor_pipe_update(struct msm_fb_data_type *mfd,
 	roi.h = min(yres - start_y, img->height - roi.y);
 
 	if ((roi.w > mdata->max_cursor_size) ||
-		(roi.h > mdata->max_cursor_size)) {
+	    (roi.h > mdata->max_cursor_size)) {
 		pr_err("Invalid cursor ROI size\n");
 		ret = -EINVAL;
 		goto done;
@@ -4746,7 +4759,7 @@ static int mdss_mdp_hw_cursor_pipe_update(struct msm_fb_data_type *mfd,
 
 	if (mfd->cursor_buf && (cursor->set & FB_CUR_SETIMAGE)) {
 		ret = copy_from_user(mfd->cursor_buf, img->data,
-				     img->width * img->height * 4);
+		                     img->width * img->height * 4);
 		if (ret) {
 			pr_err("copy_from_user error. rc=%d\n", ret);
 			goto done;
@@ -4765,7 +4778,7 @@ static int mdss_mdp_hw_cursor_pipe_update(struct msm_fb_data_type *mfd,
 	 * Both are done to support async cursor functionality.
 	 */
 	if (mdata->has_src_split || (!is_split_lm(mfd))
-			|| (mdata->ncursor_pipes == 1)) {
+	    || (mdata->ncursor_pipes == 1)) {
 		ret = mdss_mdp_cursor_pipe_setup(mfd, req, CURSOR_PIPE_LEFT);
 	} else if ((start_x + roi.w) <= left_lm_w) {
 		ret = mdss_mdp_cursor_pipe_setup(mfd, req, CURSOR_PIPE_LEFT);
@@ -4785,17 +4798,17 @@ static int mdss_mdp_hw_cursor_pipe_update(struct msm_fb_data_type *mfd,
 		ret = mdss_mdp_cursor_pipe_setup(mfd, req, CURSOR_PIPE_LEFT);
 	} else if ((start_x <= left_lm_w) && ((start_x + roi.w) >= left_lm_w)) {
 		mdss_mdp_set_rect(&req->dst_rect, start_x, start_y,
-				(left_lm_w - start_x), roi.h);
+		                  (left_lm_w - start_x), roi.h);
 		mdss_mdp_set_rect(&req->src_rect, 0, 0, (left_lm_w -
-				start_x), roi.h);
+		                  start_x), roi.h);
 		ret = mdss_mdp_cursor_pipe_setup(mfd, req, CURSOR_PIPE_LEFT);
 		if (ret)
 			goto done;
 
 		mdss_mdp_set_rect(&req->dst_rect, left_lm_w, start_y, ((start_x
-				+ roi.w) - left_lm_w), roi.h);
+		                  + roi.w) - left_lm_w), roi.h);
 		mdss_mdp_set_rect(&req->src_rect, (left_lm_w - start_x), 0,
-				(roi.w - (left_lm_w - start_x)), roi.h);
+		                  (roi.w - (left_lm_w - start_x)), roi.h);
 		ret = mdss_mdp_cursor_pipe_setup(mfd, req, CURSOR_PIPE_RIGHT);
 	} else {
 		pr_err("Invalid case for cursor pipe setup\n");
@@ -4814,7 +4827,7 @@ done:
 }
 
 static int mdss_mdp_hw_cursor_update(struct msm_fb_data_type *mfd,
-				     struct fb_cursor *cursor)
+                                     struct fb_cursor *cursor)
 {
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_mdp_mixer *mixer_left = NULL;
@@ -4833,21 +4846,21 @@ static int mdss_mdp_hw_cursor_update(struct msm_fb_data_type *mfd,
 	u32 cursor_frame_size = mdss_mdp_get_cursor_frame_size(mdata);
 
 	mixer_left = mdss_mdp_mixer_get(mdp5_data->ctl,
-			MDSS_MDP_MIXER_MUX_DEFAULT);
+	                                MDSS_MDP_MIXER_MUX_DEFAULT);
 	if (!mixer_left)
 		return -ENODEV;
 	if (is_split_lm(mfd)) {
 		mixer_right = mdss_mdp_mixer_get(mdp5_data->ctl,
-				MDSS_MDP_MIXER_MUX_RIGHT);
+		                                 MDSS_MDP_MIXER_MUX_RIGHT);
 		if (!mixer_right)
 			return -ENODEV;
 	}
 
 	if (!mfd->cursor_buf && (cursor->set & FB_CUR_SETIMAGE)) {
 		ret = mdss_smmu_dma_alloc_coherent(&pdev->dev,
-			cursor_frame_size, (dma_addr_t *) &mfd->cursor_buf_phys,
-			&mfd->cursor_buf_iova, &mfd->cursor_buf,
-			GFP_KERNEL, MDSS_IOMMU_DOMAIN_UNSECURE);
+		                                   cursor_frame_size, (dma_addr_t *) &mfd->cursor_buf_phys,
+		                                   &mfd->cursor_buf_iova, &mfd->cursor_buf,
+		                                   GFP_KERNEL, MDSS_IOMMU_DOMAIN_UNSECURE);
 		if (ret) {
 			pr_err("can't allocate cursor buffer rc:%d\n", ret);
 			return ret;
@@ -4855,8 +4868,8 @@ static int mdss_mdp_hw_cursor_update(struct msm_fb_data_type *mfd,
 	}
 
 	if ((img->width > mdata->max_cursor_size) ||
-		(img->height > mdata->max_cursor_size) ||
-		(img->depth != 32) || (start_x >= xres) || (start_y >= yres))
+	    (img->height > mdata->max_cursor_size) ||
+	    (img->depth != 32) || (start_x >= xres) || (start_y >= yres))
 		return -EINVAL;
 
 	pr_debug("enable=%x set=%x\n", cursor->enable, cursor->set);
@@ -4865,10 +4878,10 @@ static int mdss_mdp_hw_cursor_update(struct msm_fb_data_type *mfd,
 	memset(&roi, 0, sizeof(struct mdss_rect));
 	if (cursor->set & FB_CUR_SETHOT) {
 		if ((cursor->hot.x < img->width) &&
-			(cursor->hot.y < img->height)) {
+		    (cursor->hot.y < img->height)) {
 			cursor_hot.x = cursor->hot.x;
 			cursor_hot.y = cursor->hot.y;
-			 /* Update cursor position */
+			/* Update cursor position */
 			cursor->set |= FB_CUR_SETPOS;
 		} else {
 			pr_err("Invalid cursor hotspot coordinates\n");
@@ -4897,7 +4910,7 @@ static int mdss_mdp_hw_cursor_update(struct msm_fb_data_type *mfd,
 	if (mfd->cursor_buf && (cursor->set & FB_CUR_SETIMAGE)) {
 		u32 cursor_addr;
 		ret = copy_from_user(mfd->cursor_buf, img->data,
-				     img->width * img->height * 4);
+		                     img->width * img->height * 4);
 		if (ret) {
 			pr_err("copy_from_user error. rc=%d\n", ret);
 			mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_OFF);
@@ -4915,16 +4928,16 @@ static int mdss_mdp_hw_cursor_update(struct msm_fb_data_type *mfd,
 			cursor_addr = mfd->cursor_buf_phys;
 		}
 		mdss_mdp_hw_cursor_setimage(mixer_left, cursor, cursor_addr,
-				&roi);
+		                            &roi);
 		if (is_split_lm(mfd))
 			mdss_mdp_hw_cursor_setimage(mixer_right, cursor,
-					cursor_addr, &roi);
+			                            cursor_addr, &roi);
 	}
 
 	if ((start_x + roi.w) <= left_lm_w) {
 		if (cursor->set & FB_CUR_SETPOS)
 			mdss_mdp_hw_cursor_setpos(mixer_left, &roi, start_x,
-					start_y);
+			                          start_y);
 		mdss_mdp_hw_cursor_blend_config(mixer_left, cursor);
 		cursor->enable = false;
 		mdss_mdp_hw_cursor_blend_config(mixer_right, cursor);
@@ -4932,7 +4945,7 @@ static int mdss_mdp_hw_cursor_update(struct msm_fb_data_type *mfd,
 		start_x -= left_lm_w;
 		if (cursor->set & FB_CUR_SETPOS)
 			mdss_mdp_hw_cursor_setpos(mixer_right, &roi, start_x,
-					start_y);
+			                          start_y);
 		mdss_mdp_hw_cursor_blend_config(mixer_right, cursor);
 		cursor->enable = false;
 		mdss_mdp_hw_cursor_blend_config(mixer_left, cursor);
@@ -4941,7 +4954,7 @@ static int mdss_mdp_hw_cursor_update(struct msm_fb_data_type *mfd,
 		roi.w = left_lm_w - start_x;
 		if (cursor->set & FB_CUR_SETPOS)
 			mdss_mdp_hw_cursor_setpos(mixer_left, &roi, start_x,
-					start_y);
+			                          start_y);
 		mdss_mdp_hw_cursor_blend_config(mixer_left, cursor);
 
 		roi_right.x = 0;
@@ -4949,7 +4962,7 @@ static int mdss_mdp_hw_cursor_update(struct msm_fb_data_type *mfd,
 		start_x = 0;
 		if (cursor->set & FB_CUR_SETPOS)
 			mdss_mdp_hw_cursor_setpos(mixer_right, &roi_right,
-					start_x, start_y);
+			                          start_x, start_y);
 		mdss_mdp_hw_cursor_blend_config(mixer_right, cursor);
 	}
 
@@ -4961,7 +4974,7 @@ static int mdss_mdp_hw_cursor_update(struct msm_fb_data_type *mfd,
 }
 
 static int mdss_bl_scale_config(struct msm_fb_data_type *mfd,
-						struct mdp_bl_scale_data *data)
+                                struct mdp_bl_scale_data *data)
 {
 	int ret = 0;
 	int curr_bl;
@@ -4970,7 +4983,7 @@ static int mdss_bl_scale_config(struct msm_fb_data_type *mfd,
 	mfd->bl_scale = data->scale;
 	mfd->bl_min_lvl = data->min_lvl;
 	pr_debug("update scale = %d, min_lvl = %d\n", mfd->bl_scale,
-							mfd->bl_min_lvl);
+	         mfd->bl_min_lvl);
 
 	/* Update current backlight to use new scaling, if it is not zero */
 	if (curr_bl)
@@ -4981,7 +4994,7 @@ static int mdss_bl_scale_config(struct msm_fb_data_type *mfd,
 }
 
 static int mdss_mdp_pp_ioctl(struct msm_fb_data_type *mfd,
-				void __user *argp)
+                             void __user *argp)
 {
 	int ret;
 	struct msmfb_mdp_pp mdp_pp;
@@ -4995,45 +5008,45 @@ static int mdss_mdp_pp_ioctl(struct msm_fb_data_type *mfd,
 	/* Supprt only MDP register read/write and
 	exit_dcm in DCM state*/
 	if (mfd->dcm_state == DCM_ENTER &&
-			(mdp_pp.op != mdp_op_calib_buffer &&
-			mdp_pp.op != mdp_op_calib_dcm_state))
+	    (mdp_pp.op != mdp_op_calib_buffer &&
+	     mdp_pp.op != mdp_op_calib_dcm_state))
 		return -EPERM;
 
 	switch (mdp_pp.op) {
 	case mdp_op_pa_cfg:
 		ret = mdss_mdp_pa_config(mfd, &mdp_pp.data.pa_cfg_data,
-					&copyback);
+		                         &copyback);
 		break;
 
 	case mdp_op_pa_v2_cfg:
 		ret = mdss_mdp_pa_v2_config(mfd, &mdp_pp.data.pa_v2_cfg_data,
-					&copyback);
+		                            &copyback);
 		break;
 
 	case mdp_op_pcc_cfg:
 		ret = mdss_mdp_pcc_config(mfd, &mdp_pp.data.pcc_cfg_data,
-					&copyback);
+		                          &copyback);
 		break;
 
 	case mdp_op_lut_cfg:
 		switch (mdp_pp.data.lut_cfg_data.lut_type) {
 		case mdp_lut_igc:
 			ret = mdss_mdp_igc_lut_config(mfd,
-					(struct mdp_igc_lut_data *)
-					&mdp_pp.data.lut_cfg_data.data,
-					&copyback, copy_from_kernel);
+			                              (struct mdp_igc_lut_data *)
+			                              &mdp_pp.data.lut_cfg_data.data,
+			                              &copyback, copy_from_kernel);
 			break;
 
 		case mdp_lut_pgc:
 			ret = mdss_mdp_argc_config(mfd,
-				&mdp_pp.data.lut_cfg_data.data.pgc_lut_data,
-				&copyback);
+			                           &mdp_pp.data.lut_cfg_data.data.pgc_lut_data,
+			                           &copyback);
 			break;
 
 		case mdp_lut_hist:
 			ret = mdss_mdp_hist_lut_config(mfd,
-				(struct mdp_hist_lut_data *)
-				&mdp_pp.data.lut_cfg_data.data, &copyback);
+			                               (struct mdp_hist_lut_data *)
+			                               &mdp_pp.data.lut_cfg_data.data, &copyback);
 			break;
 
 		default:
@@ -5043,18 +5056,18 @@ static int mdss_mdp_pp_ioctl(struct msm_fb_data_type *mfd,
 		break;
 	case mdp_op_dither_cfg:
 		ret = mdss_mdp_dither_config(mfd,
-				&mdp_pp.data.dither_cfg_data,
-				&copyback,
-				false);
+		                             &mdp_pp.data.dither_cfg_data,
+		                             &copyback,
+		                             false);
 		break;
 	case mdp_op_gamut_cfg:
 		ret = mdss_mdp_gamut_config(mfd,
-				&mdp_pp.data.gamut_cfg_data,
-				&copyback);
+		                            &mdp_pp.data.gamut_cfg_data,
+		                            &copyback);
 		break;
 	case mdp_bl_scale_cfg:
 		ret = mdss_bl_scale_config(mfd, (struct mdp_bl_scale_data *)
-						&mdp_pp.data.bl_scale_data);
+		                           &mdp_pp.data.bl_scale_data);
 		break;
 	case mdp_op_ad_cfg:
 		ret = mdss_mdp_ad_config(mfd, &mdp_pp.data.ad_init_cfg);
@@ -5068,22 +5081,22 @@ static int mdss_mdp_pp_ioctl(struct msm_fb_data_type *mfd,
 		break;
 	case mdp_op_calib_cfg:
 		ret = mdss_mdp_calib_config((struct mdp_calib_config_data *)
-					 &mdp_pp.data.calib_cfg, &copyback);
+		                            &mdp_pp.data.calib_cfg, &copyback);
 		break;
 	case mdp_op_calib_mode:
 		ret = mdss_mdp_calib_mode(mfd, &mdp_pp.data.mdss_calib_cfg);
 		break;
 	case mdp_op_calib_buffer:
 		ret = mdss_mdp_calib_config_buffer(
-				(struct mdp_calib_config_buffer *)
-				 &mdp_pp.data.calib_buffer, &copyback);
+		          (struct mdp_calib_config_buffer *)
+		          &mdp_pp.data.calib_buffer, &copyback);
 		break;
 	case mdp_op_calib_dcm_state:
 		ret = mdss_fb_dcm(mfd, mdp_pp.data.calib_dcm.dcm_state);
 		break;
 	default:
 		pr_err("Unsupported request to MDP_PP IOCTL. %d = op\n",
-								mdp_pp.op);
+		       mdp_pp.op);
 		ret = -EINVAL;
 		break;
 	}
@@ -5093,7 +5106,7 @@ static int mdss_mdp_pp_ioctl(struct msm_fb_data_type *mfd,
 }
 
 static int mdss_mdp_histo_ioctl(struct msm_fb_data_type *mfd, u32 cmd,
-				void __user *argp)
+                                void __user *argp)
 {
 	int ret = -ENOSYS;
 	struct mdp_histogram_data hist;
@@ -5147,7 +5160,7 @@ static int mdss_mdp_histo_ioctl(struct msm_fb_data_type *mfd, u32 cmd,
 }
 
 static int mdss_fb_set_metadata(struct msm_fb_data_type *mfd,
-				struct msmfb_metadata *metadata)
+                                struct msmfb_metadata *metadata)
 {
 	struct mdss_data_type *mdata = mfd_to_mdata(mfd);
 	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
@@ -5158,7 +5171,7 @@ static int mdss_fb_set_metadata(struct msm_fb_data_type *mfd,
 	case metadata_op_vic:
 		if (mfd->panel_info)
 			mfd->panel_info->vic =
-				metadata->data.video_info_code;
+			    metadata->data.video_info_code;
 		else
 			ret = -EINVAL;
 		break;
@@ -5176,7 +5189,7 @@ static int mdss_fb_set_metadata(struct msm_fb_data_type *mfd,
 }
 
 static int mdss_fb_get_hw_caps(struct msm_fb_data_type *mfd,
-		struct mdss_hw_caps *caps)
+                               struct mdss_hw_caps *caps)
 {
 	struct mdss_data_type *mdata = mfd_to_mdata(mfd);
 	caps->mdp_rev = mdata->mdp_rev;
@@ -5197,7 +5210,7 @@ static int mdss_fb_get_hw_caps(struct msm_fb_data_type *mfd,
 }
 
 static int mdss_fb_get_metadata(struct msm_fb_data_type *mfd,
-				struct msmfb_metadata *metadata)
+                                struct msmfb_metadata *metadata)
 {
 	struct mdss_data_type *mdata = mfd_to_mdata(mfd);
 	struct mdss_mdp_ctl *ctl = NULL;
@@ -5206,8 +5219,8 @@ static int mdss_fb_get_metadata(struct msm_fb_data_type *mfd,
 	switch (metadata->op) {
 	case metadata_op_frame_rate:
 		metadata->data.panel_frame_rate =
-			mdss_panel_get_framerate(mfd->panel_info,
-				FPS_RESOLUTION_DEFAULT);
+		    mdss_panel_get_framerate(mfd->panel_info,
+		                             FPS_RESOLUTION_DEFAULT);
 		pr_debug("current fps:%d\n", metadata->data.panel_frame_rate);
 		break;
 	case metadata_op_get_caps:
@@ -5217,12 +5230,12 @@ static int mdss_fb_get_metadata(struct msm_fb_data_type *mfd,
 		if (mfd->fb_ion_handle && mfd->fb_ion_client) {
 			get_dma_buf(mfd->fbmem_buf);
 			metadata->data.fbmem_ionfd =
-				ion_share_dma_buf_fd(mfd->fb_ion_client,
-					mfd->fb_ion_handle);
+			    ion_share_dma_buf_fd(mfd->fb_ion_client,
+			                         mfd->fb_ion_handle);
 			if (metadata->data.fbmem_ionfd < 0) {
 				dma_buf_put(mfd->fbmem_buf);
 				pr_err("fd allocation failed. fd = %d\n",
-						metadata->data.fbmem_ionfd);
+				       metadata->data.fbmem_ionfd);
 			}
 		}
 		break;
@@ -5231,7 +5244,7 @@ static int mdss_fb_get_metadata(struct msm_fb_data_type *mfd,
 		if (!ctl || mdss_fb_is_power_off(mfd))
 			return -EPERM;
 		ret = mdss_misr_get(mdata, &metadata->data.misr_request, ctl,
-			ctl->is_video_mode);
+		                    ctl->is_video_mode);
 		break;
 	default:
 		pr_warn("Unsupported request to MDP META IOCTL.\n");
@@ -5283,7 +5296,7 @@ static int mdss_mdp_overlay_precommit(struct msm_fb_data_type *mfd)
 	ret = __mdss_mdp_clean_dirty_pipes(mfd);
 	if (ret) {
 		pr_warn("fb%d: dirty pipes remaining %x\n",
-				mfd->index, ret);
+		        mfd->index, ret);
 		ret = -EPIPE;
 	}
 
@@ -5293,12 +5306,12 @@ static int mdss_mdp_overlay_precommit(struct msm_fb_data_type *mfd)
 	 * border color will be seen regardless of resolution or mode.
 	 */
 	if ((mfd->switch_state != MDSS_MDP_NO_UPDATE_REQUESTED) &&
-			(mfd->switch_state != MDSS_MDP_WAIT_FOR_COMMIT)) {
+	    (mfd->switch_state != MDSS_MDP_WAIT_FOR_COMMIT)) {
 		if (list_empty(&mdp5_data->pipes_used)) {
 			mfd->switch_state = MDSS_MDP_WAIT_FOR_COMMIT;
 		} else {
 			pr_warn("Invalid commit on fb%d with state=%d\n",
-					mfd->index, mfd->switch_state);
+			        mfd->index, mfd->switch_state);
 			ret = -EINVAL;
 		}
 	}
@@ -5315,7 +5328,7 @@ static int mdss_mdp_overlay_precommit(struct msm_fb_data_type *mfd)
  *    index to original list because user-space is not aware of the sorted list.
  */
 static int __mdss_overlay_map(struct mdp_overlay *ovs,
-	struct mdp_overlay *op_ovs, int num_ovs, int num_ovs_processed)
+                              struct mdp_overlay *op_ovs, int num_ovs, int num_ovs_processed)
 {
 	int mapped = num_ovs_processed;
 	int j, k;
@@ -5353,7 +5366,7 @@ static inline int __zorder_dstx_cmp_func(const void *a, const void *b)
 	if (ov1->z_order < ov2->z_order)
 		rc = -1;
 	else if ((ov1->z_order == ov2->z_order) &&
-		 (ov1->dst_rect.x < ov2->dst_rect.x))
+	         (ov1->dst_rect.x < ov2->dst_rect.x))
 		rc = -1;
 
 	return rc;
@@ -5364,7 +5377,7 @@ static inline int __zorder_dstx_cmp_func(const void *a, const void *b)
  * same z_order sort them on dst_x.
  */
 static int __mdss_overlay_src_split_sort(struct msm_fb_data_type *mfd,
-	struct mdp_overlay *ovs, int num_ovs)
+        struct mdp_overlay *ovs, int num_ovs)
 {
 	int i;
 	int left_lm_zo_cnt[MDSS_MDP_MAX_STAGE] = {0};
@@ -5372,7 +5385,7 @@ static int __mdss_overlay_src_split_sort(struct msm_fb_data_type *mfd,
 	u32 left_lm_w = left_lm_w_from_mfd(mfd);
 
 	sort(ovs, num_ovs, sizeof(struct mdp_overlay), __zorder_dstx_cmp_func,
-		__overlay_swap_func);
+	     __overlay_swap_func);
 
 	for (i = 0; i < num_ovs; i++) {
 		if (ovs[i].z_order >= MDSS_MDP_MAX_STAGE) {
@@ -5382,14 +5395,14 @@ static int __mdss_overlay_src_split_sort(struct msm_fb_data_type *mfd,
 		if (ovs[i].dst_rect.x < left_lm_w) {
 			if (left_lm_zo_cnt[ovs[i].z_order] == 2) {
 				pr_err("more than 2 ov @ stage%u on left lm\n",
-					ovs[i].z_order);
+				       ovs[i].z_order);
 				return -EINVAL;
 			}
 			left_lm_zo_cnt[ovs[i].z_order]++;
 		} else {
 			if (right_lm_zo_cnt[ovs[i].z_order] == 2) {
 				pr_err("more than 2 ov @ stage%u on right lm\n",
-					ovs[i].z_order);
+				       ovs[i].z_order);
 				return -EINVAL;
 			}
 			right_lm_zo_cnt[ovs[i].z_order]++;
@@ -5400,7 +5413,7 @@ static int __mdss_overlay_src_split_sort(struct msm_fb_data_type *mfd,
 }
 
 static int __handle_overlay_prepare(struct msm_fb_data_type *mfd,
-	struct mdp_overlay_list *ovlist, struct mdp_overlay *ip_ovs)
+                                    struct mdp_overlay_list *ovlist, struct mdp_overlay *ip_ovs)
 {
 	int ret, i;
 	int new_reqs = 0, left_cnt = 0, right_cnt = 0;
@@ -5449,7 +5462,7 @@ static int __handle_overlay_prepare(struct msm_fb_data_type *mfd,
 
 	for (i = 0; i < num_ovs; i++) {
 		if (IS_RIGHT_MIXER_OV(ip_ovs[i].flags, ip_ovs[i].dst_rect.x,
-			left_lm_w))
+		                      left_lm_w))
 			right_lm_ovs++;
 		else
 			left_lm_ovs++;
@@ -5473,7 +5486,7 @@ static int __handle_overlay_prepare(struct msm_fb_data_type *mfd,
 			 */
 			if (prev_req && (prev_req->z_order == req->z_order) &&
 			    is_ov_right_blend(&prev_req->dst_rect,
-				    &req->dst_rect, left_lm_w)) {
+			                      &req->dst_rect, left_lm_w)) {
 				left_blend_pipe = pipe;
 			}
 		} else {
@@ -5481,22 +5494,22 @@ static int __handle_overlay_prepare(struct msm_fb_data_type *mfd,
 		}
 
 		if (IS_RIGHT_MIXER_OV(ip_ovs[i].flags, ip_ovs[i].dst_rect.x,
-			left_lm_w))
+		                      left_lm_w))
 			is_single_layer = (right_lm_ovs == 1);
 		else
 			is_single_layer = (left_lm_ovs == 1);
 
 		req->z_order += MDSS_MDP_STAGE_0;
 		ret = mdss_mdp_overlay_pipe_setup(mfd, req, &pipe,
-			left_blend_pipe, is_single_layer);
+		                                  left_blend_pipe, is_single_layer);
 		req->z_order -= MDSS_MDP_STAGE_0;
 
 		if (IS_ERR_VALUE(ret))
 			goto validate_exit;
 
 		pr_debug("pnum:%d id:0x%x flags:0x%x dst_x:%d l_blend_pnum%d\n",
-			pipe->num, req->id, req->flags, req->dst_rect.x,
-			left_blend_pipe ? left_blend_pipe->num : -1);
+		         pipe->num, req->id, req->flags, req->dst_rect.x,
+		         left_blend_pipe ? left_blend_pipe->num : -1);
 
 		/* keep track of the new overlays to unset in case of errors */
 		if (pipe->play_cnt == 0)
@@ -5522,19 +5535,19 @@ static int __handle_overlay_prepare(struct msm_fb_data_type *mfd,
 	}
 
 	ret = mdss_mdp_perf_bw_check(mdp5_data->ctl, left_plist, left_cnt,
-			right_plist, right_cnt);
+	                             right_plist, right_cnt);
 
 validate_exit:
 	if (sort_needed)
 		ovlist->processed_overlays =
-			__mdss_overlay_map(sorted_ovs, ip_ovs, num_ovs, i);
+		    __mdss_overlay_map(sorted_ovs, ip_ovs, num_ovs, i);
 	else
 		ovlist->processed_overlays = i;
 
 	if (IS_ERR_VALUE(ret)) {
 		pr_debug("err=%d total_ovs:%d processed:%d left:%d right:%d\n",
-			ret, num_ovs, ovlist->processed_overlays, left_lm_ovs,
-			right_lm_ovs);
+		         ret, num_ovs, ovlist->processed_overlays, left_lm_ovs,
+		         right_lm_ovs);
 		mdss_mdp_overlay_release(mfd, new_reqs);
 	}
 	mutex_unlock(&mdp5_data->ov_lock);
@@ -5545,7 +5558,7 @@ validate_exit:
 }
 
 static int __handle_ioctl_overlay_prepare(struct msm_fb_data_type *mfd,
-		void __user *argp)
+        void __user *argp)
 {
 	struct mdp_overlay_list ovlist;
 	struct mdp_overlay *req_list[OVERLAY_MAX];
@@ -5570,15 +5583,15 @@ static int __handle_ioctl_overlay_prepare(struct msm_fb_data_type *mfd,
 	}
 
 	if (copy_from_user(req_list, ovlist.overlay_list,
-				sizeof(struct mdp_overlay *) *
-				ovlist.num_overlays)) {
+	                   sizeof(struct mdp_overlay *) *
+	                   ovlist.num_overlays)) {
 		ret = -EFAULT;
 		goto validate_exit;
 	}
 
 	for (i = 0; i < ovlist.num_overlays; i++) {
 		if (copy_from_user(overlays + i, req_list[i],
-				sizeof(struct mdp_overlay))) {
+		                   sizeof(struct mdp_overlay))) {
 			ret = -EFAULT;
 			goto validate_exit;
 		}
@@ -5588,7 +5601,7 @@ static int __handle_ioctl_overlay_prepare(struct msm_fb_data_type *mfd,
 	if (!IS_ERR_VALUE(ret)) {
 		for (i = 0; i < ovlist.num_overlays; i++) {
 			if (copy_to_user(req_list[i], overlays + i,
-					sizeof(struct mdp_overlay))) {
+			                 sizeof(struct mdp_overlay))) {
 				ret = -EFAULT;
 				goto validate_exit;
 			}
@@ -5605,7 +5618,7 @@ validate_exit:
 }
 
 static int mdss_mdp_overlay_ioctl_handler(struct msm_fb_data_type *mfd,
-					  u32 cmd, void __user *argp)
+        u32 cmd, void __user *argp)
 {
 	struct mdp_overlay *req = NULL;
 	int val, ret = -ENOSYS;
@@ -5620,7 +5633,7 @@ static int mdss_mdp_overlay_ioctl_handler(struct msm_fb_data_type *mfd,
 		break;
 	case MSMFB_MDP_PP_GET_FEATURE_VERSION:
 		ret = copy_from_user(&pp_feature_version, argp,
-				     sizeof(pp_feature_version));
+		                     sizeof(pp_feature_version));
 		if (ret) {
 			pr_err("copy_from_user failed for pp_feature_version\n");
 			ret = -EFAULT;
@@ -5628,7 +5641,7 @@ static int mdss_mdp_overlay_ioctl_handler(struct msm_fb_data_type *mfd,
 			ret = mdss_mdp_pp_get_version(&pp_feature_version);
 			if (!ret) {
 				ret = copy_to_user(argp, &pp_feature_version,
-						sizeof(pp_feature_version));
+				                   sizeof(pp_feature_version));
 				if (ret) {
 					pr_err("copy_to_user failed for pp_feature_version\n");
 					ret = -EFAULT;
@@ -5746,7 +5759,7 @@ static int mdss_mdp_overlay_ioctl_handler(struct msm_fb_data_type *mfd,
  * Return: pointer to the newly allocated control structure.
  */
 static struct mdss_mdp_ctl *__mdss_mdp_overlay_ctl_init(
-	struct msm_fb_data_type *mfd)
+    struct msm_fb_data_type *mfd)
 {
 	int rc = 0;
 	struct mdss_mdp_ctl *ctl;
@@ -5772,28 +5785,28 @@ static struct mdss_mdp_ctl *__mdss_mdp_overlay_ctl_init(
 	ctl = mdss_mdp_ctl_init(pdata, mfd);
 	if (IS_ERR_OR_NULL(ctl)) {
 		pr_err("Unable to initialize ctl for fb%d\n",
-			mfd->index);
+		       mfd->index);
 		rc = PTR_ERR(ctl);
 		goto error;
 	}
 	ctl->is_master = true;
 	ctl->vsync_handler.vsync_handler =
-					mdss_mdp_overlay_handle_vsync;
+	    mdss_mdp_overlay_handle_vsync;
 	ctl->vsync_handler.cmd_post_flush = false;
 
 	ctl->recover_underrun_handler.vsync_handler =
-			mdss_mdp_recover_underrun_handler;
+	    mdss_mdp_recover_underrun_handler;
 	ctl->recover_underrun_handler.cmd_post_flush = false;
 
 	ctl->frc_vsync_handler.vsync_handler =
-			mdss_mdp_overlay_frc_handler;
+	    mdss_mdp_overlay_frc_handler;
 	ctl->frc_vsync_handler.cmd_post_flush = false;
 
 	ctl->lineptr_handler.lineptr_handler =
-					mdss_mdp_overlay_handle_lineptr;
+	    mdss_mdp_overlay_handle_lineptr;
 
 	INIT_WORK(&ctl->remove_underrun_handler,
-				remove_underrun_vsync_handler);
+	          remove_underrun_vsync_handler);
 
 	if (mfd->split_mode == MDP_DUAL_LM_DUAL_DISPLAY) {
 		/* enable split display */
@@ -5826,14 +5839,14 @@ static void mdss_mdp_set_lm_flag(struct msm_fb_data_type *mfd)
 
 	/* setting the appropriate split_mode for HDMI usecases */
 	if ((mfd->split_mode == MDP_SPLIT_MODE_NONE ||
-			mfd->split_mode == MDP_DUAL_LM_SINGLE_DISPLAY) &&
-			(width > mdata->max_mixer_width)) {
+	     mfd->split_mode == MDP_DUAL_LM_SINGLE_DISPLAY) &&
+	    (width > mdata->max_mixer_width)) {
 		width /= 2;
 		mfd->split_mode = MDP_DUAL_LM_SINGLE_DISPLAY;
 		mfd->split_fb_left = width;
 		mfd->split_fb_right = width;
 	} else if (is_dual_lm_single_display(mfd) &&
-		   (width <= mdata->max_mixer_width)) {
+	           (width <= mdata->max_mixer_width)) {
 		mfd->split_mode = MDP_SPLIT_MODE_NONE;
 		mfd->split_fb_left = 0;
 		mfd->split_fb_right = 0;
@@ -5867,8 +5880,8 @@ static void mdss_mdp_handle_invalid_switch_state(struct msm_fb_data_type *mfd)
 
 		mutex_lock(&mdp5_data->list_lock);
 		list_for_each_entry_safe(buf, tmpbuf,
-				&mdp5_data->bufs_used, buf_list)
-			list_move(&buf->buf_list, &mdp5_data->bufs_freelist);
+		                         &mdp5_data->bufs_used, buf_list)
+		list_move(&buf->buf_list, &mdp5_data->bufs_freelist);
 		mutex_unlock(&mdp5_data->list_lock);
 	}
 }
@@ -5919,7 +5932,7 @@ static int mdss_mdp_overlay_on(struct msm_fb_data_type *mfd)
 	}
 
 	rc = mdss_mdp_ctl_intf_event(mdp5_data->ctl, MDSS_EVENT_RESET,
-		NULL, false);
+	                             NULL, false);
 	if (rc)
 		goto panel_on;
 
@@ -5932,7 +5945,7 @@ static int mdss_mdp_overlay_on(struct msm_fb_data_type *mfd)
 	TODO: In the long run, the overlay start and kickoff
 	should not be skipped, instead, the handoff can be done */
 	if (!mfd->panel_info->cont_splash_enabled &&
-		!mdata->handoff_pending) {
+	    !mdata->handoff_pending) {
 		rc = mdss_mdp_overlay_start(mfd);
 		if (rc)
 			goto end;
@@ -5975,7 +5988,7 @@ static int mdss_mdp_handoff_cleanup_ctl(struct msm_fb_data_type *mfd)
 
 	mutex_lock(&mdp5_data->list_lock);
 	need_cleanup = !list_empty(&mdp5_data->pipes_cleanup) ||
-		!list_empty(&mdp5_data->pipes_used);
+	               !list_empty(&mdp5_data->pipes_used);
 	mutex_unlock(&mdp5_data->list_lock);
 
 	if (need_cleanup)
@@ -6057,7 +6070,7 @@ static int mdss_mdp_overlay_off(struct msm_fb_data_type *mfd)
 		destroy_ctl = true;
 		need_cleanup = false;
 		pr_warn("fb%d blank while mode switch (%d) in progress\n",
-				mfd->index, mfd->switch_state);
+		        mfd->index, mfd->switch_state);
 		mdss_mdp_handle_invalid_switch_state(mfd);
 	}
 	mutex_unlock(&mfd->switch_lock);
@@ -6090,7 +6103,7 @@ static int mdss_mdp_overlay_off(struct msm_fb_data_type *mfd)
 	mutex_unlock(&mfd->mdp_sync_pt_data.sync_mutex);
 	if (retire_cnt) {
 		u32 fps = mdss_panel_get_framerate(mfd->panel_info,
-					FPS_RESOLUTION_HZ);
+		                                   FPS_RESOLUTION_HZ);
 		u32 vsync_time = 1000 / (fps ? : DEFAULT_FRAME_RATE);
 
 		msleep(vsync_time);
@@ -6115,9 +6128,9 @@ ctl_stop:
 	mutex_lock(&mdp5_data->ov_lock);
 	/* set the correct pipe_mapped before ctl_stop */
 	mdss_mdp_mixer_update_pipe_map(mdp5_data->ctl,
-			MDSS_MDP_MIXER_MUX_LEFT);
+	                               MDSS_MDP_MIXER_MUX_LEFT);
 	mdss_mdp_mixer_update_pipe_map(mdp5_data->ctl,
-			MDSS_MDP_MIXER_MUX_RIGHT);
+	                               MDSS_MDP_MIXER_MUX_RIGHT);
 	rc = mdss_mdp_ctl_stop(mdp5_data->ctl, mfd->panel_power_state);
 	if (rc == 0) {
 		if (mdss_fb_is_power_off(mfd)) {
@@ -6127,7 +6140,7 @@ ctl_stop:
 				mdss_mdp_overlay_buf_deinit(mfd);
 			mutex_unlock(&mdp5_data->list_lock);
 			mdss_mdp_ctl_notifier_unregister(mdp5_data->ctl,
-					&mfd->mdp_sync_pt_data.notifier);
+			                                 &mfd->mdp_sync_pt_data.notifier);
 
 			if (destroy_ctl) {
 				mdp5_data->borderfill_enable = false;
@@ -6138,11 +6151,11 @@ ctl_stop:
 			atomic_dec(&mdp5_data->mdata->active_intf_cnt);
 
 			if (!mdp5_data->mdata->idle_pc_enabled ||
-				(mfd->panel_info->type != MIPI_CMD_PANEL)) {
+			    (mfd->panel_info->type != MIPI_CMD_PANEL)) {
 				rc = pm_runtime_put(&mfd->pdev->dev);
 				if (rc)
 					pr_err("unable to suspend w/pm_runtime_put (%d)\n",
-						rc);
+					       rc);
 			}
 		}
 	}
@@ -6163,7 +6176,7 @@ end:
 }
 
 static int __mdss_mdp_ctl_handoff(struct msm_fb_data_type *mfd,
-	struct mdss_mdp_ctl *ctl, struct mdss_data_type *mdata)
+                                  struct mdss_mdp_ctl *ctl, struct mdss_data_type *mdata)
 {
 	int rc = 0;
 	int i, j;
@@ -6192,7 +6205,7 @@ static int __mdss_mdp_ctl_handoff(struct msm_fb_data_type *mfd,
 				pr_debug("Pipe %d staged\n", j);
 				/* bootloader display always uses RECT0 */
 				pipe = mdss_mdp_pipe_search(mdata, BIT(j),
-					MDSS_MDP_PIPE_RECT0);
+				                            MDSS_MDP_PIPE_RECT0);
 				if (!pipe) {
 					pr_warn("Invalid pipe %d staged\n", j);
 					continue;
@@ -6201,7 +6214,7 @@ static int __mdss_mdp_ctl_handoff(struct msm_fb_data_type *mfd,
 				rc = mdss_mdp_pipe_handoff(pipe);
 				if (rc) {
 					pr_err("Failed to handoff pipe%d\n",
-						pipe->num);
+					       pipe->num);
 					goto exit;
 				}
 
@@ -6319,7 +6332,7 @@ static void __vsync_retire_handle_vsync(struct mdss_mdp_ctl *ctl, ktime_t t)
 static void __vsync_retire_work_handler(struct kthread_work *work)
 {
 	struct mdss_overlay_private *mdp5_data =
-		container_of(work, typeof(*mdp5_data), vsync_work);
+	    container_of(work, typeof(*mdp5_data), vsync_work);
 
 	if (!mdp5_data->ctl || !mdp5_data->ctl->mfd)
 		return;
@@ -6342,7 +6355,7 @@ static void __vsync_retire_signal(struct msm_fb_data_type *mfd, int val)
 		if (mdp5_data->retire_cnt == 0) {
 			mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_ON);
 			mdp5_data->ctl->ops.remove_vsync_handler(mdp5_data->ctl,
-					&mdp5_data->vsync_retire_handler);
+			        &mdp5_data->vsync_retire_handler);
 			mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_OFF);
 		}
 	}
@@ -6376,7 +6389,7 @@ __vsync_retire_get_fence(struct msm_sync_pt_data *sync_pt_data)
 	mdp5_data->retire_cnt++;
 
 	return mdss_fb_sync_get_fence(mdp5_data->vsync_timeline,
-			"mdp-retire", value);
+	                              "mdp-retire", value);
 }
 
 static int __vsync_set_vsync_handler(struct msm_fb_data_type *mfd)
@@ -6402,7 +6415,7 @@ static int __vsync_set_vsync_handler(struct msm_fb_data_type *mfd)
 	}
 
 	rc = ctl->ops.add_vsync_handler(ctl,
-			&mdp5_data->vsync_retire_handler);
+	                                &mdp5_data->vsync_retire_handler);
 	return rc;
 }
 
@@ -6423,7 +6436,7 @@ static int __vsync_retire_setup(struct msm_fb_data_type *mfd)
 	init_kthread_work(&mdp5_data->vsync_work, __vsync_retire_work_handler);
 
 	mdp5_data->thread = kthread_run(kthread_worker_fn,
-					&mdp5_data->worker, "vsync_retire_work");
+	                                &mdp5_data->worker, "vsync_retire_work");
 
 	if (IS_ERR(mdp5_data->thread)) {
 		pr_err("unable to start vsync thread\n");
@@ -6436,14 +6449,14 @@ static int __vsync_retire_setup(struct msm_fb_data_type *mfd)
 	mfd->mdp_sync_pt_data.get_retire_fence = __vsync_retire_get_fence;
 
 	mdp5_data->vsync_retire_handler.vsync_handler =
-		__vsync_retire_handle_vsync;
+	    __vsync_retire_handle_vsync;
 	mdp5_data->vsync_retire_handler.cmd_post_flush = false;
 
 	return 0;
 }
 
 static int mdss_mdp_update_panel_info(struct msm_fb_data_type *mfd,
-		int mode, int dest_ctrl)
+                                      int mode, int dest_ctrl)
 {
 	int ret = 0;
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
@@ -6458,10 +6471,10 @@ static int mdss_mdp_update_panel_info(struct msm_fb_data_type *mfd,
 	}
 
 	ret = mdss_mdp_ctl_intf_event(ctl, MDSS_EVENT_DSI_UPDATE_PANEL_DATA,
-		(void *)(unsigned long)mode, CTL_INTF_EVENT_FLAG_DEFAULT);
+	                              (void *)(unsigned long)mode, CTL_INTF_EVENT_FLAG_DEFAULT);
 	if (ret)
 		pr_err("Dynamic switch to %s mode failed!\n",
-					mode ? "command" : "video");
+		       mode ? "command" : "video");
 
 	if (dest_ctrl) {
 		/*
@@ -6474,7 +6487,7 @@ static int mdss_mdp_update_panel_info(struct msm_fb_data_type *mfd,
 		pdata = dev_get_platdata(&mfd->pdev->dev);
 
 		if (mdp5_data->mdata->has_pingpong_split &&
-			pdata->panel_info.use_pingpong_split)
+		    pdata->panel_info.use_pingpong_split)
 			mfd->split_mode = MDP_PINGPONG_SPLIT;
 		/*
 		 * Dynamic change so we need to reconfig instead of
@@ -6494,8 +6507,8 @@ static int mdss_mdp_update_panel_info(struct msm_fb_data_type *mfd,
 			if (mfd->split_mode == MDP_DUAL_LM_DUAL_DISPLAY) {
 				mdss_mdp_ctl_reconfig(sctl, pdata->next);
 				sctl->border_x_off +=
-					pdata->panel_info.lcdc.border_left +
-					pdata->panel_info.lcdc.border_right;
+				    pdata->panel_info.lcdc.border_left +
+				    pdata->panel_info.lcdc.border_right;
 			} else {
 				/*
 				 * todo: need to revisit this and properly
@@ -6507,7 +6520,7 @@ static int mdss_mdp_update_panel_info(struct msm_fb_data_type *mfd,
 		} else if (mfd->split_mode == MDP_DUAL_LM_DUAL_DISPLAY) {
 			/* enable split display for the first time */
 			ret = mdss_mdp_ctl_split_display_setup(ctl,
-					pdata->next);
+			                                       pdata->next);
 			if (ret) {
 				mdss_mdp_ctl_destroy(ctl);
 				mdp5_data->ctl = NULL;
@@ -6545,7 +6558,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	}
 
 	mdp5_data->frc_fsm
-		= kzalloc(sizeof(struct mdss_mdp_frc_fsm), GFP_KERNEL);
+	    = kzalloc(sizeof(struct mdss_mdp_frc_fsm), GFP_KERNEL);
 	if (!mdp5_data->frc_fsm) {
 		rc = -ENOMEM;
 		pr_err("fail to allocate mdp5 frc fsm structure\n");
@@ -6568,7 +6581,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	else
 		mdp5_interface->cursor_update = mdss_mdp_hw_cursor_update;
 	mdp5_interface->async_position_update =
-		mdss_mdp_async_position_update;
+	    mdss_mdp_async_position_update;
 	mdp5_interface->dma_fnc = mdss_mdp_overlay_pan_display;
 	mdp5_interface->ioctl_handler = mdss_mdp_overlay_ioctl_handler;
 	mdp5_interface->kickoff_fnc = mdss_mdp_overlay_kickoff;
@@ -6581,12 +6594,12 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 
 	if (mfd->panel_info->type == WRITEBACK_PANEL) {
 		mdp5_interface->atomic_validate =
-			mdss_mdp_layer_atomic_validate_wfd;
+		    mdss_mdp_layer_atomic_validate_wfd;
 		mdp5_interface->pre_commit = mdss_mdp_layer_pre_commit_wfd;
 		mdp5_interface->is_config_same = mdss_mdp_wfd_is_config_same;
 	} else {
 		mdp5_interface->atomic_validate =
-			mdss_mdp_layer_atomic_validate;
+		    mdss_mdp_layer_atomic_validate;
 		mdp5_interface->pre_commit = mdss_mdp_layer_pre_commit;
 	}
 
@@ -6634,7 +6647,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	}
 
 	mdp5_data->vsync_event_sd = sysfs_get_dirent(dev->kobj.sd,
-						     "vsync_event");
+	                            "vsync_event");
 	if (!mdp5_data->vsync_event_sd) {
 		pr_err("vsync_event sysfs lookup failed\n");
 		rc = -ENODEV;
@@ -6642,7 +6655,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	}
 
 	mdp5_data->lineptr_event_sd = sysfs_get_dirent(dev->kobj.sd,
-						     "lineptr_event");
+	                              "lineptr_event");
 	if (!mdp5_data->lineptr_event_sd) {
 		pr_err("lineptr_event sysfs lookup failed\n");
 		rc = -ENODEV;
@@ -6650,7 +6663,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	}
 
 	mdp5_data->hist_event_sd = sysfs_get_dirent(dev->kobj.sd,
-						    "hist_event");
+	                           "hist_event");
 	if (!mdp5_data->hist_event_sd) {
 		pr_err("hist_event sysfs lookup failed\n");
 		rc = -ENODEV;
@@ -6658,7 +6671,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	}
 
 	mdp5_data->bl_event_sd = sysfs_get_dirent(dev->kobj.sd,
-							 "bl_event");
+	                         "bl_event");
 	if (!mdp5_data->bl_event_sd) {
 		pr_err("bl_event sysfs lookup failed\n");
 		rc = -ENODEV;
@@ -6666,7 +6679,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	}
 
 	mdp5_data->ad_event_sd = sysfs_get_dirent(dev->kobj.sd,
-							 "ad_event");
+	                         "ad_event");
 	if (!mdp5_data->ad_event_sd) {
 		pr_err("ad_event sysfs lookup failed\n");
 		rc = -ENODEV;
@@ -6674,7 +6687,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	}
 
 	mdp5_data->ad_bl_event_sd = sysfs_get_dirent(dev->kobj.sd,
-							 "ad_bl_event");
+	                            "ad_bl_event");
 	if (!mdp5_data->ad_bl_event_sd) {
 		pr_err("ad_bl_event sysfs lookup failed\n");
 		rc = -ENODEV;
@@ -6682,19 +6695,19 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	}
 
 	rc = sysfs_create_link_nowarn(&dev->kobj,
-			&mdp5_data->mdata->pdev->dev.kobj, "mdp");
+	                              &mdp5_data->mdata->pdev->dev.kobj, "mdp");
 	if (rc)
 		pr_warn("problem creating link to mdp sysfs\n");
 
 	rc = sysfs_create_link_nowarn(&dev->kobj,
-			&mfd->pdev->dev.kobj, "mdss_fb");
+	                              &mfd->pdev->dev.kobj, "mdss_fb");
 	if (rc)
 		pr_warn("problem creating link to mdss_fb sysfs\n");
 
 	if (mfd->panel_info->type == MIPI_VIDEO_PANEL ||
 	    mfd->panel_info->type == DTV_PANEL) {
 		rc = sysfs_create_group(&dev->kobj,
-			&dynamic_fps_fs_attrs_group);
+		                        &dynamic_fps_fs_attrs_group);
 		if (rc) {
 			pr_err("Error dfps sysfs creation ret=%d\n", rc);
 			goto init_fail;
@@ -6702,7 +6715,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	}
 
 	if (mfd->panel_info->mipi.dms_mode ||
-			mfd->panel_info->type == MIPI_CMD_PANEL) {
+	    mfd->panel_info->type == MIPI_CMD_PANEL) {
 		rc = __vsync_retire_setup(mfd);
 		if (IS_ERR_VALUE(rc)) {
 			pr_err("unable to create vsync timeline\n");
@@ -6722,7 +6735,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	/* Adding event timer only for primary panel */
 	if ((mfd->index == 0) && (mfd->panel_info->type != WRITEBACK_PANEL)) {
 		mdp5_data->cpu_pm_hdl = add_event_timer(mdss_irq->irq,
-				mdss_mdp_ctl_event_timer, (void *)mdp5_data);
+		                                        mdss_mdp_ctl_event_timer, (void *)mdp5_data);
 		if (!mdp5_data->cpu_pm_hdl)
 			pr_warn("%s: unable to add event timer\n", __func__);
 	}
@@ -6737,7 +6750,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 			 * animation
 			 */
 			pr_warn("Overlay handoff failed for fb%d. rc=%d\n",
-				mfd->index, rc);
+			        mfd->index, rc);
 			rc = 0;
 		}
 	}
@@ -6760,17 +6773,17 @@ static int mdss_mdp_overlay_fb_parse_dt(struct msm_fb_data_type *mfd)
 	struct mdss_overlay_private *mdp5_mdata = mfd_to_mdp5_data(mfd);
 
 	mdp5_mdata->mixer_swap = of_property_read_bool(pdev->dev.of_node,
-					   "qcom,mdss-mixer-swap");
+	                         "qcom,mdss-mixer-swap");
 	if (mdp5_mdata->mixer_swap) {
 		pr_info("mixer swap is enabled for fb device=%s\n",
-			pdev->name);
+		        pdev->name);
 	}
 
 	return rc;
 }
 
 static int mdss_mdp_scaler_lut_init(struct mdss_data_type *mdata,
-		struct mdp_scale_luts_info *lut_tbl)
+                                    struct mdp_scale_luts_info *lut_tbl)
 {
 	struct mdss_mdp_qseed3_lut_tbl *qseed3_lut_tbl;
 	int ret;
@@ -6780,17 +6793,17 @@ static int mdss_mdp_scaler_lut_init(struct mdss_data_type *mdata,
 
 	qseed3_lut_tbl = &mdata->scaler_off->lut_tbl;
 	if ((lut_tbl->dir_lut_size !=
-		DIR_LUT_IDX * DIR_LUT_COEFFS * sizeof(uint32_t)) ||
-		(lut_tbl->cir_lut_size !=
-		 CIR_LUT_IDX * CIR_LUT_COEFFS * sizeof(uint32_t)) ||
-		(lut_tbl->sep_lut_size !=
-		 SEP_LUT_IDX * SEP_LUT_COEFFS * sizeof(uint32_t)))
-			return -EINVAL;
+	     DIR_LUT_IDX * DIR_LUT_COEFFS * sizeof(uint32_t)) ||
+	    (lut_tbl->cir_lut_size !=
+	     CIR_LUT_IDX * CIR_LUT_COEFFS * sizeof(uint32_t)) ||
+	    (lut_tbl->sep_lut_size !=
+	     SEP_LUT_IDX * SEP_LUT_COEFFS * sizeof(uint32_t)))
+		return -EINVAL;
 
 	if (!qseed3_lut_tbl->dir_lut) {
 		qseed3_lut_tbl->dir_lut = devm_kzalloc(&mdata->pdev->dev,
-				lut_tbl->dir_lut_size,
-				GFP_KERNEL);
+		                                       lut_tbl->dir_lut_size,
+		                                       GFP_KERNEL);
 		if (!qseed3_lut_tbl->dir_lut) {
 			ret = -ENOMEM;
 			goto fail;
@@ -6799,8 +6812,8 @@ static int mdss_mdp_scaler_lut_init(struct mdss_data_type *mdata,
 
 	if (!qseed3_lut_tbl->cir_lut) {
 		qseed3_lut_tbl->cir_lut = devm_kzalloc(&mdata->pdev->dev,
-				lut_tbl->cir_lut_size,
-				GFP_KERNEL);
+		                                       lut_tbl->cir_lut_size,
+		                                       GFP_KERNEL);
 		if (!qseed3_lut_tbl->cir_lut) {
 			ret = -ENOMEM;
 			goto fail;
@@ -6809,8 +6822,8 @@ static int mdss_mdp_scaler_lut_init(struct mdss_data_type *mdata,
 
 	if (!qseed3_lut_tbl->sep_lut) {
 		qseed3_lut_tbl->sep_lut = devm_kzalloc(&mdata->pdev->dev,
-				lut_tbl->sep_lut_size,
-				GFP_KERNEL);
+		                                       lut_tbl->sep_lut_size,
+		                                       GFP_KERNEL);
 		if (!qseed3_lut_tbl->sep_lut) {
 			ret = -ENOMEM;
 			goto fail;
@@ -6822,24 +6835,24 @@ static int mdss_mdp_scaler_lut_init(struct mdss_data_type *mdata,
 
 
 	if (copy_from_user(qseed3_lut_tbl->dir_lut,
-				(void *)(unsigned long)lut_tbl->dir_lut,
-				lut_tbl->dir_lut_size)) {
-			ret = -EINVAL;
-			goto err;
+	                   (void *)(unsigned long)lut_tbl->dir_lut,
+	                   lut_tbl->dir_lut_size)) {
+		ret = -EINVAL;
+		goto err;
 	}
 
 	if (copy_from_user(qseed3_lut_tbl->cir_lut,
-				(void *)(unsigned long)lut_tbl->cir_lut,
-				lut_tbl->cir_lut_size)) {
-			ret = -EINVAL;
-			goto err;
+	                   (void *)(unsigned long)lut_tbl->cir_lut,
+	                   lut_tbl->cir_lut_size)) {
+		ret = -EINVAL;
+		goto err;
 	}
 
 	if (copy_from_user(qseed3_lut_tbl->sep_lut,
-				(void *)(unsigned long)lut_tbl->sep_lut,
-				lut_tbl->sep_lut_size)) {
-			ret = -EINVAL;
-			goto err;
+	                   (void *)(unsigned long)lut_tbl->sep_lut,
+	                   lut_tbl->sep_lut_size)) {
+		ret = -EINVAL;
+		goto err;
 	}
 
 	qseed3_lut_tbl->valid = true;
@@ -6855,7 +6868,7 @@ err:
 }
 
 static int mdss_mdp_set_cfg(struct msm_fb_data_type *mfd,
-		struct mdp_set_cfg *cfg)
+                            struct mdp_set_cfg *cfg)
 {
 	struct mdss_data_type *mdata = mfd_to_mdata(mfd);
 	int ret = -EINVAL;
@@ -6865,12 +6878,12 @@ static int mdss_mdp_set_cfg(struct msm_fb_data_type *mfd,
 	case MDP_QSEED3_LUT_CFG:
 		if (cfg->len != sizeof(luts_info)) {
 			pr_err("invalid length %d expected %zd\n", cfg->len,
-				sizeof(luts_info));
+			       sizeof(luts_info));
 			ret = -EINVAL;
 			break;
 		}
 		ret = copy_from_user(&luts_info,
-				(void *)(unsigned long)cfg->payload, cfg->len);
+		                     (void *)(unsigned long)cfg->payload, cfg->len);
 		if (ret) {
 			pr_err("qseed3 lut copy failed ret %d\n", ret);
 			ret = -EFAULT;

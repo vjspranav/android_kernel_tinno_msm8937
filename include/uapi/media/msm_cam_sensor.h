@@ -37,13 +37,13 @@
 #define MSM_V4L2_PIX_FMT_META v4l2_fourcc('M', 'E', 'T', 'A') /* META */
 #define MSM_V4L2_PIX_FMT_META10 v4l2_fourcc('M', 'E', '1', '0') /* META10 */
 #define MSM_V4L2_PIX_FMT_SBGGR14 v4l2_fourcc('B', 'G', '1', '4')
-	/* 14  BGBG.. GRGR.. */
+/* 14  BGBG.. GRGR.. */
 #define MSM_V4L2_PIX_FMT_SGBRG14 v4l2_fourcc('G', 'B', '1', '4')
-	/* 14  GBGB.. RGRG.. */
+/* 14  GBGB.. RGRG.. */
 #define MSM_V4L2_PIX_FMT_SGRBG14 v4l2_fourcc('B', 'A', '1', '4')
-	/* 14  GRGR.. BGBG.. */
+/* 14  GRGR.. BGBG.. */
 #define MSM_V4L2_PIX_FMT_SRGGB14 v4l2_fourcc('R', 'G', '1', '4')
-	/* 14  RGRG.. GBGB.. */
+/* 14  RGRG.. GBGB.. */
 
 enum flash_type {
 	LED_FLASH = 1,
@@ -537,7 +537,6 @@ struct msm_flash_cfg_data_t {
 	enum msm_flash_cfg_type_t cfg_type;
 	int32_t flash_current[MAX_LED_TRIGGERS];
 	int32_t flash_duration[MAX_LED_TRIGGERS];
-	int32_t camera_id; //LINE<20160601>wangyanhui add for cts
 	union {
 		struct msm_flash_init_info_t *flash_init_info;
 		struct msm_camera_i2c_reg_setting_array *settings;

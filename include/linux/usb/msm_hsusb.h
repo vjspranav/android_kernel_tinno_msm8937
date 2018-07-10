@@ -123,8 +123,6 @@ enum msm_usb_phy_type {
 #define IDEV_CHG_MAX	1500
 #define IUNIT		100
 #define IDEV_HVDCP_CHG_MAX	1800
-#define IDEV_CHG_MAX_TINNO 500
-
 
 /**
  * Different states involved in USB charger detection.
@@ -162,7 +160,6 @@ enum usb_chg_state {
  *                      IDEV_CHG_MAX can be drawn irrespective of USB state.
  * USB_PROPRIETARY_CHARGER A proprietary charger pull DP and DM to specific
  *			voltages between 2.0-3.3v for identification.
- * USB_UNSUPPORTED_CHARGER Unsupported Floated charger.
  *
  */
 enum usb_chg_type {
@@ -171,7 +168,7 @@ enum usb_chg_type {
 	USB_DCP_CHARGER,
 	USB_CDP_CHARGER,
 	USB_PROPRIETARY_CHARGER,
-	USB_UNSUPPORTED_CHARGER,
+	USB_FLOATED_CHARGER,
 };
 
 /**
@@ -224,21 +221,6 @@ enum usb_ctrl {
 enum usb_id_state {
 	USB_ID_GROUND = 0,
 	USB_ID_FLOAT,
-};
-
-/**
- * Used for different states involved in Floating charger detection.
- *
- * FLOATING_AS_SDP		This is used to detect floating charger as SDP
- * FLOATING_AS_DCP		This is used to detect floating charger as DCP
- * FLOATING_AS_INVALID		This is used to detect floating charger is not
- *				supported and detects as INVALID
- *
- */
-enum floated_chg_type {
-	FLOATING_AS_SDP = 0,
-	FLOATING_AS_DCP,
-	FLOATING_AS_INVALID,
 };
 
 /**
@@ -303,7 +285,6 @@ enum floated_chg_type {
 		for improving data performance.
  * @bool enable_sdp_typec_current_limit: Indicates whether type-c current for
 		sdp charger to be limited.
-　* @enable_floated_charger: Indicates floated charger type (SDP/DCP/INVALID).
  * @usbeth_reset_gpio: Gpio used for external usb-to-eth reset.
  */
 struct msm_otg_platform_data {
@@ -347,7 +328,6 @@ struct msm_otg_platform_data {
 	bool emulation;
 	bool enable_streaming;
 	bool enable_axi_prefetch;
-	enum floated_chg_type enable_floated_charger;
 	bool enable_sdp_typec_current_limit;
 	bool vbus_low_as_hostmode;
 };
@@ -421,8 +401,6 @@ struct msm_otg_platform_data {
  * @typec_current_max: Max charging current allowed as per type-c chg detection
  * @is_ext_chg_dcp: To indicate whether charger detected by external entity
 		SMB hardware is DCP charger or not.
- * @is_ext_chg_detected: To indicate whether charger detected by external entity
-		SMB hardware or not.
  * @ext_id_irq: IRQ for ID interrupt.
  * @phy_irq_pending: Gets set when PHY IRQ arrives in LPM.
  * @id_state: Indicates USBID line status.
@@ -509,10 +487,10 @@ struct msm_otg {
 	 * voltage regulator(VDDCX).
 	 */
 #define ALLOW_PHY_RETENTION		BIT(1)
-	  /*
-	   * Allow putting the core in Low Power mode, when
-	   * USB bus is suspended but cable is connected.
-	   */
+	/*
+	 * Allow putting the core in Low Power mode, when
+	 * USB bus is suspended but cable is connected.
+	 */
 #define ALLOW_LPM_ON_DEV_SUSPEND	BIT(2)
 	/*
 	 * Allowing PHY regulators LPM puts the HSUSB 3.3v and 1.8v
@@ -562,15 +540,14 @@ struct msm_otg {
 	struct completion ext_chg_wait;
 	struct pinctrl *phy_pinctrl;
 	bool is_ext_chg_dcp;
-	bool is_ext_chg_detected;
 	struct qpnp_vadc_chip	*vadc_dev;
 	int ext_id_irq;
 	bool phy_irq_pending;
 	enum usb_id_state id_state;
 	bool rm_pulldown;
-/* Maximum debug message length */
+	/* Maximum debug message length */
 #define DEBUG_MSG_LEN   128UL
-/* Maximum number of messages */
+	/* Maximum number of messages */
 #define DEBUG_MAX_MSG   256UL
 	unsigned int dbg_idx;
 	rwlock_t dbg_lock;
@@ -673,15 +650,24 @@ static inline void msm_bam_set_usb_host_dev(struct device *dev) {}
 static inline void msm_bam_set_hsic_host_dev(struct device *dev) {}
 static inline void msm_bam_wait_for_usb_host_prod_granted(void) {}
 static inline void msm_bam_wait_for_hsic_host_prod_granted(void) {}
-static inline bool msm_bam_hsic_lpm_ok(void) { return true; }
+static inline bool msm_bam_hsic_lpm_ok(void)
+{
+	return true;
+}
 static inline void msm_bam_hsic_host_notify_on_resume(void) {}
 static inline void msm_bam_usb_host_notify_on_resume(void) {}
-static inline bool msm_bam_hsic_host_pipe_empty(void) { return true; }
+static inline bool msm_bam_hsic_host_pipe_empty(void)
+{
+	return true;
+}
 static inline bool msm_usb_bam_enable(enum usb_ctrl ctrl, bool bam_enable)
 {
 	return true;
 }
-int msm_do_bam_disable_enable(enum usb_ctrl ctrl) { return true; }
+int msm_do_bam_disable_enable(enum usb_ctrl ctrl)
+{
+	return true;
+}
 #endif
 #ifdef CONFIG_USB_CI13XXX_MSM
 void msm_hw_soft_reset(void);
@@ -706,7 +692,10 @@ static inline int get_pm_runtime_counter(struct device *dev)
 	return atomic_read(&dev->power.usage_count);
 }
 #else /* !CONFIG_PM_RUNTIME */
-static inline int get_pm_runtime_counter(struct device *dev) { return -ENOSYS; }
+static inline int get_pm_runtime_counter(struct device *dev)
+{
+	return -ENOSYS;
+}
 #endif
 
 #ifdef CONFIG_USB_DWC3_MSM
@@ -714,13 +703,13 @@ int msm_ep_config(struct usb_ep *ep, struct usb_request *request);
 int msm_ep_unconfig(struct usb_ep *ep);
 void dwc3_tx_fifo_resize_request(struct usb_ep *ep, bool qdss_enable);
 int msm_data_fifo_config(struct usb_ep *ep, phys_addr_t addr, u32 size,
-	u8 dst_pipe_idx);
+                         u8 dst_pipe_idx);
 bool msm_dwc3_reset_ep_after_lpm(struct usb_gadget *gadget);
 int msm_dwc3_reset_dbm_ep(struct usb_ep *ep);
 
 #else
 static inline int msm_data_fifo_config(struct usb_ep *ep, phys_addr_t addr,
-	u32 size, u8 dst_pipe_idx)
+                                       u32 size, u8 dst_pipe_idx)
 {
 	return -ENODEV;
 }
@@ -736,7 +725,7 @@ static inline int msm_ep_unconfig(struct usb_ep *ep)
 }
 
 static inline void dwc3_tx_fifo_resize_request(
-					struct usb_ep *ep, bool qdss_enable)
+    struct usb_ep *ep, bool qdss_enable)
 {
 }
 

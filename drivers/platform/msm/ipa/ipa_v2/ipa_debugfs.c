@@ -22,8 +22,8 @@
 #define IPA_DBG_CNTR_ON 127265
 #define IPA_DBG_CNTR_OFF 127264
 #define IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE ((IPA2_ACTIVE_CLIENTS_LOG_LINE_LEN \
-			* IPA2_ACTIVE_CLIENTS_LOG_BUFFER_SIZE_LINES) \
-			+ IPA_MAX_MSG_LEN)
+        * IPA2_ACTIVE_CLIENTS_LOG_BUFFER_SIZE_LINES) \
+        + IPA_MAX_MSG_LEN)
 
 #define RX_MIN_POLL_CNT "Rx Min Poll Count"
 #define RX_MAX_POLL_CNT "Rx Max Poll Count"
@@ -137,44 +137,44 @@ static void *ipa_ipc_low_buff;
 int _ipa_read_gen_reg_v1_1(char *buff, int max_len)
 {
 	return scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-			"IPA_VERSION=0x%x\n"
-			"IPA_COMP_HW_VERSION=0x%x\n"
-			"IPA_ROUTE=0x%x\n"
-			"IPA_FILTER=0x%x\n"
-			"IPA_SHARED_MEM_SIZE=0x%x\n",
-			ipa_read_reg(ipa_ctx->mmio, IPA_VERSION_OFST),
-			ipa_read_reg(ipa_ctx->mmio, IPA_COMP_HW_VERSION_OFST),
-			ipa_read_reg(ipa_ctx->mmio, IPA_ROUTE_OFST_v1_1),
-			ipa_read_reg(ipa_ctx->mmio, IPA_FILTER_OFST_v1_1),
-			ipa_read_reg(ipa_ctx->mmio,
-					IPA_SHARED_MEM_SIZE_OFST_v1_1));
+	                 "IPA_VERSION=0x%x\n"
+	                 "IPA_COMP_HW_VERSION=0x%x\n"
+	                 "IPA_ROUTE=0x%x\n"
+	                 "IPA_FILTER=0x%x\n"
+	                 "IPA_SHARED_MEM_SIZE=0x%x\n",
+	                 ipa_read_reg(ipa_ctx->mmio, IPA_VERSION_OFST),
+	                 ipa_read_reg(ipa_ctx->mmio, IPA_COMP_HW_VERSION_OFST),
+	                 ipa_read_reg(ipa_ctx->mmio, IPA_ROUTE_OFST_v1_1),
+	                 ipa_read_reg(ipa_ctx->mmio, IPA_FILTER_OFST_v1_1),
+	                 ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_SHARED_MEM_SIZE_OFST_v1_1));
 }
 
 int _ipa_read_gen_reg_v2_0(char *buff, int max_len)
 {
 	return scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-			"IPA_VERSION=0x%x\n"
-			"IPA_COMP_HW_VERSION=0x%x\n"
-			"IPA_ROUTE=0x%x\n"
-			"IPA_FILTER=0x%x\n"
-			"IPA_SHARED_MEM_RESTRICTED=0x%x\n"
-			"IPA_SHARED_MEM_SIZE=0x%x\n",
-			ipa_read_reg(ipa_ctx->mmio, IPA_VERSION_OFST),
-			ipa_read_reg(ipa_ctx->mmio, IPA_COMP_HW_VERSION_OFST),
-			ipa_read_reg(ipa_ctx->mmio, IPA_ROUTE_OFST_v1_1),
-			ipa_read_reg(ipa_ctx->mmio, IPA_FILTER_OFST_v1_1),
-			ipa_read_reg_field(ipa_ctx->mmio,
-				IPA_SHARED_MEM_SIZE_OFST_v2_0,
-				IPA_SHARED_MEM_SIZE_SHARED_MEM_BADDR_BMSK_v2_0,
-				IPA_SHARED_MEM_SIZE_SHARED_MEM_BADDR_SHFT_v2_0),
-			ipa_read_reg_field(ipa_ctx->mmio,
-				IPA_SHARED_MEM_SIZE_OFST_v2_0,
-				IPA_SHARED_MEM_SIZE_SHARED_MEM_SIZE_BMSK_v2_0,
-				IPA_SHARED_MEM_SIZE_SHARED_MEM_SIZE_SHFT_v2_0));
+	                 "IPA_VERSION=0x%x\n"
+	                 "IPA_COMP_HW_VERSION=0x%x\n"
+	                 "IPA_ROUTE=0x%x\n"
+	                 "IPA_FILTER=0x%x\n"
+	                 "IPA_SHARED_MEM_RESTRICTED=0x%x\n"
+	                 "IPA_SHARED_MEM_SIZE=0x%x\n",
+	                 ipa_read_reg(ipa_ctx->mmio, IPA_VERSION_OFST),
+	                 ipa_read_reg(ipa_ctx->mmio, IPA_COMP_HW_VERSION_OFST),
+	                 ipa_read_reg(ipa_ctx->mmio, IPA_ROUTE_OFST_v1_1),
+	                 ipa_read_reg(ipa_ctx->mmio, IPA_FILTER_OFST_v1_1),
+	                 ipa_read_reg_field(ipa_ctx->mmio,
+	                                    IPA_SHARED_MEM_SIZE_OFST_v2_0,
+	                                    IPA_SHARED_MEM_SIZE_SHARED_MEM_BADDR_BMSK_v2_0,
+	                                    IPA_SHARED_MEM_SIZE_SHARED_MEM_BADDR_SHFT_v2_0),
+	                 ipa_read_reg_field(ipa_ctx->mmio,
+	                                    IPA_SHARED_MEM_SIZE_OFST_v2_0,
+	                                    IPA_SHARED_MEM_SIZE_SHARED_MEM_SIZE_BMSK_v2_0,
+	                                    IPA_SHARED_MEM_SIZE_SHARED_MEM_SIZE_SHFT_v2_0));
 }
 
 static ssize_t ipa_read_gen_reg(struct file *file, char __user *ubuf,
-		size_t count, loff_t *ppos)
+                                size_t count, loff_t *ppos)
 {
 	int nbytes;
 
@@ -186,7 +186,7 @@ static ssize_t ipa_read_gen_reg(struct file *file, char __user *ubuf,
 }
 
 static ssize_t ipa_write_ep_holb(struct file *file,
-		const char __user *buf, size_t count, loff_t *ppos)
+                                 const char __user *buf, size_t count, loff_t *ppos)
 {
 	struct ipa_ep_cfg_holb holb;
 	u32 en;
@@ -233,7 +233,7 @@ static ssize_t ipa_write_ep_holb(struct file *file,
 }
 
 static ssize_t ipa_write_ep_reg(struct file *file, const char __user *buf,
-		size_t count, loff_t *ppos)
+                                size_t count, loff_t *ppos)
 {
 	unsigned long missing;
 	s8 option = 0;
@@ -262,74 +262,74 @@ static ssize_t ipa_write_ep_reg(struct file *file, const char __user *buf,
 int _ipa_read_ep_reg_v1_1(char *buf, int max_len, int pipe)
 {
 	return scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-			"IPA_ENDP_INIT_NAT_%u=0x%x\n"
-			"IPA_ENDP_INIT_HDR_%u=0x%x\n"
-			"IPA_ENDP_INIT_MODE_%u=0x%x\n"
-			"IPA_ENDP_INIT_AGGR_%u=0x%x\n"
-			"IPA_ENDP_INIT_ROUTE_%u=0x%x\n"
-			"IPA_ENDP_INIT_CTRL_%u=0x%x\n"
-			"IPA_ENDP_INIT_HOL_EN_%u=0x%x\n"
-			"IPA_ENDP_INIT_HOL_TIMER_%u=0x%x\n",
-			pipe, ipa_read_reg(ipa_ctx->mmio,
-				IPA_ENDP_INIT_NAT_N_OFST_v1_1(pipe)),
-			pipe, ipa_read_reg(ipa_ctx->mmio,
-				IPA_ENDP_INIT_HDR_N_OFST_v1_1(pipe)),
-			pipe, ipa_read_reg(ipa_ctx->mmio,
-				IPA_ENDP_INIT_MODE_N_OFST_v1_1(pipe)),
-			pipe, ipa_read_reg(ipa_ctx->mmio,
-				IPA_ENDP_INIT_AGGR_N_OFST_v1_1(pipe)),
-			pipe, ipa_read_reg(ipa_ctx->mmio,
-				IPA_ENDP_INIT_ROUTE_N_OFST_v1_1(pipe)),
-			pipe, ipa_read_reg(ipa_ctx->mmio,
-				IPA_ENDP_INIT_CTRL_N_OFST(pipe)),
-			pipe, ipa_read_reg(ipa_ctx->mmio,
-				IPA_ENDP_INIT_HOL_BLOCK_EN_N_OFST_v1_1(pipe)),
-			pipe, ipa_read_reg(ipa_ctx->mmio,
-				IPA_ENDP_INIT_HOL_BLOCK_TIMER_N_OFST_v1_1(pipe))
-				);
+	                 "IPA_ENDP_INIT_NAT_%u=0x%x\n"
+	                 "IPA_ENDP_INIT_HDR_%u=0x%x\n"
+	                 "IPA_ENDP_INIT_MODE_%u=0x%x\n"
+	                 "IPA_ENDP_INIT_AGGR_%u=0x%x\n"
+	                 "IPA_ENDP_INIT_ROUTE_%u=0x%x\n"
+	                 "IPA_ENDP_INIT_CTRL_%u=0x%x\n"
+	                 "IPA_ENDP_INIT_HOL_EN_%u=0x%x\n"
+	                 "IPA_ENDP_INIT_HOL_TIMER_%u=0x%x\n",
+	                 pipe, ipa_read_reg(ipa_ctx->mmio,
+	                                    IPA_ENDP_INIT_NAT_N_OFST_v1_1(pipe)),
+	                 pipe, ipa_read_reg(ipa_ctx->mmio,
+	                                    IPA_ENDP_INIT_HDR_N_OFST_v1_1(pipe)),
+	                 pipe, ipa_read_reg(ipa_ctx->mmio,
+	                                    IPA_ENDP_INIT_MODE_N_OFST_v1_1(pipe)),
+	                 pipe, ipa_read_reg(ipa_ctx->mmio,
+	                                    IPA_ENDP_INIT_AGGR_N_OFST_v1_1(pipe)),
+	                 pipe, ipa_read_reg(ipa_ctx->mmio,
+	                                    IPA_ENDP_INIT_ROUTE_N_OFST_v1_1(pipe)),
+	                 pipe, ipa_read_reg(ipa_ctx->mmio,
+	                                    IPA_ENDP_INIT_CTRL_N_OFST(pipe)),
+	                 pipe, ipa_read_reg(ipa_ctx->mmio,
+	                                    IPA_ENDP_INIT_HOL_BLOCK_EN_N_OFST_v1_1(pipe)),
+	                 pipe, ipa_read_reg(ipa_ctx->mmio,
+	                                    IPA_ENDP_INIT_HOL_BLOCK_TIMER_N_OFST_v1_1(pipe))
+	                );
 }
 
 int _ipa_read_ep_reg_v2_0(char *buf, int max_len, int pipe)
 {
 	return scnprintf(
-		dbg_buff, IPA_MAX_MSG_LEN,
-		"IPA_ENDP_INIT_NAT_%u=0x%x\n"
-		"IPA_ENDP_INIT_HDR_%u=0x%x\n"
-		"IPA_ENDP_INIT_HDR_EXT_%u=0x%x\n"
-		"IPA_ENDP_INIT_MODE_%u=0x%x\n"
-		"IPA_ENDP_INIT_AGGR_%u=0x%x\n"
-		"IPA_ENDP_INIT_ROUTE_%u=0x%x\n"
-		"IPA_ENDP_INIT_CTRL_%u=0x%x\n"
-		"IPA_ENDP_INIT_HOL_EN_%u=0x%x\n"
-		"IPA_ENDP_INIT_HOL_TIMER_%u=0x%x\n"
-		"IPA_ENDP_INIT_DEAGGR_%u=0x%x\n"
-		"IPA_ENDP_INIT_CFG_%u=0x%x\n",
-		pipe, ipa_read_reg(ipa_ctx->mmio,
-			IPA_ENDP_INIT_NAT_N_OFST_v2_0(pipe)),
-		pipe, ipa_read_reg(ipa_ctx->mmio,
-			IPA_ENDP_INIT_HDR_N_OFST_v2_0(pipe)),
-		pipe, ipa_read_reg(ipa_ctx->mmio,
-			IPA_ENDP_INIT_HDR_EXT_n_OFST_v2_0(pipe)),
-		pipe, ipa_read_reg(ipa_ctx->mmio,
-			IPA_ENDP_INIT_MODE_N_OFST_v2_0(pipe)),
-		pipe, ipa_read_reg(ipa_ctx->mmio,
-			IPA_ENDP_INIT_AGGR_N_OFST_v2_0(pipe)),
-		pipe, ipa_read_reg(ipa_ctx->mmio,
-			IPA_ENDP_INIT_ROUTE_N_OFST_v2_0(pipe)),
-		pipe, ipa_read_reg(ipa_ctx->mmio,
-			IPA_ENDP_INIT_CTRL_N_OFST(pipe)),
-		pipe, ipa_read_reg(ipa_ctx->mmio,
-			IPA_ENDP_INIT_HOL_BLOCK_EN_N_OFST_v2_0(pipe)),
-		pipe, ipa_read_reg(ipa_ctx->mmio,
-			IPA_ENDP_INIT_HOL_BLOCK_TIMER_N_OFST_v2_0(pipe)),
-		pipe, ipa_read_reg(ipa_ctx->mmio,
-			IPA_ENDP_INIT_DEAGGR_n_OFST_v2_0(pipe)),
-		pipe, ipa_read_reg(ipa_ctx->mmio,
-			IPA_ENDP_INIT_CFG_n_OFST(pipe)));
+	           dbg_buff, IPA_MAX_MSG_LEN,
+	           "IPA_ENDP_INIT_NAT_%u=0x%x\n"
+	           "IPA_ENDP_INIT_HDR_%u=0x%x\n"
+	           "IPA_ENDP_INIT_HDR_EXT_%u=0x%x\n"
+	           "IPA_ENDP_INIT_MODE_%u=0x%x\n"
+	           "IPA_ENDP_INIT_AGGR_%u=0x%x\n"
+	           "IPA_ENDP_INIT_ROUTE_%u=0x%x\n"
+	           "IPA_ENDP_INIT_CTRL_%u=0x%x\n"
+	           "IPA_ENDP_INIT_HOL_EN_%u=0x%x\n"
+	           "IPA_ENDP_INIT_HOL_TIMER_%u=0x%x\n"
+	           "IPA_ENDP_INIT_DEAGGR_%u=0x%x\n"
+	           "IPA_ENDP_INIT_CFG_%u=0x%x\n",
+	           pipe, ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_ENDP_INIT_NAT_N_OFST_v2_0(pipe)),
+	           pipe, ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_ENDP_INIT_HDR_N_OFST_v2_0(pipe)),
+	           pipe, ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_ENDP_INIT_HDR_EXT_n_OFST_v2_0(pipe)),
+	           pipe, ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_ENDP_INIT_MODE_N_OFST_v2_0(pipe)),
+	           pipe, ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_ENDP_INIT_AGGR_N_OFST_v2_0(pipe)),
+	           pipe, ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_ENDP_INIT_ROUTE_N_OFST_v2_0(pipe)),
+	           pipe, ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_ENDP_INIT_CTRL_N_OFST(pipe)),
+	           pipe, ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_ENDP_INIT_HOL_BLOCK_EN_N_OFST_v2_0(pipe)),
+	           pipe, ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_ENDP_INIT_HOL_BLOCK_TIMER_N_OFST_v2_0(pipe)),
+	           pipe, ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_ENDP_INIT_DEAGGR_n_OFST_v2_0(pipe)),
+	           pipe, ipa_read_reg(ipa_ctx->mmio,
+	                              IPA_ENDP_INIT_CFG_n_OFST(pipe)));
 }
 
 static ssize_t ipa_read_ep_reg(struct file *file, char __user *ubuf,
-		size_t count, loff_t *ppos)
+                               size_t count, loff_t *ppos)
 {
 	int nbytes;
 	int i;
@@ -352,11 +352,11 @@ static ssize_t ipa_read_ep_reg(struct file *file, char __user *ubuf,
 	for (i = start_idx; i < end_idx; i++) {
 
 		nbytes = ipa_ctx->ctrl->ipa_read_ep_reg(dbg_buff,
-				IPA_MAX_MSG_LEN, i);
+		                                        IPA_MAX_MSG_LEN, i);
 
 		*ppos = pos;
 		ret = simple_read_from_buffer(ubuf, count, ppos, dbg_buff,
-					      nbytes);
+		                              nbytes);
 		if (ret < 0) {
 			IPA_ACTIVE_CLIENTS_DEC_SIMPLE();
 			return ret;
@@ -373,7 +373,7 @@ static ssize_t ipa_read_ep_reg(struct file *file, char __user *ubuf,
 }
 
 static ssize_t ipa_write_keep_awake(struct file *file, const char __user *buf,
-	size_t count, loff_t *ppos)
+                                    size_t count, loff_t *ppos)
 {
 	unsigned long missing;
 	s8 option = 0;
@@ -400,24 +400,24 @@ static ssize_t ipa_write_keep_awake(struct file *file, const char __user *buf,
 }
 
 static ssize_t ipa_read_keep_awake(struct file *file, char __user *ubuf,
-	size_t count, loff_t *ppos)
+                                   size_t count, loff_t *ppos)
 {
 	int nbytes;
 
 	ipa_active_clients_lock();
 	if (ipa_ctx->ipa_active_clients.cnt)
 		nbytes = scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-				"IPA APPS power state is ON\n");
+		                   "IPA APPS power state is ON\n");
 	else
 		nbytes = scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-				"IPA APPS power state is OFF\n");
+		                   "IPA APPS power state is OFF\n");
 	ipa_active_clients_unlock();
 
 	return simple_read_from_buffer(ubuf, count, ppos, dbg_buff, nbytes);
 }
 
 static ssize_t ipa_read_hdr(struct file *file, char __user *ubuf, size_t count,
-		loff_t *ppos)
+                            loff_t *ppos)
 {
 	int nbytes = 0;
 	int i = 0;
@@ -431,38 +431,38 @@ static ssize_t ipa_read_hdr(struct file *file, char __user *ubuf, size_t count,
 		pr_err("Table resides on system (ddr) memory\n");
 
 	list_for_each_entry(entry, &ipa_ctx->hdr_tbl.head_hdr_entry_list,
-			link) {
+	                    link) {
 		nbytes = scnprintf(
-			dbg_buff,
-			IPA_MAX_MSG_LEN - 1,
-			"name:%s len=%d ref=%d partial=%d type=%s ",
-			entry->name,
-			entry->hdr_len,
-			entry->ref_cnt,
-			entry->is_partial,
-			ipa_hdr_l2_type_name[entry->type]);
+		             dbg_buff,
+		             IPA_MAX_MSG_LEN - 1,
+		             "name:%s len=%d ref=%d partial=%d type=%s ",
+		             entry->name,
+		             entry->hdr_len,
+		             entry->ref_cnt,
+		             entry->is_partial,
+		             ipa_hdr_l2_type_name[entry->type]);
 
 		if (entry->is_hdr_proc_ctx) {
 			nbytes += scnprintf(
-				dbg_buff + nbytes,
-				IPA_MAX_MSG_LEN - 1 - nbytes,
-				"phys_base=0x%pa ",
-				&entry->phys_base);
+			              dbg_buff + nbytes,
+			              IPA_MAX_MSG_LEN - 1 - nbytes,
+			              "phys_base=0x%pa ",
+			              &entry->phys_base);
 		} else {
 			nbytes += scnprintf(
-				dbg_buff + nbytes,
-				IPA_MAX_MSG_LEN - 1 - nbytes,
-				"ofst=%u ",
-				entry->offset_entry->offset >> 2);
+			              dbg_buff + nbytes,
+			              IPA_MAX_MSG_LEN - 1 - nbytes,
+			              "ofst=%u ",
+			              entry->offset_entry->offset >> 2);
 		}
 		for (i = 0; i < entry->hdr_len; i++) {
 			scnprintf(dbg_buff + nbytes + i * 2,
-				  IPA_MAX_MSG_LEN - 1 - nbytes - i * 2,
-				  "%02x", entry->hdr[i]);
+			          IPA_MAX_MSG_LEN - 1 - nbytes - i * 2,
+			          "%02x", entry->hdr[i]);
 		}
 		scnprintf(dbg_buff + nbytes + entry->hdr_len * 2,
-			  IPA_MAX_MSG_LEN - 1 - nbytes - entry->hdr_len * 2,
-			  "\n");
+		          IPA_MAX_MSG_LEN - 1 - nbytes - entry->hdr_len * 2,
+		          "\n");
 		pr_err("%s", dbg_buff);
 	}
 	mutex_unlock(&ipa_ctx->lock);
@@ -471,7 +471,7 @@ static ssize_t ipa_read_hdr(struct file *file, char __user *ubuf, size_t count,
 }
 
 static int ipa_attrib_dump(struct ipa_rule_attrib *attrib,
-		enum ipa_ip_type ip)
+                           enum ipa_ip_type ip)
 {
 	uint32_t addr[4];
 	uint32_t mask[4];
@@ -491,16 +491,16 @@ static int ipa_attrib_dump(struct ipa_rule_attrib *attrib,
 			addr[0] = htonl(attrib->u.v4.src_addr);
 			mask[0] = htonl(attrib->u.v4.src_addr_mask);
 			pr_err(
-					"src_addr:%pI4 src_addr_mask:%pI4 ",
-					addr + 0, mask + 0);
+			    "src_addr:%pI4 src_addr_mask:%pI4 ",
+			    addr + 0, mask + 0);
 		} else if (ip == IPA_IP_v6) {
 			for (i = 0; i < 4; i++) {
 				addr[i] = htonl(attrib->u.v6.src_addr[i]);
 				mask[i] = htonl(attrib->u.v6.src_addr_mask[i]);
 			}
 			pr_err(
-					   "src_addr:%pI6 src_addr_mask:%pI6 ",
-					   addr + 0, mask + 0);
+			    "src_addr:%pI6 src_addr_mask:%pI6 ",
+			    addr + 0, mask + 0);
 		} else {
 			WARN_ON(1);
 		}
@@ -510,29 +510,29 @@ static int ipa_attrib_dump(struct ipa_rule_attrib *attrib,
 			addr[0] = htonl(attrib->u.v4.dst_addr);
 			mask[0] = htonl(attrib->u.v4.dst_addr_mask);
 			pr_err(
-					   "dst_addr:%pI4 dst_addr_mask:%pI4 ",
-					   addr + 0, mask + 0);
+			    "dst_addr:%pI4 dst_addr_mask:%pI4 ",
+			    addr + 0, mask + 0);
 		} else if (ip == IPA_IP_v6) {
 			for (i = 0; i < 4; i++) {
 				addr[i] = htonl(attrib->u.v6.dst_addr[i]);
 				mask[i] = htonl(attrib->u.v6.dst_addr_mask[i]);
 			}
 			pr_err(
-					   "dst_addr:%pI6 dst_addr_mask:%pI6 ",
-					   addr + 0, mask + 0);
+			    "dst_addr:%pI6 dst_addr_mask:%pI6 ",
+			    addr + 0, mask + 0);
 		} else {
 			WARN_ON(1);
 		}
 	}
 	if (attrib->attrib_mask & IPA_FLT_SRC_PORT_RANGE) {
 		pr_err("src_port_range:%u %u ",
-				   attrib->src_port_lo,
-			     attrib->src_port_hi);
+		       attrib->src_port_lo,
+		       attrib->src_port_hi);
 	}
 	if (attrib->attrib_mask & IPA_FLT_DST_PORT_RANGE) {
 		pr_err("dst_port_range:%u %u ",
-				   attrib->dst_port_lo,
-			     attrib->dst_port_hi);
+		       attrib->dst_port_lo,
+		       attrib->dst_port_hi);
 	}
 	if (attrib->attrib_mask & IPA_FLT_TYPE)
 		pr_err("type:%d ", attrib->type);
@@ -560,20 +560,20 @@ static int ipa_attrib_dump(struct ipa_rule_attrib *attrib,
 
 	if (attrib->attrib_mask & IPA_FLT_META_DATA) {
 		pr_err(
-				   "metadata:%x metadata_mask:%x",
-				   attrib->meta_data, attrib->meta_data_mask);
+		    "metadata:%x metadata_mask:%x",
+		    attrib->meta_data, attrib->meta_data_mask);
 	}
 
 	if (attrib->attrib_mask & IPA_FLT_FRAGMENT)
 		pr_err("frg ");
 
 	if ((attrib->attrib_mask & IPA_FLT_MAC_SRC_ADDR_ETHER_II) ||
-		(attrib->attrib_mask & IPA_FLT_MAC_SRC_ADDR_802_3)) {
+	    (attrib->attrib_mask & IPA_FLT_MAC_SRC_ADDR_802_3)) {
 		pr_err("src_mac_addr:%pM ", attrib->src_mac_addr);
 	}
 
 	if ((attrib->attrib_mask & IPA_FLT_MAC_DST_ADDR_ETHER_II) ||
-		(attrib->attrib_mask & IPA_FLT_MAC_DST_ADDR_802_3)) {
+	    (attrib->attrib_mask & IPA_FLT_MAC_DST_ADDR_802_3)) {
 		pr_err("dst_mac_addr:%pM ", attrib->dst_mac_addr);
 	}
 
@@ -599,18 +599,18 @@ static int ipa_attrib_dump_eq(struct ipa_ipfltri_rule_eq *attrib)
 
 	for (i = 0; i < attrib->num_ihl_offset_range_16; i++) {
 		pr_err(
-			   "(ihl_ofst_range16: ofst:%u lo:%u hi:%u) ",
-			   attrib->ihl_offset_range_16[i].offset,
-			   attrib->ihl_offset_range_16[i].range_low,
-			   attrib->ihl_offset_range_16[i].range_high);
+		    "(ihl_ofst_range16: ofst:%u lo:%u hi:%u) ",
+		    attrib->ihl_offset_range_16[i].offset,
+		    attrib->ihl_offset_range_16[i].range_low,
+		    attrib->ihl_offset_range_16[i].range_high);
 	}
 
 	for (i = 0; i < attrib->num_offset_meq_32; i++) {
 		pr_err(
-			   "(ofst_meq32: ofst:%u mask:0x%x val:0x%x) ",
-			   attrib->offset_meq_32[i].offset,
-			   attrib->offset_meq_32[i].mask,
-			   attrib->offset_meq_32[i].value);
+		    "(ofst_meq32: ofst:%u mask:0x%x val:0x%x) ",
+		    attrib->offset_meq_32[i].offset,
+		    attrib->offset_meq_32[i].mask,
+		    attrib->offset_meq_32[i].value);
 	}
 
 	if (attrib->tc_eq_present)
@@ -621,17 +621,17 @@ static int ipa_attrib_dump_eq(struct ipa_ipfltri_rule_eq *attrib)
 
 	if (attrib->ihl_offset_eq_16_present) {
 		pr_err(
-				"(ihl_ofst_eq16:%d val:0x%x) ",
-				attrib->ihl_offset_eq_16.offset,
-				attrib->ihl_offset_eq_16.value);
+		    "(ihl_ofst_eq16:%d val:0x%x) ",
+		    attrib->ihl_offset_eq_16.offset,
+		    attrib->ihl_offset_eq_16.value);
 	}
 
 	for (i = 0; i < attrib->num_ihl_offset_meq_32; i++) {
 		pr_err(
-				"(ihl_ofst_meq32: ofts:%d mask:0x%x val:0x%x) ",
-				attrib->ihl_offset_meq_32[i].offset,
-				attrib->ihl_offset_meq_32[i].mask,
-				attrib->ihl_offset_meq_32[i].value);
+		    "(ihl_ofst_meq32: ofts:%d mask:0x%x val:0x%x) ",
+		    attrib->ihl_offset_meq_32[i].offset,
+		    attrib->ihl_offset_meq_32[i].mask,
+		    attrib->ihl_offset_meq_32[i].value);
 	}
 
 	for (i = 0; i < attrib->num_offset_meq_128; i++) {
@@ -640,18 +640,18 @@ static int ipa_attrib_dump_eq(struct ipa_ipfltri_rule_eq *attrib)
 			mask[j] = attrib->offset_meq_128[i].mask[j];
 		}
 		pr_err(
-				"(ofst_meq128: ofst:%d mask:%pI6 val:%pI6) ",
-				attrib->offset_meq_128[i].offset,
-				mask + 0,
-				addr + 0);
+		    "(ofst_meq128: ofst:%d mask:%pI6 val:%pI6) ",
+		    attrib->offset_meq_128[i].offset,
+		    mask + 0,
+		    addr + 0);
 	}
 
 	if (attrib->metadata_meq32_present) {
 		pr_err(
-				"(metadata: ofst:%u mask:0x%x val:0x%x) ",
-				attrib->metadata_meq32.offset,
-				attrib->metadata_meq32.mask,
-				attrib->metadata_meq32.value);
+		    "(metadata: ofst:%u mask:0x%x val:0x%x) ",
+		    attrib->metadata_meq32.offset,
+		    attrib->metadata_meq32.mask,
+		    attrib->metadata_meq32.value);
 	}
 
 	if (attrib->ipv4_frag_eq_present)
@@ -668,7 +668,7 @@ static int ipa_open_dbg(struct inode *inode, struct file *file)
 }
 
 static ssize_t ipa_read_rt(struct file *file, char __user *ubuf, size_t count,
-		loff_t *ppos)
+                           loff_t *ppos)
 {
 	int i = 0;
 	struct ipa_rt_tbl *tbl;
@@ -700,20 +700,20 @@ static ssize_t ipa_read_rt(struct file *file, char __user *ubuf, size_t count,
 			if (entry->proc_ctx) {
 				ofst = entry->proc_ctx->offset_entry->offset;
 				ofst_words =
-					(ofst +
-					ipa_ctx->hdr_proc_ctx_tbl.start_offset)
-					>> 5;
+				    (ofst +
+				     ipa_ctx->hdr_proc_ctx_tbl.start_offset)
+				    >> 5;
 
 				pr_err("tbl_idx:%d tbl_name:%s tbl_ref:%u ",
-					entry->tbl->idx, entry->tbl->name,
-					entry->tbl->ref_cnt);
+				       entry->tbl->idx, entry->tbl->name,
+				       entry->tbl->ref_cnt);
 				pr_err("rule_idx:%d dst:%d ep:%d S:%u ",
-					i, entry->rule.dst,
-					ipa2_get_ep_mapping(entry->rule.dst),
-					!ipa_ctx->hdr_tbl_lcl);
+				       i, entry->rule.dst,
+				       ipa2_get_ep_mapping(entry->rule.dst),
+				       !ipa_ctx->hdr_tbl_lcl);
 				pr_err("proc_ctx[32B]:%u attrib_mask:%08x ",
-					ofst_words,
-					entry->rule.attrib.attrib_mask);
+				       ofst_words,
+				       entry->rule.attrib.attrib_mask);
 			} else {
 				if (entry->hdr)
 					ofst = entry->hdr->offset_entry->offset;
@@ -721,15 +721,15 @@ static ssize_t ipa_read_rt(struct file *file, char __user *ubuf, size_t count,
 					ofst = 0;
 
 				pr_err("tbl_idx:%d tbl_name:%s tbl_ref:%u ",
-					entry->tbl->idx, entry->tbl->name,
-					entry->tbl->ref_cnt);
+				       entry->tbl->idx, entry->tbl->name,
+				       entry->tbl->ref_cnt);
 				pr_err("rule_idx:%d dst:%d ep:%d S:%u ",
-					i, entry->rule.dst,
-					ipa2_get_ep_mapping(entry->rule.dst),
-					!ipa_ctx->hdr_tbl_lcl);
+				       i, entry->rule.dst,
+				       ipa2_get_ep_mapping(entry->rule.dst),
+				       !ipa_ctx->hdr_tbl_lcl);
 				pr_err("hdr_ofst[words]:%u attrib_mask:%08x ",
-					ofst >> 2,
-					entry->rule.attrib.attrib_mask);
+				       ofst >> 2,
+				       entry->rule.attrib.attrib_mask);
 			}
 
 			ipa_attrib_dump(&entry->rule.attrib, ip);
@@ -742,7 +742,7 @@ static ssize_t ipa_read_rt(struct file *file, char __user *ubuf, size_t count,
 }
 
 static ssize_t ipa_read_proc_ctx(struct file *file, char __user *ubuf,
-		size_t count, loff_t *ppos)
+                                 size_t count, loff_t *ppos)
 {
 	int nbytes = 0;
 	struct ipa_hdr_proc_ctx_tbl *tbl;
@@ -760,30 +760,30 @@ static ssize_t ipa_read_proc_ctx(struct file *file, char __user *ubuf,
 
 	list_for_each_entry(entry, &tbl->head_proc_ctx_entry_list, link) {
 		ofst_words = (entry->offset_entry->offset +
-			ipa_ctx->hdr_proc_ctx_tbl.start_offset)
-			>> 5;
+		              ipa_ctx->hdr_proc_ctx_tbl.start_offset)
+		             >> 5;
 		if (entry->hdr->is_hdr_proc_ctx) {
 			nbytes += scnprintf(dbg_buff + nbytes,
-				IPA_MAX_MSG_LEN - nbytes,
-				"id:%u hdr_proc_type:%s proc_ctx[32B]:%u ",
-				entry->id,
-				ipa_hdr_proc_type_name[entry->type],
-				ofst_words);
+			                    IPA_MAX_MSG_LEN - nbytes,
+			                    "id:%u hdr_proc_type:%s proc_ctx[32B]:%u ",
+			                    entry->id,
+			                    ipa_hdr_proc_type_name[entry->type],
+			                    ofst_words);
 			nbytes += scnprintf(dbg_buff + nbytes,
-				IPA_MAX_MSG_LEN - nbytes,
-				"hdr_phys_base:0x%pa\n",
-				&entry->hdr->phys_base);
+			                    IPA_MAX_MSG_LEN - nbytes,
+			                    "hdr_phys_base:0x%pa\n",
+			                    &entry->hdr->phys_base);
 		} else {
 			nbytes += scnprintf(dbg_buff + nbytes,
-				IPA_MAX_MSG_LEN - nbytes,
-				"id:%u hdr_proc_type:%s proc_ctx[32B]:%u ",
-				entry->id,
-				ipa_hdr_proc_type_name[entry->type],
-				ofst_words);
+			                    IPA_MAX_MSG_LEN - nbytes,
+			                    "id:%u hdr_proc_type:%s proc_ctx[32B]:%u ",
+			                    entry->id,
+			                    ipa_hdr_proc_type_name[entry->type],
+			                    ofst_words);
 			nbytes += scnprintf(dbg_buff + nbytes,
-				IPA_MAX_MSG_LEN - nbytes,
-				"hdr[words]:%u\n",
-				entry->hdr->offset_entry->offset >> 2);
+			                    IPA_MAX_MSG_LEN - nbytes,
+			                    "hdr[words]:%u\n",
+			                    entry->hdr->offset_entry->offset >> 2);
 		}
 	}
 	mutex_unlock(&ipa_ctx->lock);
@@ -792,7 +792,7 @@ static ssize_t ipa_read_proc_ctx(struct file *file, char __user *ubuf,
 }
 
 static ssize_t ipa_read_flt(struct file *file, char __user *ubuf, size_t count,
-		loff_t *ppos)
+                            loff_t *ppos)
 {
 	int i;
 	int j;
@@ -815,7 +815,7 @@ static ssize_t ipa_read_flt(struct file *file, char __user *ubuf, size_t count,
 		} else {
 			rt_tbl = ipa_id_find(entry->rule.rt_tbl_hdl);
 			if (rt_tbl == NULL ||
-				rt_tbl->cookie != IPA_RT_TBL_COOKIE)
+			    rt_tbl->cookie != IPA_RT_TBL_COOKIE)
 				rt_tbl_idx =  ~0;
 			else
 				rt_tbl_idx = rt_tbl->idx;
@@ -823,15 +823,15 @@ static ssize_t ipa_read_flt(struct file *file, char __user *ubuf, size_t count,
 			eq = false;
 		}
 		pr_err("ep_idx:global rule_idx:%d act:%d rt_tbl_idx:%d ",
-			i, entry->rule.action, rt_tbl_idx);
+		       i, entry->rule.action, rt_tbl_idx);
 		pr_err("attrib_mask:%08x retain_hdr:%d eq:%d ",
-			bitmap, entry->rule.retain_hdr, eq);
+		       bitmap, entry->rule.retain_hdr, eq);
 		if (eq)
 			ipa_attrib_dump_eq(
-				&entry->rule.eq_attrib);
+			    &entry->rule.eq_attrib);
 		else
 			ipa_attrib_dump(
-				&entry->rule.attrib, ip);
+			    &entry->rule.attrib, ip);
 		i++;
 	}
 
@@ -846,7 +846,7 @@ static ssize_t ipa_read_flt(struct file *file, char __user *ubuf, size_t count,
 			} else {
 				rt_tbl = ipa_id_find(entry->rule.rt_tbl_hdl);
 				if (rt_tbl == NULL ||
-					rt_tbl->cookie != IPA_RT_TBL_COOKIE)
+				    rt_tbl->cookie != IPA_RT_TBL_COOKIE)
 					rt_tbl_idx = ~0;
 				else
 					rt_tbl_idx = rt_tbl->idx;
@@ -854,16 +854,16 @@ static ssize_t ipa_read_flt(struct file *file, char __user *ubuf, size_t count,
 				eq = false;
 			}
 			pr_err("ep_idx:%d rule_idx:%d act:%d rt_tbl_idx:%d ",
-				j, i, entry->rule.action, rt_tbl_idx);
+			       j, i, entry->rule.action, rt_tbl_idx);
 			pr_err("attrib_mask:%08x retain_hdr:%d ",
-				bitmap, entry->rule.retain_hdr);
+			       bitmap, entry->rule.retain_hdr);
 			pr_err("eq:%d ", eq);
 			if (eq)
 				ipa_attrib_dump_eq(
-					&entry->rule.eq_attrib);
+				    &entry->rule.eq_attrib);
 			else
 				ipa_attrib_dump(
-					&entry->rule.attrib, ip);
+				    &entry->rule.attrib, ip);
 			i++;
 		}
 	}
@@ -873,7 +873,7 @@ static ssize_t ipa_read_flt(struct file *file, char __user *ubuf, size_t count,
 }
 
 static ssize_t ipa_read_stats(struct file *file, char __user *ubuf,
-		size_t count, loff_t *ppos)
+                              size_t count, loff_t *ppos)
 {
 	int nbytes;
 	int i;
@@ -885,71 +885,71 @@ static ssize_t ipa_read_stats(struct file *file, char __user *ubuf,
 
 	if (ipa_ctx->ipa_hw_type >= IPA_HW_v2_0) {
 		nbytes = scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-			"sw_tx=%u\n"
-			"hw_tx=%u\n"
-			"tx_non_linear=%u\n"
-			"tx_compl=%u\n"
-			"wan_rx=%u\n"
-			"stat_compl=%u\n"
-			"lan_aggr_close=%u\n"
-			"wan_aggr_close=%u\n"
-			"act_clnt=%u\n"
-			"con_clnt_bmap=0x%x\n"
-			"wan_rx_empty=%u\n"
-			"wan_repl_rx_empty=%u\n"
-			"lan_rx_empty=%u\n"
-			"lan_repl_rx_empty=%u\n"
-			"flow_enable=%u\n"
-			"flow_disable=%u\n",
-			ipa_ctx->stats.tx_sw_pkts,
-			ipa_ctx->stats.tx_hw_pkts,
-			ipa_ctx->stats.tx_non_linear,
-			ipa_ctx->stats.tx_pkts_compl,
-			ipa_ctx->stats.rx_pkts,
-			ipa_ctx->stats.stat_compl,
-			ipa_ctx->stats.aggr_close,
-			ipa_ctx->stats.wan_aggr_close,
-			ipa_ctx->ipa_active_clients.cnt,
-			connect,
-			ipa_ctx->stats.wan_rx_empty,
-			ipa_ctx->stats.wan_repl_rx_empty,
-			ipa_ctx->stats.lan_rx_empty,
-			ipa_ctx->stats.lan_repl_rx_empty,
-			ipa_ctx->stats.flow_enable,
-			ipa_ctx->stats.flow_disable);
+		                   "sw_tx=%u\n"
+		                   "hw_tx=%u\n"
+		                   "tx_non_linear=%u\n"
+		                   "tx_compl=%u\n"
+		                   "wan_rx=%u\n"
+		                   "stat_compl=%u\n"
+		                   "lan_aggr_close=%u\n"
+		                   "wan_aggr_close=%u\n"
+		                   "act_clnt=%u\n"
+		                   "con_clnt_bmap=0x%x\n"
+		                   "wan_rx_empty=%u\n"
+		                   "wan_repl_rx_empty=%u\n"
+		                   "lan_rx_empty=%u\n"
+		                   "lan_repl_rx_empty=%u\n"
+		                   "flow_enable=%u\n"
+		                   "flow_disable=%u\n",
+		                   ipa_ctx->stats.tx_sw_pkts,
+		                   ipa_ctx->stats.tx_hw_pkts,
+		                   ipa_ctx->stats.tx_non_linear,
+		                   ipa_ctx->stats.tx_pkts_compl,
+		                   ipa_ctx->stats.rx_pkts,
+		                   ipa_ctx->stats.stat_compl,
+		                   ipa_ctx->stats.aggr_close,
+		                   ipa_ctx->stats.wan_aggr_close,
+		                   ipa_ctx->ipa_active_clients.cnt,
+		                   connect,
+		                   ipa_ctx->stats.wan_rx_empty,
+		                   ipa_ctx->stats.wan_repl_rx_empty,
+		                   ipa_ctx->stats.lan_rx_empty,
+		                   ipa_ctx->stats.lan_repl_rx_empty,
+		                   ipa_ctx->stats.flow_enable,
+		                   ipa_ctx->stats.flow_disable);
 		cnt += nbytes;
 
 		for (i = 0; i < MAX_NUM_EXCP; i++) {
 			nbytes = scnprintf(dbg_buff + cnt,
-				IPA_MAX_MSG_LEN - cnt,
-				"lan_rx_excp[%u:%20s]=%u\n", i,
-				ipa_status_excp_name[i],
-				ipa_ctx->stats.rx_excp_pkts[i]);
+			                   IPA_MAX_MSG_LEN - cnt,
+			                   "lan_rx_excp[%u:%20s]=%u\n", i,
+			                   ipa_status_excp_name[i],
+			                   ipa_ctx->stats.rx_excp_pkts[i]);
 			cnt += nbytes;
 		}
-	} else{
+	} else {
 		nbytes = scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-			"sw_tx=%u\n"
-			"hw_tx=%u\n"
-			"rx=%u\n"
-			"rx_repl_repost=%u\n"
-			"rx_q_len=%u\n"
-			"act_clnt=%u\n"
-			"con_clnt_bmap=0x%x\n",
-			ipa_ctx->stats.tx_sw_pkts,
-			ipa_ctx->stats.tx_hw_pkts,
-			ipa_ctx->stats.rx_pkts,
-			ipa_ctx->stats.rx_repl_repost,
-			ipa_ctx->stats.rx_q_len,
-			ipa_ctx->ipa_active_clients.cnt,
-			connect);
-	cnt += nbytes;
+		                   "sw_tx=%u\n"
+		                   "hw_tx=%u\n"
+		                   "rx=%u\n"
+		                   "rx_repl_repost=%u\n"
+		                   "rx_q_len=%u\n"
+		                   "act_clnt=%u\n"
+		                   "con_clnt_bmap=0x%x\n",
+		                   ipa_ctx->stats.tx_sw_pkts,
+		                   ipa_ctx->stats.tx_hw_pkts,
+		                   ipa_ctx->stats.rx_pkts,
+		                   ipa_ctx->stats.rx_repl_repost,
+		                   ipa_ctx->stats.rx_q_len,
+		                   ipa_ctx->ipa_active_clients.cnt,
+		                   connect);
+		cnt += nbytes;
 
 		for (i = 0; i < MAX_NUM_EXCP; i++) {
 			nbytes = scnprintf(dbg_buff + cnt,
-				IPA_MAX_MSG_LEN - cnt,
-				"rx_excp[%u:%35s]=%u\n", i, ipa_excp_name[i],
-				ipa_ctx->stats.rx_excp_pkts[i]);
+			                   IPA_MAX_MSG_LEN - cnt,
+			                   "rx_excp[%u:%35s]=%u\n", i, ipa_excp_name[i],
+			                   ipa_ctx->stats.rx_excp_pkts[i]);
 			cnt += nbytes;
 		}
 	}
@@ -958,7 +958,7 @@ static ssize_t ipa_read_stats(struct file *file, char __user *ubuf,
 }
 
 static ssize_t ipa_read_wstats(struct file *file, char __user *ubuf,
-		size_t count, loff_t *ppos)
+                               size_t count, loff_t *ppos)
 {
 
 #define HEAD_FRMT_STR "%25s\n"
@@ -973,13 +973,13 @@ static ssize_t ipa_read_wstats(struct file *file, char __user *ubuf,
 
 	do {
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			HEAD_FRMT_STR, "Client IPA_CLIENT_WLAN1_PROD Stats:");
+		                   HEAD_FRMT_STR, "Client IPA_CLIENT_WLAN1_PROD Stats:");
 		cnt += nbytes;
 
 		ipa_ep_idx = ipa2_get_ep_mapping(client);
 		if (ipa_ep_idx == -1) {
 			nbytes = scnprintf(dbg_buff + cnt,
-				IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR, "Not up");
+			                   IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR, "Not up");
 			cnt += nbytes;
 			break;
 		}
@@ -987,57 +987,57 @@ static ssize_t ipa_read_wstats(struct file *file, char __user *ubuf,
 		ep = &ipa_ctx->ep[ipa_ep_idx];
 		if (ep->valid != 1) {
 			nbytes = scnprintf(dbg_buff + cnt,
-				IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR, "Not up");
+			                   IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR, "Not up");
 			cnt += nbytes;
 			break;
 		}
 
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			FRMT_STR, "Avail Fifo Desc:",
-			atomic_read(&ep->avail_fifo_desc));
+		                   FRMT_STR, "Avail Fifo Desc:",
+		                   atomic_read(&ep->avail_fifo_desc));
 		cnt += nbytes;
 
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			FRMT_STR, "Rx Pkts Rcvd:", ep->wstats.rx_pkts_rcvd);
+		                   FRMT_STR, "Rx Pkts Rcvd:", ep->wstats.rx_pkts_rcvd);
 		cnt += nbytes;
 
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			FRMT_STR, "Rx Pkts Status Rcvd:",
-			ep->wstats.rx_pkts_status_rcvd);
+		                   FRMT_STR, "Rx Pkts Status Rcvd:",
+		                   ep->wstats.rx_pkts_status_rcvd);
 		cnt += nbytes;
 
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			FRMT_STR, "Rx DH Rcvd:", ep->wstats.rx_hd_rcvd);
+		                   FRMT_STR, "Rx DH Rcvd:", ep->wstats.rx_hd_rcvd);
 		cnt += nbytes;
 
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			FRMT_STR, "Rx DH Processed:",
-			ep->wstats.rx_hd_processed);
+		                   FRMT_STR, "Rx DH Processed:",
+		                   ep->wstats.rx_hd_processed);
 		cnt += nbytes;
 
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			FRMT_STR, "Rx DH Sent Back:", ep->wstats.rx_hd_reply);
+		                   FRMT_STR, "Rx DH Sent Back:", ep->wstats.rx_hd_reply);
 		cnt += nbytes;
 
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			FRMT_STR, "Rx Pkt Leak:", ep->wstats.rx_pkt_leak);
+		                   FRMT_STR, "Rx Pkt Leak:", ep->wstats.rx_pkt_leak);
 		cnt += nbytes;
 
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			FRMT_STR1, "Rx DP Fail:", ep->wstats.rx_dp_fail);
+		                   FRMT_STR1, "Rx DP Fail:", ep->wstats.rx_dp_fail);
 		cnt += nbytes;
 
 	} while (0);
 
 	client = IPA_CLIENT_WLAN1_CONS;
 	nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR,
-		"Client IPA_CLIENT_WLAN1_CONS Stats:");
+	                   "Client IPA_CLIENT_WLAN1_CONS Stats:");
 	cnt += nbytes;
 	while (1) {
 		ipa_ep_idx = ipa2_get_ep_mapping(client);
 		if (ipa_ep_idx == -1) {
 			nbytes = scnprintf(dbg_buff + cnt,
-				IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR, "Not up");
+			                   IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR, "Not up");
 			cnt += nbytes;
 			goto nxt_clnt_cons;
 		}
@@ -1045,76 +1045,76 @@ static ssize_t ipa_read_wstats(struct file *file, char __user *ubuf,
 		ep = &ipa_ctx->ep[ipa_ep_idx];
 		if (ep->valid != 1) {
 			nbytes = scnprintf(dbg_buff + cnt,
-				IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR, "Not up");
+			                   IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR, "Not up");
 			cnt += nbytes;
 			goto nxt_clnt_cons;
 		}
 
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			FRMT_STR, "Tx Pkts Received:", ep->wstats.tx_pkts_rcvd);
+		                   FRMT_STR, "Tx Pkts Received:", ep->wstats.tx_pkts_rcvd);
 		cnt += nbytes;
 
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			FRMT_STR, "Tx Pkts Sent:", ep->wstats.tx_pkts_sent);
+		                   FRMT_STR, "Tx Pkts Sent:", ep->wstats.tx_pkts_sent);
 		cnt += nbytes;
 
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			FRMT_STR1, "Tx Pkts Dropped:",
-			ep->wstats.tx_pkts_dropped);
+		                   FRMT_STR1, "Tx Pkts Dropped:",
+		                   ep->wstats.tx_pkts_dropped);
 		cnt += nbytes;
 
 nxt_clnt_cons:
-			switch (client) {
-			case IPA_CLIENT_WLAN1_CONS:
-				client = IPA_CLIENT_WLAN2_CONS;
-				nbytes = scnprintf(dbg_buff + cnt,
-					IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR,
-					"Client IPA_CLIENT_WLAN2_CONS Stats:");
-				cnt += nbytes;
-				continue;
-			case IPA_CLIENT_WLAN2_CONS:
-				client = IPA_CLIENT_WLAN3_CONS;
-				nbytes = scnprintf(dbg_buff + cnt,
-					IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR,
-					"Client IPA_CLIENT_WLAN3_CONS Stats:");
-				cnt += nbytes;
-				continue;
-			case IPA_CLIENT_WLAN3_CONS:
-				client = IPA_CLIENT_WLAN4_CONS;
-				nbytes = scnprintf(dbg_buff + cnt,
-					IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR,
-					"Client IPA_CLIENT_WLAN4_CONS Stats:");
-				cnt += nbytes;
-				continue;
-			case IPA_CLIENT_WLAN4_CONS:
-			default:
-				break;
-			}
+		switch (client) {
+		case IPA_CLIENT_WLAN1_CONS:
+			client = IPA_CLIENT_WLAN2_CONS;
+			nbytes = scnprintf(dbg_buff + cnt,
+			                   IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR,
+			                   "Client IPA_CLIENT_WLAN2_CONS Stats:");
+			cnt += nbytes;
+			continue;
+		case IPA_CLIENT_WLAN2_CONS:
+			client = IPA_CLIENT_WLAN3_CONS;
+			nbytes = scnprintf(dbg_buff + cnt,
+			                   IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR,
+			                   "Client IPA_CLIENT_WLAN3_CONS Stats:");
+			cnt += nbytes;
+			continue;
+		case IPA_CLIENT_WLAN3_CONS:
+			client = IPA_CLIENT_WLAN4_CONS;
+			nbytes = scnprintf(dbg_buff + cnt,
+			                   IPA_MAX_MSG_LEN - cnt, HEAD_FRMT_STR,
+			                   "Client IPA_CLIENT_WLAN4_CONS Stats:");
+			cnt += nbytes;
+			continue;
+		case IPA_CLIENT_WLAN4_CONS:
+		default:
+			break;
+		}
 		break;
 	}
 
 	nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-		"\n"HEAD_FRMT_STR, "All Wlan Consumer pipes stats:");
+	                   "\n"HEAD_FRMT_STR, "All Wlan Consumer pipes stats:");
 	cnt += nbytes;
 
 	nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt, FRMT_STR,
-		"Tx Comm Buff Allocated:",
-		ipa_ctx->wc_memb.wlan_comm_total_cnt);
+	                   "Tx Comm Buff Allocated:",
+	                   ipa_ctx->wc_memb.wlan_comm_total_cnt);
 	cnt += nbytes;
 
 	nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt, FRMT_STR,
-		"Tx Comm Buff Avail:", ipa_ctx->wc_memb.wlan_comm_free_cnt);
+	                   "Tx Comm Buff Avail:", ipa_ctx->wc_memb.wlan_comm_free_cnt);
 	cnt += nbytes;
 
 	nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt, FRMT_STR1,
-		"Total Tx Pkts Freed:", ipa_ctx->wc_memb.total_tx_pkts_freed);
+	                   "Total Tx Pkts Freed:", ipa_ctx->wc_memb.total_tx_pkts_freed);
 	cnt += nbytes;
 
 	return simple_read_from_buffer(ubuf, count, ppos, dbg_buff, cnt);
 }
 
 static ssize_t ipa_read_ntn(struct file *file, char __user *ubuf,
-		size_t count, loff_t *ppos)
+                            size_t count, loff_t *ppos)
 {
 #define TX_STATS(y) \
 	ipa_ctx->uc_ntn_ctx.ntn_uc_stats_mmio->tx_ch_stats[0].y
@@ -1127,90 +1127,90 @@ static ssize_t ipa_read_ntn(struct file *file, char __user *ubuf,
 
 	if (!ipa2_get_ntn_stats(&stats)) {
 		nbytes = scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-			"TX num_pkts_processed=%u\n"
-			"TX tail_ptr_val=%u\n"
-			"TX num_db_fired=%u\n"
-			"TX ringFull=%u\n"
-			"TX ringEmpty=%u\n"
-			"TX ringUsageHigh=%u\n"
-			"TX ringUsageLow=%u\n"
-			"TX RingUtilCount=%u\n"
-			"TX bamFifoFull=%u\n"
-			"TX bamFifoEmpty=%u\n"
-			"TX bamFifoUsageHigh=%u\n"
-			"TX bamFifoUsageLow=%u\n"
-			"TX bamUtilCount=%u\n"
-			"TX num_db=%u\n"
-			"TX num_unexpected_db=%u\n"
-			"TX num_bam_int_handled=%u\n"
-			"TX num_bam_int_in_non_running_state=%u\n"
-			"TX num_qmb_int_handled=%u\n"
-			"TX num_bam_int_handled_while_wait_for_bam=%u\n"
-			"TX num_bam_int_handled_while_not_in_bam=%u\n",
-			TX_STATS(num_pkts_processed),
-			TX_STATS(tail_ptr_val),
-			TX_STATS(num_db_fired),
-			TX_STATS(tx_comp_ring_stats.ringFull),
-			TX_STATS(tx_comp_ring_stats.ringEmpty),
-			TX_STATS(tx_comp_ring_stats.ringUsageHigh),
-			TX_STATS(tx_comp_ring_stats.ringUsageLow),
-			TX_STATS(tx_comp_ring_stats.RingUtilCount),
-			TX_STATS(bam_stats.bamFifoFull),
-			TX_STATS(bam_stats.bamFifoEmpty),
-			TX_STATS(bam_stats.bamFifoUsageHigh),
-			TX_STATS(bam_stats.bamFifoUsageLow),
-			TX_STATS(bam_stats.bamUtilCount),
-			TX_STATS(num_db),
-			TX_STATS(num_unexpected_db),
-			TX_STATS(num_bam_int_handled),
-			TX_STATS(num_bam_int_in_non_running_state),
-			TX_STATS(num_qmb_int_handled),
-			TX_STATS(num_bam_int_handled_while_wait_for_bam),
-			TX_STATS(num_bam_int_handled_while_not_in_bam));
+		                   "TX num_pkts_processed=%u\n"
+		                   "TX tail_ptr_val=%u\n"
+		                   "TX num_db_fired=%u\n"
+		                   "TX ringFull=%u\n"
+		                   "TX ringEmpty=%u\n"
+		                   "TX ringUsageHigh=%u\n"
+		                   "TX ringUsageLow=%u\n"
+		                   "TX RingUtilCount=%u\n"
+		                   "TX bamFifoFull=%u\n"
+		                   "TX bamFifoEmpty=%u\n"
+		                   "TX bamFifoUsageHigh=%u\n"
+		                   "TX bamFifoUsageLow=%u\n"
+		                   "TX bamUtilCount=%u\n"
+		                   "TX num_db=%u\n"
+		                   "TX num_unexpected_db=%u\n"
+		                   "TX num_bam_int_handled=%u\n"
+		                   "TX num_bam_int_in_non_running_state=%u\n"
+		                   "TX num_qmb_int_handled=%u\n"
+		                   "TX num_bam_int_handled_while_wait_for_bam=%u\n"
+		                   "TX num_bam_int_handled_while_not_in_bam=%u\n",
+		                   TX_STATS(num_pkts_processed),
+		                   TX_STATS(tail_ptr_val),
+		                   TX_STATS(num_db_fired),
+		                   TX_STATS(tx_comp_ring_stats.ringFull),
+		                   TX_STATS(tx_comp_ring_stats.ringEmpty),
+		                   TX_STATS(tx_comp_ring_stats.ringUsageHigh),
+		                   TX_STATS(tx_comp_ring_stats.ringUsageLow),
+		                   TX_STATS(tx_comp_ring_stats.RingUtilCount),
+		                   TX_STATS(bam_stats.bamFifoFull),
+		                   TX_STATS(bam_stats.bamFifoEmpty),
+		                   TX_STATS(bam_stats.bamFifoUsageHigh),
+		                   TX_STATS(bam_stats.bamFifoUsageLow),
+		                   TX_STATS(bam_stats.bamUtilCount),
+		                   TX_STATS(num_db),
+		                   TX_STATS(num_unexpected_db),
+		                   TX_STATS(num_bam_int_handled),
+		                   TX_STATS(num_bam_int_in_non_running_state),
+		                   TX_STATS(num_qmb_int_handled),
+		                   TX_STATS(num_bam_int_handled_while_wait_for_bam),
+		                   TX_STATS(num_bam_int_handled_while_not_in_bam));
 		cnt += nbytes;
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			"RX max_outstanding_pkts=%u\n"
-			"RX num_pkts_processed=%u\n"
-			"RX rx_ring_rp_value=%u\n"
-			"RX ringFull=%u\n"
-			"RX ringEmpty=%u\n"
-			"RX ringUsageHigh=%u\n"
-			"RX ringUsageLow=%u\n"
-			"RX RingUtilCount=%u\n"
-			"RX bamFifoFull=%u\n"
-			"RX bamFifoEmpty=%u\n"
-			"RX bamFifoUsageHigh=%u\n"
-			"RX bamFifoUsageLow=%u\n"
-			"RX bamUtilCount=%u\n"
-			"RX num_bam_int_handled=%u\n"
-			"RX num_db=%u\n"
-			"RX num_unexpected_db=%u\n"
-			"RX num_pkts_in_dis_uninit_state=%u\n"
-			"num_ic_inj_vdev_change=%u\n"
-			"num_ic_inj_fw_desc_change=%u\n",
-			RX_STATS(max_outstanding_pkts),
-			RX_STATS(num_pkts_processed),
-			RX_STATS(rx_ring_rp_value),
-			RX_STATS(rx_ind_ring_stats.ringFull),
-			RX_STATS(rx_ind_ring_stats.ringEmpty),
-			RX_STATS(rx_ind_ring_stats.ringUsageHigh),
-			RX_STATS(rx_ind_ring_stats.ringUsageLow),
-			RX_STATS(rx_ind_ring_stats.RingUtilCount),
-			RX_STATS(bam_stats.bamFifoFull),
-			RX_STATS(bam_stats.bamFifoEmpty),
-			RX_STATS(bam_stats.bamFifoUsageHigh),
-			RX_STATS(bam_stats.bamFifoUsageLow),
-			RX_STATS(bam_stats.bamUtilCount),
-			RX_STATS(num_bam_int_handled),
-			RX_STATS(num_db),
-			RX_STATS(num_unexpected_db),
-			RX_STATS(num_pkts_in_dis_uninit_state),
-			RX_STATS(num_bam_int_handled_while_not_in_bam),
-			RX_STATS(num_bam_int_handled_while_in_bam_state));
+		                   "RX max_outstanding_pkts=%u\n"
+		                   "RX num_pkts_processed=%u\n"
+		                   "RX rx_ring_rp_value=%u\n"
+		                   "RX ringFull=%u\n"
+		                   "RX ringEmpty=%u\n"
+		                   "RX ringUsageHigh=%u\n"
+		                   "RX ringUsageLow=%u\n"
+		                   "RX RingUtilCount=%u\n"
+		                   "RX bamFifoFull=%u\n"
+		                   "RX bamFifoEmpty=%u\n"
+		                   "RX bamFifoUsageHigh=%u\n"
+		                   "RX bamFifoUsageLow=%u\n"
+		                   "RX bamUtilCount=%u\n"
+		                   "RX num_bam_int_handled=%u\n"
+		                   "RX num_db=%u\n"
+		                   "RX num_unexpected_db=%u\n"
+		                   "RX num_pkts_in_dis_uninit_state=%u\n"
+		                   "num_ic_inj_vdev_change=%u\n"
+		                   "num_ic_inj_fw_desc_change=%u\n",
+		                   RX_STATS(max_outstanding_pkts),
+		                   RX_STATS(num_pkts_processed),
+		                   RX_STATS(rx_ring_rp_value),
+		                   RX_STATS(rx_ind_ring_stats.ringFull),
+		                   RX_STATS(rx_ind_ring_stats.ringEmpty),
+		                   RX_STATS(rx_ind_ring_stats.ringUsageHigh),
+		                   RX_STATS(rx_ind_ring_stats.ringUsageLow),
+		                   RX_STATS(rx_ind_ring_stats.RingUtilCount),
+		                   RX_STATS(bam_stats.bamFifoFull),
+		                   RX_STATS(bam_stats.bamFifoEmpty),
+		                   RX_STATS(bam_stats.bamFifoUsageHigh),
+		                   RX_STATS(bam_stats.bamFifoUsageLow),
+		                   RX_STATS(bam_stats.bamUtilCount),
+		                   RX_STATS(num_bam_int_handled),
+		                   RX_STATS(num_db),
+		                   RX_STATS(num_unexpected_db),
+		                   RX_STATS(num_pkts_in_dis_uninit_state),
+		                   RX_STATS(num_bam_int_handled_while_not_in_bam),
+		                   RX_STATS(num_bam_int_handled_while_in_bam_state));
 		cnt += nbytes;
 	} else {
 		nbytes = scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-				"Fail to read NTN stats\n");
+		                   "Fail to read NTN stats\n");
 		cnt += nbytes;
 	}
 
@@ -1218,7 +1218,7 @@ static ssize_t ipa_read_ntn(struct file *file, char __user *ubuf,
 }
 
 static ssize_t ipa_read_wdi(struct file *file, char __user *ubuf,
-		size_t count, loff_t *ppos)
+                            size_t count, loff_t *ppos)
 {
 	struct IpaHwStatsWDIInfoData_t stats;
 	int nbytes;
@@ -1226,95 +1226,95 @@ static ssize_t ipa_read_wdi(struct file *file, char __user *ubuf,
 
 	if (!ipa2_get_wdi_stats(&stats)) {
 		nbytes = scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-			"TX num_pkts_processed=%u\n"
-			"TX copy_engine_doorbell_value=%u\n"
-			"TX num_db_fired=%u\n"
-			"TX ringFull=%u\n"
-			"TX ringEmpty=%u\n"
-			"TX ringUsageHigh=%u\n"
-			"TX ringUsageLow=%u\n"
-			"TX RingUtilCount=%u\n"
-			"TX bamFifoFull=%u\n"
-			"TX bamFifoEmpty=%u\n"
-			"TX bamFifoUsageHigh=%u\n"
-			"TX bamFifoUsageLow=%u\n"
-			"TX bamUtilCount=%u\n"
-			"TX num_db=%u\n"
-			"TX num_unexpected_db=%u\n"
-			"TX num_bam_int_handled=%u\n"
-			"TX num_bam_int_in_non_runnning_state=%u\n"
-			"TX num_qmb_int_handled=%u\n"
-			"TX num_bam_int_handled_while_wait_for_bam=%u\n",
-			stats.tx_ch_stats.num_pkts_processed,
-			stats.tx_ch_stats.copy_engine_doorbell_value,
-			stats.tx_ch_stats.num_db_fired,
-			stats.tx_ch_stats.tx_comp_ring_stats.ringFull,
-			stats.tx_ch_stats.tx_comp_ring_stats.ringEmpty,
-			stats.tx_ch_stats.tx_comp_ring_stats.ringUsageHigh,
-			stats.tx_ch_stats.tx_comp_ring_stats.ringUsageLow,
-			stats.tx_ch_stats.tx_comp_ring_stats.RingUtilCount,
-			stats.tx_ch_stats.bam_stats.bamFifoFull,
-			stats.tx_ch_stats.bam_stats.bamFifoEmpty,
-			stats.tx_ch_stats.bam_stats.bamFifoUsageHigh,
-			stats.tx_ch_stats.bam_stats.bamFifoUsageLow,
-			stats.tx_ch_stats.bam_stats.bamUtilCount,
-			stats.tx_ch_stats.num_db,
-			stats.tx_ch_stats.num_unexpected_db,
-			stats.tx_ch_stats.num_bam_int_handled,
-			stats.tx_ch_stats.num_bam_int_in_non_runnning_state,
-			stats.tx_ch_stats.num_qmb_int_handled,
-			stats.tx_ch_stats.
-				num_bam_int_handled_while_wait_for_bam);
+		                   "TX num_pkts_processed=%u\n"
+		                   "TX copy_engine_doorbell_value=%u\n"
+		                   "TX num_db_fired=%u\n"
+		                   "TX ringFull=%u\n"
+		                   "TX ringEmpty=%u\n"
+		                   "TX ringUsageHigh=%u\n"
+		                   "TX ringUsageLow=%u\n"
+		                   "TX RingUtilCount=%u\n"
+		                   "TX bamFifoFull=%u\n"
+		                   "TX bamFifoEmpty=%u\n"
+		                   "TX bamFifoUsageHigh=%u\n"
+		                   "TX bamFifoUsageLow=%u\n"
+		                   "TX bamUtilCount=%u\n"
+		                   "TX num_db=%u\n"
+		                   "TX num_unexpected_db=%u\n"
+		                   "TX num_bam_int_handled=%u\n"
+		                   "TX num_bam_int_in_non_runnning_state=%u\n"
+		                   "TX num_qmb_int_handled=%u\n"
+		                   "TX num_bam_int_handled_while_wait_for_bam=%u\n",
+		                   stats.tx_ch_stats.num_pkts_processed,
+		                   stats.tx_ch_stats.copy_engine_doorbell_value,
+		                   stats.tx_ch_stats.num_db_fired,
+		                   stats.tx_ch_stats.tx_comp_ring_stats.ringFull,
+		                   stats.tx_ch_stats.tx_comp_ring_stats.ringEmpty,
+		                   stats.tx_ch_stats.tx_comp_ring_stats.ringUsageHigh,
+		                   stats.tx_ch_stats.tx_comp_ring_stats.ringUsageLow,
+		                   stats.tx_ch_stats.tx_comp_ring_stats.RingUtilCount,
+		                   stats.tx_ch_stats.bam_stats.bamFifoFull,
+		                   stats.tx_ch_stats.bam_stats.bamFifoEmpty,
+		                   stats.tx_ch_stats.bam_stats.bamFifoUsageHigh,
+		                   stats.tx_ch_stats.bam_stats.bamFifoUsageLow,
+		                   stats.tx_ch_stats.bam_stats.bamUtilCount,
+		                   stats.tx_ch_stats.num_db,
+		                   stats.tx_ch_stats.num_unexpected_db,
+		                   stats.tx_ch_stats.num_bam_int_handled,
+		                   stats.tx_ch_stats.num_bam_int_in_non_runnning_state,
+		                   stats.tx_ch_stats.num_qmb_int_handled,
+		                   stats.tx_ch_stats.
+		                   num_bam_int_handled_while_wait_for_bam);
 		cnt += nbytes;
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-			"RX max_outstanding_pkts=%u\n"
-			"RX num_pkts_processed=%u\n"
-			"RX rx_ring_rp_value=%u\n"
-			"RX ringFull=%u\n"
-			"RX ringEmpty=%u\n"
-			"RX ringUsageHigh=%u\n"
-			"RX ringUsageLow=%u\n"
-			"RX RingUtilCount=%u\n"
-			"RX bamFifoFull=%u\n"
-			"RX bamFifoEmpty=%u\n"
-			"RX bamFifoUsageHigh=%u\n"
-			"RX bamFifoUsageLow=%u\n"
-			"RX bamUtilCount=%u\n"
-			"RX num_bam_int_handled=%u\n"
-			"RX num_db=%u\n"
-			"RX num_unexpected_db=%u\n"
-			"RX num_pkts_in_dis_uninit_state=%u\n"
-			"RX num_ic_inj_vdev_change=%u\n"
-			"RX num_ic_inj_fw_desc_change=%u\n"
-			"RX num_qmb_int_handled=%u\n"
-			"RX reserved1=%u\n"
-			"RX reserved2=%u\n",
-			stats.rx_ch_stats.max_outstanding_pkts,
-			stats.rx_ch_stats.num_pkts_processed,
-			stats.rx_ch_stats.rx_ring_rp_value,
-			stats.rx_ch_stats.rx_ind_ring_stats.ringFull,
-			stats.rx_ch_stats.rx_ind_ring_stats.ringEmpty,
-			stats.rx_ch_stats.rx_ind_ring_stats.ringUsageHigh,
-			stats.rx_ch_stats.rx_ind_ring_stats.ringUsageLow,
-			stats.rx_ch_stats.rx_ind_ring_stats.RingUtilCount,
-			stats.rx_ch_stats.bam_stats.bamFifoFull,
-			stats.rx_ch_stats.bam_stats.bamFifoEmpty,
-			stats.rx_ch_stats.bam_stats.bamFifoUsageHigh,
-			stats.rx_ch_stats.bam_stats.bamFifoUsageLow,
-			stats.rx_ch_stats.bam_stats.bamUtilCount,
-			stats.rx_ch_stats.num_bam_int_handled,
-			stats.rx_ch_stats.num_db,
-			stats.rx_ch_stats.num_unexpected_db,
-			stats.rx_ch_stats.num_pkts_in_dis_uninit_state,
-			stats.rx_ch_stats.num_ic_inj_vdev_change,
-			stats.rx_ch_stats.num_ic_inj_fw_desc_change,
-			stats.rx_ch_stats.num_qmb_int_handled,
-			stats.rx_ch_stats.reserved1,
-			stats.rx_ch_stats.reserved2);
+		                   "RX max_outstanding_pkts=%u\n"
+		                   "RX num_pkts_processed=%u\n"
+		                   "RX rx_ring_rp_value=%u\n"
+		                   "RX ringFull=%u\n"
+		                   "RX ringEmpty=%u\n"
+		                   "RX ringUsageHigh=%u\n"
+		                   "RX ringUsageLow=%u\n"
+		                   "RX RingUtilCount=%u\n"
+		                   "RX bamFifoFull=%u\n"
+		                   "RX bamFifoEmpty=%u\n"
+		                   "RX bamFifoUsageHigh=%u\n"
+		                   "RX bamFifoUsageLow=%u\n"
+		                   "RX bamUtilCount=%u\n"
+		                   "RX num_bam_int_handled=%u\n"
+		                   "RX num_db=%u\n"
+		                   "RX num_unexpected_db=%u\n"
+		                   "RX num_pkts_in_dis_uninit_state=%u\n"
+		                   "RX num_ic_inj_vdev_change=%u\n"
+		                   "RX num_ic_inj_fw_desc_change=%u\n"
+		                   "RX num_qmb_int_handled=%u\n"
+		                   "RX reserved1=%u\n"
+		                   "RX reserved2=%u\n",
+		                   stats.rx_ch_stats.max_outstanding_pkts,
+		                   stats.rx_ch_stats.num_pkts_processed,
+		                   stats.rx_ch_stats.rx_ring_rp_value,
+		                   stats.rx_ch_stats.rx_ind_ring_stats.ringFull,
+		                   stats.rx_ch_stats.rx_ind_ring_stats.ringEmpty,
+		                   stats.rx_ch_stats.rx_ind_ring_stats.ringUsageHigh,
+		                   stats.rx_ch_stats.rx_ind_ring_stats.ringUsageLow,
+		                   stats.rx_ch_stats.rx_ind_ring_stats.RingUtilCount,
+		                   stats.rx_ch_stats.bam_stats.bamFifoFull,
+		                   stats.rx_ch_stats.bam_stats.bamFifoEmpty,
+		                   stats.rx_ch_stats.bam_stats.bamFifoUsageHigh,
+		                   stats.rx_ch_stats.bam_stats.bamFifoUsageLow,
+		                   stats.rx_ch_stats.bam_stats.bamUtilCount,
+		                   stats.rx_ch_stats.num_bam_int_handled,
+		                   stats.rx_ch_stats.num_db,
+		                   stats.rx_ch_stats.num_unexpected_db,
+		                   stats.rx_ch_stats.num_pkts_in_dis_uninit_state,
+		                   stats.rx_ch_stats.num_ic_inj_vdev_change,
+		                   stats.rx_ch_stats.num_ic_inj_fw_desc_change,
+		                   stats.rx_ch_stats.num_qmb_int_handled,
+		                   stats.rx_ch_stats.reserved1,
+		                   stats.rx_ch_stats.reserved2);
 		cnt += nbytes;
 	} else {
 		nbytes = scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-				"Fail to read WDI stats\n");
+		                   "Fail to read WDI stats\n");
 		cnt += nbytes;
 	}
 
@@ -1325,24 +1325,24 @@ void _ipa_write_dbg_cnt_v1_1(int option)
 {
 	if (option == 1)
 		ipa_write_reg(ipa_ctx->mmio, IPA_DEBUG_CNT_CTRL_N_OFST_v1_1(0),
-				IPA_DBG_CNTR_ON);
+		              IPA_DBG_CNTR_ON);
 	else
 		ipa_write_reg(ipa_ctx->mmio, IPA_DEBUG_CNT_CTRL_N_OFST_v1_1(0),
-				IPA_DBG_CNTR_OFF);
+		              IPA_DBG_CNTR_OFF);
 }
 
 void _ipa_write_dbg_cnt_v2_0(int option)
 {
 	if (option == 1)
 		ipa_write_reg(ipa_ctx->mmio, IPA_DEBUG_CNT_CTRL_N_OFST_v2_0(0),
-				IPA_DBG_CNTR_ON);
+		              IPA_DBG_CNTR_ON);
 	else
 		ipa_write_reg(ipa_ctx->mmio, IPA_DEBUG_CNT_CTRL_N_OFST_v2_0(0),
-				IPA_DBG_CNTR_OFF);
+		              IPA_DBG_CNTR_OFF);
 }
 
 static ssize_t ipa_write_dbg_cnt(struct file *file, const char __user *buf,
-		size_t count, loff_t *ppos)
+                                 size_t count, loff_t *ppos)
 {
 	unsigned long missing;
 	u32 option = 0;
@@ -1370,10 +1370,10 @@ int _ipa_read_dbg_cnt_v1_1(char *buf, int max_len)
 	int regval;
 
 	regval = ipa_read_reg(ipa_ctx->mmio,
-			IPA_DEBUG_CNT_REG_N_OFST_v1_1(0));
+	                      IPA_DEBUG_CNT_REG_N_OFST_v1_1(0));
 
 	return scnprintf(buf, max_len,
-			"IPA_DEBUG_CNT_REG_0=0x%x\n", regval);
+	                 "IPA_DEBUG_CNT_REG_0=0x%x\n", regval);
 }
 
 int _ipa_read_dbg_cnt_v2_0(char *buf, int max_len)
@@ -1381,14 +1381,14 @@ int _ipa_read_dbg_cnt_v2_0(char *buf, int max_len)
 	int regval;
 
 	regval = ipa_read_reg(ipa_ctx->mmio,
-			IPA_DEBUG_CNT_REG_N_OFST_v2_0(0));
+	                      IPA_DEBUG_CNT_REG_N_OFST_v2_0(0));
 
 	return scnprintf(buf, max_len,
-			"IPA_DEBUG_CNT_REG_0=0x%x\n", regval);
+	                 "IPA_DEBUG_CNT_REG_0=0x%x\n", regval);
 }
 
 static ssize_t ipa_read_dbg_cnt(struct file *file, char __user *ubuf,
-		size_t count, loff_t *ppos)
+                                size_t count, loff_t *ppos)
 {
 	int nbytes;
 
@@ -1400,7 +1400,7 @@ static ssize_t ipa_read_dbg_cnt(struct file *file, char __user *ubuf,
 }
 
 static ssize_t ipa_read_msg(struct file *file, char __user *ubuf,
-		size_t count, loff_t *ppos)
+                            size_t count, loff_t *ppos)
 {
 	int nbytes;
 	int cnt = 0;
@@ -1408,10 +1408,10 @@ static ssize_t ipa_read_msg(struct file *file, char __user *ubuf,
 
 	for (i = 0; i < IPA_EVENT_MAX_NUM; i++) {
 		nbytes = scnprintf(dbg_buff + cnt, IPA_MAX_MSG_LEN - cnt,
-				"msg[%u:%27s] W:%u R:%u\n", i,
-				ipa_event_name[i],
-				ipa_ctx->stats.msg_w[i],
-				ipa_ctx->stats.msg_r[i]);
+		                   "msg[%u:%27s] W:%u R:%u\n", i,
+		                   ipa_event_name[i],
+		                   ipa_ctx->stats.msg_w[i],
+		                   ipa_ctx->stats.msg_r[i]);
 		cnt += nbytes;
 	}
 
@@ -1419,8 +1419,9 @@ static ssize_t ipa_read_msg(struct file *file, char __user *ubuf,
 }
 
 static ssize_t ipa_read_nat4(struct file *file,
-		char __user *ubuf, size_t count,
-		loff_t *ppos) {
+                             char __user *ubuf, size_t count,
+                             loff_t *ppos)
+{
 
 #define ENTRY_U32_FIELDS 8
 #define NAT_ENTRY_ENABLE 0x8000
@@ -1436,17 +1437,17 @@ static ssize_t ipa_read_nat4(struct file *file,
 
 	value = ipa_ctx->nat_mem.public_ip_addr;
 	pr_err(
-				"Table IP Address:%d.%d.%d.%d\n",
-				((value & 0xFF000000) >> 24),
-				((value & 0x00FF0000) >> 16),
-				((value & 0x0000FF00) >> 8),
-				((value & 0x000000FF)));
+	    "Table IP Address:%d.%d.%d.%d\n",
+	    ((value & 0xFF000000) >> 24),
+	    ((value & 0x00FF0000) >> 16),
+	    ((value & 0x0000FF00) >> 8),
+	    ((value & 0x000000FF)));
 
 	pr_err("Table Size:%d\n",
-				ipa_ctx->nat_mem.size_base_tables);
+	       ipa_ctx->nat_mem.size_base_tables);
 
 	pr_err("Expansion Table Size:%d\n",
-				ipa_ctx->nat_mem.size_expansion_tables-1);
+	       ipa_ctx->nat_mem.size_expansion_tables-1);
 
 	if (!ipa_ctx->nat_mem.is_sys_mem)
 		pr_err("Not supported for local(shared) memory\n");
@@ -1462,7 +1463,7 @@ static ssize_t ipa_read_nat4(struct file *file,
 		} else {
 			tbl_size = ipa_ctx->nat_mem.size_expansion_tables-1;
 			base_tbl =
-			 (u32 *)ipa_ctx->nat_mem.ipv4_expansion_rules_addr;
+			    (u32 *)ipa_ctx->nat_mem.ipv4_expansion_rules_addr;
 
 			pr_err("\nExpansion Base Table:\n");
 		}
@@ -1479,69 +1480,69 @@ static ssize_t ipa_read_nat4(struct file *file,
 
 					value = *tmp;
 					pr_err(
-						"Private_IP:%d.%d.%d.%d ",
-						((value & 0xFF000000) >> 24),
-						((value & 0x00FF0000) >> 16),
-						((value & 0x0000FF00) >> 8),
-						((value & 0x000000FF)));
+					    "Private_IP:%d.%d.%d.%d ",
+					    ((value & 0xFF000000) >> 24),
+					    ((value & 0x00FF0000) >> 16),
+					    ((value & 0x0000FF00) >> 8),
+					    ((value & 0x000000FF)));
 					tmp++;
 
 					value = *tmp;
 					pr_err(
-						"Target_IP:%d.%d.%d.%d ",
-						((value & 0xFF000000) >> 24),
-						((value & 0x00FF0000) >> 16),
-						((value & 0x0000FF00) >> 8),
-						((value & 0x000000FF)));
+					    "Target_IP:%d.%d.%d.%d ",
+					    ((value & 0xFF000000) >> 24),
+					    ((value & 0x00FF0000) >> 16),
+					    ((value & 0x0000FF00) >> 8),
+					    ((value & 0x000000FF)));
 					tmp++;
 
 					value = *tmp;
 					pr_err(
-						"Next_Index:%d  Public_Port:%d ",
-						(value & 0x0000FFFF),
-						((value & 0xFFFF0000) >> 16));
+					    "Next_Index:%d  Public_Port:%d ",
+					    (value & 0x0000FFFF),
+					    ((value & 0xFFFF0000) >> 16));
 					tmp++;
 
 					value = *tmp;
 					pr_err(
-						"Private_Port:%d  Target_Port:%d ",
-						(value & 0x0000FFFF),
-						((value & 0xFFFF0000) >> 16));
+					    "Private_Port:%d  Target_Port:%d ",
+					    (value & 0x0000FFFF),
+					    ((value & 0xFFFF0000) >> 16));
 					tmp++;
 
 					value = *tmp;
 					flag = ((value & 0xFFFF0000) >> 16);
 					if (flag & NAT_ENTRY_RST_FIN_BIT) {
 						pr_err(
-								"IP_CKSM_delta:0x%x  Flags:%s ",
-							  (value & 0x0000FFFF),
-								"Direct_To_A5");
+						    "IP_CKSM_delta:0x%x  Flags:%s ",
+						    (value & 0x0000FFFF),
+						    "Direct_To_A5");
 					} else {
 						pr_err(
-							"IP_CKSM_delta:0x%x  Flags:%s ",
-							(value & 0x0000FFFF),
-							"Fwd_to_route");
+						    "IP_CKSM_delta:0x%x  Flags:%s ",
+						    (value & 0x0000FFFF),
+						    "Fwd_to_route");
 					}
 					tmp++;
 
 					value = *tmp;
 					pr_err(
-						"Time_stamp:0x%x Proto:%d ",
-						(value & 0x00FFFFFF),
-						((value & 0xFF000000) >> 24));
+					    "Time_stamp:0x%x Proto:%d ",
+					    (value & 0x00FFFFFF),
+					    ((value & 0xFF000000) >> 24));
 					tmp++;
 
 					value = *tmp;
 					pr_err(
-						"Prev_Index:%d  Indx_tbl_entry:%d ",
-						(value & 0x0000FFFF),
-						((value & 0xFFFF0000) >> 16));
+					    "Prev_Index:%d  Indx_tbl_entry:%d ",
+					    (value & 0x0000FFFF),
+					    ((value & 0xFFFF0000) >> 16));
 					tmp++;
 
 					value = *tmp;
 					pr_err(
-						"TCP_UDP_cksum_delta:0x%x\n",
-						((value & 0xFFFF0000) >> 16));
+					    "TCP_UDP_cksum_delta:0x%x\n",
+					    ((value & 0xFFFF0000) >> 16));
 				}
 
 				base_tbl += ENTRY_U32_FIELDS;
@@ -1561,7 +1562,7 @@ static ssize_t ipa_read_nat4(struct file *file,
 		} else {
 			tbl_size = ipa_ctx->nat_mem.size_expansion_tables-1;
 			indx_tbl =
-			 (u32 *)ipa_ctx->nat_mem.index_table_expansion_addr;
+			    (u32 *)ipa_ctx->nat_mem.index_table_expansion_addr;
 
 			pr_err("\nExpansion Index Table:\n");
 		}
@@ -1577,9 +1578,9 @@ static ssize_t ipa_read_nat4(struct file *file,
 
 					value = *tmp;
 					pr_err(
-						"Table_Entry:%d  Next_Index:%d\n",
-						tbl_entry,
-						((value & 0xFFFF0000) >> 16));
+					    "Table_Entry:%d  Next_Index:%d\n",
+					    tbl_entry,
+					    ((value & 0xFFFF0000) >> 16));
 				}
 
 				indx_tbl++;
@@ -1592,14 +1593,14 @@ static ssize_t ipa_read_nat4(struct file *file,
 }
 
 static ssize_t ipa_rm_read_stats(struct file *file, char __user *ubuf,
-		size_t count, loff_t *ppos)
+                                 size_t count, loff_t *ppos)
 {
 	int result, nbytes, cnt = 0;
 
 	result = ipa_rm_stat(dbg_buff, IPA_MAX_MSG_LEN);
 	if (result < 0) {
 		nbytes = scnprintf(dbg_buff, IPA_MAX_MSG_LEN,
-				"Error in printing RM stat %d\n", result);
+		                   "Error in printing RM stat %d\n", result);
 		cnt += nbytes;
 	} else
 		cnt += result;
@@ -1651,7 +1652,7 @@ static void ipa_dump_status(struct ipa_hw_pkt_status *status)
 }
 
 static ssize_t ipa_status_stats_read(struct file *file, char __user *ubuf,
-		size_t count, loff_t *ppos)
+                                     size_t count, loff_t *ppos)
 {
 	struct ipa_status_stats *stats;
 	int i, j;
@@ -1666,14 +1667,14 @@ static ssize_t ipa_status_stats_read(struct file *file, char __user *ubuf,
 
 		memcpy(stats, ipa_ctx->ep[i].sys->status_stat, sizeof(*stats));
 		stats->curr = (stats->curr + IPA_MAX_STATUS_STAT_NUM - 1)
-			% IPA_MAX_STATUS_STAT_NUM;
+		              % IPA_MAX_STATUS_STAT_NUM;
 		pr_err("Statuses for pipe %d\n", i);
 		for (j = 0; j < IPA_MAX_STATUS_STAT_NUM; j++) {
 			pr_err("curr=%d\n", stats->curr);
 			ipa_dump_status(&stats->status[stats->curr]);
 			pr_err("\n\n\n");
 			stats->curr = (stats->curr + 1) %
-				IPA_MAX_STATUS_STAT_NUM;
+			              IPA_MAX_STATUS_STAT_NUM;
 		}
 	}
 
@@ -1682,7 +1683,7 @@ static ssize_t ipa_status_stats_read(struct file *file, char __user *ubuf,
 }
 
 static ssize_t ipa2_print_active_clients_log(struct file *file,
-		char __user *ubuf, size_t count, loff_t *ppos)
+        char __user *ubuf, size_t count, loff_t *ppos)
 {
 	int cnt;
 	int table_size;
@@ -1694,17 +1695,17 @@ static ssize_t ipa2_print_active_clients_log(struct file *file,
 	memset(active_clients_buf, 0, IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE);
 	ipa_active_clients_lock();
 	cnt = ipa2_active_clients_log_print_buffer(active_clients_buf,
-			IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE - IPA_MAX_MSG_LEN);
+	        IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE - IPA_MAX_MSG_LEN);
 	table_size = ipa2_active_clients_log_print_table(active_clients_buf
-			+ cnt, IPA_MAX_MSG_LEN);
+	             + cnt, IPA_MAX_MSG_LEN);
 	ipa_active_clients_unlock();
 
 	return simple_read_from_buffer(ubuf, count, ppos, active_clients_buf,
-			cnt + table_size);
+	                               cnt + table_size);
 }
 
 static ssize_t ipa2_clear_active_clients_log(struct file *file,
-		const char __user *ubuf, size_t count, loff_t *ppos)
+        const char __user *ubuf, size_t count, loff_t *ppos)
 {
 	unsigned long missing;
 	s8 option = 0;
@@ -1726,7 +1727,7 @@ static ssize_t ipa2_clear_active_clients_log(struct file *file,
 }
 
 static ssize_t ipa_read_rx_polling_timeout(struct file *file,
-		char __user *ubuf, size_t count, loff_t *ppos)
+        char __user *ubuf, size_t count, loff_t *ppos)
 {
 	int min_cnt;
 	int max_cnt;
@@ -1737,21 +1738,21 @@ static ssize_t ipa_read_rx_polling_timeout(struct file *file,
 	}
 	memset(active_clients_buf, 0, IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE);
 	min_cnt = scnprintf(active_clients_buf,
-		IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE,
-		"Rx Min Poll count = %u\n",
-		ipa_ctx->ipa_rx_min_timeout_usec);
+	                    IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE,
+	                    "Rx Min Poll count = %u\n",
+	                    ipa_ctx->ipa_rx_min_timeout_usec);
 
 	max_cnt = scnprintf(active_clients_buf + min_cnt,
-		IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE,
-		"Rx Max Poll count = %u\n",
-		ipa_ctx->ipa_rx_max_timeout_usec);
+	                    IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE,
+	                    "Rx Max Poll count = %u\n",
+	                    ipa_ctx->ipa_rx_max_timeout_usec);
 
 	return simple_read_from_buffer(ubuf, count, ppos, active_clients_buf,
-			min_cnt + max_cnt);
+	                               min_cnt + max_cnt);
 }
 
 static ssize_t ipa_write_rx_polling_timeout(struct file *file,
-		const char __user *ubuf, size_t count, loff_t *ppos)
+        const char __user *ubuf, size_t count, loff_t *ppos)
 {
 	s8 polltime = 0;
 
@@ -1767,12 +1768,12 @@ static ssize_t ipa_write_rx_polling_timeout(struct file *file,
 		return -EFAULT;
 
 	ipa_rx_timeout_min_max_calc(&ipa_ctx->ipa_rx_min_timeout_usec,
-		&ipa_ctx->ipa_rx_max_timeout_usec, polltime);
+	                            &ipa_ctx->ipa_rx_max_timeout_usec, polltime);
 	return count;
 }
 
 static ssize_t ipa_read_polling_iteration(struct file *file,
-		char __user *ubuf, size_t count, loff_t *ppos)
+        char __user *ubuf, size_t count, loff_t *ppos)
 {
 	int cnt;
 
@@ -1784,15 +1785,15 @@ static ssize_t ipa_read_polling_iteration(struct file *file,
 	memset(active_clients_buf, 0, IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE);
 
 	cnt = scnprintf(active_clients_buf, IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE,
-			"Polling Iteration count = %u\n",
-			ipa_ctx->ipa_polling_iteration);
+	                "Polling Iteration count = %u\n",
+	                ipa_ctx->ipa_polling_iteration);
 
 	return simple_read_from_buffer(ubuf, count, ppos, active_clients_buf,
-			cnt);
+	                               cnt);
 }
 
 static ssize_t ipa_write_polling_iteration(struct file *file,
-		const char __user *ubuf, size_t count, loff_t *ppos)
+        const char __user *ubuf, size_t count, loff_t *ppos)
 {
 	s8 iteration_cnt = 0;
 
@@ -1808,7 +1809,7 @@ static ssize_t ipa_write_polling_iteration(struct file *file,
 		return -EFAULT;
 
 	if ((iteration_cnt >= MIN_POLLING_ITERATION) &&
-		(iteration_cnt <= MAX_POLLING_ITERATION))
+	    (iteration_cnt <= MAX_POLLING_ITERATION))
 		ipa_ctx->ipa_polling_iteration = iteration_cnt;
 	else
 		ipa_ctx->ipa_polling_iteration = MAX_POLLING_ITERATION;
@@ -1817,7 +1818,7 @@ static ssize_t ipa_write_polling_iteration(struct file *file,
 }
 
 static ssize_t ipa_enable_ipc_low(struct file *file,
-	const char __user *ubuf, size_t count, loff_t *ppos)
+                                  const char __user *ubuf, size_t count, loff_t *ppos)
 {
 	unsigned long missing;
 	s8 option = 0;
@@ -1837,8 +1838,8 @@ static ssize_t ipa_enable_ipc_low(struct file *file,
 	if (option) {
 		if (!ipa_ipc_low_buff) {
 			ipa_ipc_low_buff =
-				ipc_log_context_create(IPA_IPC_LOG_PAGES,
-				"ipa_low", 0);
+			    ipc_log_context_create(IPA_IPC_LOG_PAGES,
+			                           "ipa_low", 0);
 			if (ipa_ipc_low_buff == NULL)
 				IPAERR("failed to get logbuf_low\n");
 		}
@@ -1947,7 +1948,7 @@ void ipa_debugfs_init(void)
 {
 	const mode_t read_only_mode = S_IRUSR | S_IRGRP | S_IROTH;
 	const mode_t read_write_mode = S_IRUSR | S_IRGRP | S_IROTH |
-			S_IWUSR | S_IWGRP;
+	                               S_IWUSR | S_IWGRP;
 	const mode_t write_only_mode = S_IWUSR | S_IWGRP;
 	struct dentry *file;
 
@@ -1958,7 +1959,7 @@ void ipa_debugfs_init(void)
 	}
 
 	file = debugfs_create_u32("hw_type", read_only_mode,
-			dent, &ipa_ctx->ipa_hw_type);
+	                          dent, &ipa_ctx->ipa_hw_type);
 	if (!file) {
 		IPAERR("could not create hw_type file\n");
 		goto fail;
@@ -1966,14 +1967,14 @@ void ipa_debugfs_init(void)
 
 
 	dfile_gen_reg = debugfs_create_file("gen_reg", read_only_mode, dent, 0,
-			&ipa_gen_reg_ops);
+	                                    &ipa_gen_reg_ops);
 	if (!dfile_gen_reg || IS_ERR(dfile_gen_reg)) {
 		IPAERR("fail to create file for debug_fs gen_reg\n");
 		goto fail;
 	}
 
 	dfile_active_clients = debugfs_create_file("active_clients",
-			read_write_mode, dent, 0, &ipa2_active_clients);
+	                       read_write_mode, dent, 0, &ipa2_active_clients);
 	if (!dfile_active_clients || IS_ERR(dfile_active_clients)) {
 		IPAERR("fail to create file for debug_fs active_clients\n");
 		goto fail;
@@ -1981,175 +1982,175 @@ void ipa_debugfs_init(void)
 
 	active_clients_buf = NULL;
 	active_clients_buf = kzalloc(IPA_DBG_ACTIVE_CLIENTS_BUF_SIZE,
-			GFP_KERNEL);
+	                             GFP_KERNEL);
 	if (active_clients_buf == NULL)
 		IPAERR("fail to allocate active clients memory buffer");
 
 	dfile_ep_reg = debugfs_create_file("ep_reg", read_write_mode, dent, 0,
-			&ipa_ep_reg_ops);
+	                                   &ipa_ep_reg_ops);
 	if (!dfile_ep_reg || IS_ERR(dfile_ep_reg)) {
 		IPAERR("fail to create file for debug_fs ep_reg\n");
 		goto fail;
 	}
 
 	dfile_keep_awake = debugfs_create_file("keep_awake", read_write_mode,
-			dent, 0, &ipa_keep_awake_ops);
+	                                       dent, 0, &ipa_keep_awake_ops);
 	if (!dfile_keep_awake || IS_ERR(dfile_keep_awake)) {
 		IPAERR("fail to create file for debug_fs dfile_keep_awake\n");
 		goto fail;
 	}
 
 	dfile_ep_holb = debugfs_create_file("holb", write_only_mode, dent,
-			0, &ipa_ep_holb_ops);
+	                                    0, &ipa_ep_holb_ops);
 	if (!dfile_ep_holb || IS_ERR(dfile_ep_holb)) {
 		IPAERR("fail to create file for debug_fs dfile_ep_hol_en\n");
 		goto fail;
 	}
 
 	dfile_hdr = debugfs_create_file("hdr", read_only_mode, dent, 0,
-			&ipa_hdr_ops);
+	                                &ipa_hdr_ops);
 	if (!dfile_hdr || IS_ERR(dfile_hdr)) {
 		IPAERR("fail to create file for debug_fs hdr\n");
 		goto fail;
 	}
 
 	dfile_proc_ctx = debugfs_create_file("proc_ctx", read_only_mode, dent,
-		0, &ipa_proc_ctx_ops);
+	                                     0, &ipa_proc_ctx_ops);
 	if (!dfile_hdr || IS_ERR(dfile_hdr)) {
 		IPAERR("fail to create file for debug_fs proc_ctx\n");
 		goto fail;
 	}
 
 	dfile_ip4_rt = debugfs_create_file("ip4_rt", read_only_mode, dent,
-			(void *)IPA_IP_v4, &ipa_rt_ops);
+	                                   (void *)IPA_IP_v4, &ipa_rt_ops);
 	if (!dfile_ip4_rt || IS_ERR(dfile_ip4_rt)) {
 		IPAERR("fail to create file for debug_fs ip4 rt\n");
 		goto fail;
 	}
 
 	dfile_ip6_rt = debugfs_create_file("ip6_rt", read_only_mode, dent,
-			(void *)IPA_IP_v6, &ipa_rt_ops);
+	                                   (void *)IPA_IP_v6, &ipa_rt_ops);
 	if (!dfile_ip6_rt || IS_ERR(dfile_ip6_rt)) {
 		IPAERR("fail to create file for debug_fs ip6:w" " rt\n");
 		goto fail;
 	}
 
 	dfile_ip4_flt = debugfs_create_file("ip4_flt", read_only_mode, dent,
-			(void *)IPA_IP_v4, &ipa_flt_ops);
+	                                    (void *)IPA_IP_v4, &ipa_flt_ops);
 	if (!dfile_ip4_flt || IS_ERR(dfile_ip4_flt)) {
 		IPAERR("fail to create file for debug_fs ip4 flt\n");
 		goto fail;
 	}
 
 	dfile_ip6_flt = debugfs_create_file("ip6_flt", read_only_mode, dent,
-			(void *)IPA_IP_v6, &ipa_flt_ops);
+	                                    (void *)IPA_IP_v6, &ipa_flt_ops);
 	if (!dfile_ip6_flt || IS_ERR(dfile_ip6_flt)) {
 		IPAERR("fail to create file for debug_fs ip6 flt\n");
 		goto fail;
 	}
 
 	dfile_stats = debugfs_create_file("stats", read_only_mode, dent, 0,
-			&ipa_stats_ops);
+	                                  &ipa_stats_ops);
 	if (!dfile_stats || IS_ERR(dfile_stats)) {
 		IPAERR("fail to create file for debug_fs stats\n");
 		goto fail;
 	}
 
 	dfile_wstats = debugfs_create_file("wstats", read_only_mode,
-			dent, 0, &ipa_wstats_ops);
+	                                   dent, 0, &ipa_wstats_ops);
 	if (!dfile_wstats || IS_ERR(dfile_wstats)) {
 		IPAERR("fail to create file for debug_fs wstats\n");
 		goto fail;
 	}
 
 	dfile_wdi_stats = debugfs_create_file("wdi", read_only_mode, dent, 0,
-			&ipa_wdi_ops);
+	                                      &ipa_wdi_ops);
 	if (!dfile_wdi_stats || IS_ERR(dfile_wdi_stats)) {
 		IPAERR("fail to create file for debug_fs wdi stats\n");
 		goto fail;
 	}
 
 	dfile_ntn_stats = debugfs_create_file("ntn", read_only_mode, dent, 0,
-			&ipa_ntn_ops);
+	                                      &ipa_ntn_ops);
 	if (!dfile_ntn_stats || IS_ERR(dfile_ntn_stats)) {
 		IPAERR("fail to create file for debug_fs ntn stats\n");
 		goto fail;
 	}
 
 	dfile_dbg_cnt = debugfs_create_file("dbg_cnt", read_write_mode, dent, 0,
-			&ipa_dbg_cnt_ops);
+	                                    &ipa_dbg_cnt_ops);
 	if (!dfile_dbg_cnt || IS_ERR(dfile_dbg_cnt)) {
 		IPAERR("fail to create file for debug_fs dbg_cnt\n");
 		goto fail;
 	}
 
 	dfile_msg = debugfs_create_file("msg", read_only_mode, dent, 0,
-			&ipa_msg_ops);
+	                                &ipa_msg_ops);
 	if (!dfile_msg || IS_ERR(dfile_msg)) {
 		IPAERR("fail to create file for debug_fs msg\n");
 		goto fail;
 	}
 
 	dfile_ip4_nat = debugfs_create_file("ip4_nat", read_only_mode, dent,
-			0, &ipa_nat4_ops);
+	                                    0, &ipa_nat4_ops);
 	if (!dfile_ip4_nat || IS_ERR(dfile_ip4_nat)) {
 		IPAERR("fail to create file for debug_fs ip4 nat\n");
 		goto fail;
 	}
 
 	dfile_rm_stats = debugfs_create_file("rm_stats",
-			read_only_mode, dent, 0, &ipa_rm_stats);
+	                                     read_only_mode, dent, 0, &ipa_rm_stats);
 	if (!dfile_rm_stats || IS_ERR(dfile_rm_stats)) {
 		IPAERR("fail to create file for debug_fs rm_stats\n");
 		goto fail;
 	}
 
 	dfile_status_stats = debugfs_create_file("status_stats",
-			read_only_mode, dent, 0, &ipa_status_stats_ops);
+	                     read_only_mode, dent, 0, &ipa_status_stats_ops);
 	if (!dfile_status_stats || IS_ERR(dfile_status_stats)) {
 		IPAERR("fail to create file for debug_fs status_stats\n");
 		goto fail;
 	}
 
 	dfile_ipa_rx_poll_timeout = debugfs_create_file("ipa_rx_poll_time",
-			read_write_mode, dent, 0, &ipa_rx_poll_time_ops);
+	                            read_write_mode, dent, 0, &ipa_rx_poll_time_ops);
 	if (!dfile_ipa_rx_poll_timeout || IS_ERR(dfile_ipa_rx_poll_timeout)) {
 		IPAERR("fail to create file for debug_fs rx poll timeout\n");
 		goto fail;
 	}
 
 	dfile_ipa_poll_iteration = debugfs_create_file("ipa_poll_iteration",
-			read_write_mode, dent, 0, &ipa_poll_iteration_ops);
+	                           read_write_mode, dent, 0, &ipa_poll_iteration_ops);
 	if (!dfile_ipa_poll_iteration || IS_ERR(dfile_ipa_poll_iteration)) {
 		IPAERR("fail to create file for debug_fs poll iteration\n");
 		goto fail;
 	}
 
 	file = debugfs_create_u32("enable_clock_scaling", read_write_mode,
-		dent, &ipa_ctx->enable_clock_scaling);
+	                          dent, &ipa_ctx->enable_clock_scaling);
 	if (!file) {
 		IPAERR("could not create enable_clock_scaling file\n");
 		goto fail;
 	}
 
 	file = debugfs_create_u32("clock_scaling_bw_threshold_nominal_mbps",
-		read_write_mode, dent,
-		&ipa_ctx->ctrl->clock_scaling_bw_threshold_nominal);
+	                          read_write_mode, dent,
+	                          &ipa_ctx->ctrl->clock_scaling_bw_threshold_nominal);
 	if (!file) {
 		IPAERR("could not create bw_threshold_nominal_mbps\n");
 		goto fail;
 	}
 
 	file = debugfs_create_u32("clock_scaling_bw_threshold_turbo_mbps",
-		read_write_mode, dent,
-		&ipa_ctx->ctrl->clock_scaling_bw_threshold_turbo);
+	                          read_write_mode, dent,
+	                          &ipa_ctx->ctrl->clock_scaling_bw_threshold_turbo);
 	if (!file) {
 		IPAERR("could not create bw_threshold_turbo_mbps\n");
 		goto fail;
 	}
 
 	file = debugfs_create_file("enable_low_prio_print", write_only_mode,
-		dent, 0, &ipa_ipc_low_ops);
+	                           dent, 0, &ipa_ipc_low_ops);
 	if (!file) {
 		IPAERR("could not create enable_low_prio_print file\n");
 		goto fail;

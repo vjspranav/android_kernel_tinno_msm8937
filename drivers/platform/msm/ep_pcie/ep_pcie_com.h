@@ -142,56 +142,56 @@
 #define EP_PCIE_OATU_UPPER 0x100
 
 #define EP_PCIE_GEN_DBG(x...) do { \
-	if (ep_pcie_get_debug_mask()) \
-		pr_alert(x); \
-	else \
-		pr_debug(x); \
+		if (ep_pcie_get_debug_mask()) \
+			pr_alert(x); \
+		else \
+			pr_debug(x); \
 	} while (0)
 
 #define EP_PCIE_DBG(dev, fmt, arg...) do {			 \
-	if ((dev)->ipc_log_ful)   \
-		ipc_log_string((dev)->ipc_log_ful, "%s: " fmt, __func__, arg); \
-	if (ep_pcie_get_debug_mask())   \
-		pr_alert("%s: " fmt, __func__, arg);		  \
+		if ((dev)->ipc_log_ful)   \
+			ipc_log_string((dev)->ipc_log_ful, "%s: " fmt, __func__, arg); \
+		if (ep_pcie_get_debug_mask())   \
+			pr_alert("%s: " fmt, __func__, arg);		  \
 	} while (0)
 
 #define EP_PCIE_DBG2(dev, fmt, arg...) do {			 \
-	if ((dev)->ipc_log_sel)   \
-		ipc_log_string((dev)->ipc_log_sel, \
-			"DBG1:%s: " fmt, __func__, arg); \
-	if ((dev)->ipc_log_ful)   \
-		ipc_log_string((dev)->ipc_log_ful, \
-			"DBG2:%s: " fmt, __func__, arg); \
-	if (ep_pcie_get_debug_mask())   \
-		pr_alert("%s: " fmt, __func__, arg); \
+		if ((dev)->ipc_log_sel)   \
+			ipc_log_string((dev)->ipc_log_sel, \
+			               "DBG1:%s: " fmt, __func__, arg); \
+		if ((dev)->ipc_log_ful)   \
+			ipc_log_string((dev)->ipc_log_ful, \
+			               "DBG2:%s: " fmt, __func__, arg); \
+		if (ep_pcie_get_debug_mask())   \
+			pr_alert("%s: " fmt, __func__, arg); \
 	} while (0)
 
 #define EP_PCIE_DBG_FS(fmt, arg...) pr_alert("%s: " fmt, __func__, arg)
 
 #define EP_PCIE_DUMP(dev, fmt, arg...) do {			\
-	if ((dev)->ipc_log_dump) \
-		ipc_log_string((dev)->ipc_log_dump, \
-			"DUMP:%s: " fmt, __func__, arg); \
-	if (ep_pcie_get_debug_mask())   \
-		pr_alert("%s: " fmt, __func__, arg); \
+		if ((dev)->ipc_log_dump) \
+			ipc_log_string((dev)->ipc_log_dump, \
+			               "DUMP:%s: " fmt, __func__, arg); \
+		if (ep_pcie_get_debug_mask())   \
+			pr_alert("%s: " fmt, __func__, arg); \
 	} while (0)
 
 #define EP_PCIE_INFO(dev, fmt, arg...) do {			 \
-	if ((dev)->ipc_log_sel)   \
-		ipc_log_string((dev)->ipc_log_sel, \
-			"INFO:%s: " fmt, __func__, arg); \
-	if ((dev)->ipc_log_ful)   \
-		ipc_log_string((dev)->ipc_log_ful, "%s: " fmt, __func__, arg); \
-	pr_info("%s: " fmt, __func__, arg);  \
+		if ((dev)->ipc_log_sel)   \
+			ipc_log_string((dev)->ipc_log_sel, \
+			               "INFO:%s: " fmt, __func__, arg); \
+		if ((dev)->ipc_log_ful)   \
+			ipc_log_string((dev)->ipc_log_ful, "%s: " fmt, __func__, arg); \
+		pr_info("%s: " fmt, __func__, arg);  \
 	} while (0)
 
 #define EP_PCIE_ERR(dev, fmt, arg...) do {			 \
-	if ((dev)->ipc_log_sel)   \
-		ipc_log_string((dev)->ipc_log_sel, \
-			"ERR:%s: " fmt, __func__, arg); \
-	if ((dev)->ipc_log_ful)   \
-		ipc_log_string((dev)->ipc_log_ful, "%s: " fmt, __func__, arg); \
-	pr_err("%s: " fmt, __func__, arg);  \
+		if ((dev)->ipc_log_sel)   \
+			ipc_log_string((dev)->ipc_log_sel, \
+			               "ERR:%s: " fmt, __func__, arg); \
+		if ((dev)->ipc_log_ful)   \
+			ipc_log_string((dev)->ipc_log_ful, "%s: " fmt, __func__, arg); \
+		pr_err("%s: " fmt, __func__, arg);  \
 	} while (0)
 
 enum ep_pcie_res {
@@ -342,7 +342,7 @@ extern struct ep_pcie_dev_t ep_pcie_dev;
 extern struct ep_pcie_hw hw_drv;
 
 static inline void ep_pcie_write_mask(void __iomem *addr,
-				u32 clear_mask, u32 set_mask)
+                                      u32 clear_mask, u32 set_mask)
 {
 	u32 val;
 
@@ -360,7 +360,7 @@ static inline void ep_pcie_write_reg(void __iomem *base, u32 offset, u32 value)
 }
 
 static inline void ep_pcie_write_reg_field(void __iomem *base, u32 offset,
-	const u32 mask, u32 val)
+        const u32 mask, u32 val)
 {
 	u32 shift = find_first_bit((void *)&mask, 32);
 	u32 tmp = readl_relaxed(base + offset);

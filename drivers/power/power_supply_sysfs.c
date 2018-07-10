@@ -32,17 +32,18 @@
  */
 
 #define POWER_SUPPLY_ATTR(_name)					\
-{									\
-	.attr = { .name = #_name },					\
-	.show = power_supply_show_property,				\
-	.store = power_supply_store_property,				\
-}
+	{									\
+		.attr = { .name = #_name },					\
+		        .show = power_supply_show_property,				\
+		                .store = power_supply_store_property,				\
+	}
 
 static struct device_attribute power_supply_attrs[];
 
 static ssize_t power_supply_show_property(struct device *dev,
-					  struct device_attribute *attr,
-					  char *buf) {
+        struct device_attribute *attr,
+        char *buf)
+{
 	static const char * const type_text[] = {
 		"Unknown", "Battery", "UPS", "Mains", "USB", "USB_DCP",
 		"USB_CDP", "USB_ACA", "USB_HVDCP", "USB_HVDCP_3", "USB_PD",
@@ -96,10 +97,10 @@ static ssize_t power_supply_show_property(struct device *dev,
 		if (ret < 0) {
 			if (ret == -ENODATA)
 				dev_dbg(dev, "driver has no data for `%s' property\n",
-					attr->attr.name);
+				        attr->attr.name);
 			else if (ret != -ENODEV)
 				dev_err(dev, "driver failed to report `%s' property: %zd\n",
-					attr->attr.name, ret);
+				        attr->attr.name, ret);
 			return ret;
 		}
 	}
@@ -120,16 +121,16 @@ static ssize_t power_supply_show_property(struct device *dev,
 		return sprintf(buf, "%s\n", scope_text[value.intval]);
 	else if (off == POWER_SUPPLY_PROP_TYPEC_MODE)
 		return snprintf(buf, PAGE_SIZE,
-					"%s\n", typec_text[value.intval]);
+		                "%s\n", typec_text[value.intval]);
 	else if (off == POWER_SUPPLY_PROP_TYPEC_POWER_ROLE)
 		return snprintf(buf, PAGE_SIZE,
-					"%s\n", typec_pr_text[value.intval]);
+		                "%s\n", typec_pr_text[value.intval]);
 	else if (off == POWER_SUPPLY_PROP_DIE_HEALTH)
 		return snprintf(buf, PAGE_SIZE,
-					"%s\n", health_text[value.intval]);
+		                "%s\n", health_text[value.intval]);
 	else if (off == POWER_SUPPLY_PROP_CONNECTOR_HEALTH)
 		return snprintf(buf, PAGE_SIZE,
-					"%s\n", health_text[value.intval]);
+		                "%s\n", health_text[value.intval]);
 	else if (off >= POWER_SUPPLY_PROP_MODEL_NAME)
 		return sprintf(buf, "%s\n", value.strval);
 
@@ -140,8 +141,9 @@ static ssize_t power_supply_show_property(struct device *dev,
 }
 
 static ssize_t power_supply_store_property(struct device *dev,
-					   struct device_attribute *attr,
-					   const char *buf, size_t count) {
+        struct device_attribute *attr,
+        const char *buf, size_t count)
+{
 	ssize_t ret;
 	struct power_supply *psy = dev_get_drvdata(dev);
 	const ptrdiff_t off = attr - power_supply_attrs;
@@ -214,10 +216,6 @@ static struct device_attribute power_supply_attrs[] = {
 	POWER_SUPPLY_ATTR(capacity_alert_max),
 	POWER_SUPPLY_ATTR(capacity_level),
 	POWER_SUPPLY_ATTR(capacity_raw),
-	//add for Battery information	
-	POWER_SUPPLY_ATTR(batt_vol),
-       //add end	
-    POWER_SUPPLY_ATTR(charge_speed),
 	POWER_SUPPLY_ATTR(temp),
 	POWER_SUPPLY_ATTR(temp_max),
 	POWER_SUPPLY_ATTR(temp_min),
@@ -322,8 +320,8 @@ static struct attribute *
 __power_supply_attrs[ARRAY_SIZE(power_supply_attrs) + 1];
 
 static umode_t power_supply_attr_is_visible(struct kobject *kobj,
-					   struct attribute *attr,
-					   int attrno)
+        struct attribute *attr,
+        int attrno)
 {
 	struct device *dev = container_of(kobj, struct device, kobj);
 	struct power_supply *psy = dev_get_drvdata(dev);

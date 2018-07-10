@@ -301,7 +301,7 @@ static int kgsl_pool_get_retry_order(unsigned int order)
  * Return total page count on success and negative value on failure
  */
 int kgsl_pool_alloc_page(int *page_size, struct page **pages,
-			unsigned int pages_len, unsigned int *align)
+                         unsigned int pages_len, unsigned int *align)
 {
 	int j;
 	int pcount = 0;
@@ -364,7 +364,7 @@ int kgsl_pool_alloc_page(int *page_size, struct page **pages,
 		/* Only allocate non-reserved memory for certain pools */
 		if (!pool->allocation_allowed && pool_idx > 0) {
 			size = PAGE_SIZE <<
-					kgsl_pools[pool_idx-1].pool_order;
+			       kgsl_pools[pool_idx-1].pool_order;
 			goto eagain;
 		}
 
@@ -374,7 +374,7 @@ int kgsl_pool_alloc_page(int *page_size, struct page **pages,
 			if (pool_idx > 0) {
 				/* Retry with lower order pages */
 				size = PAGE_SIZE <<
-					kgsl_pools[pool_idx-1].pool_order;
+				       kgsl_pools[pool_idx-1].pool_order;
 				goto eagain;
 			} else
 				return -ENOMEM;
@@ -394,7 +394,7 @@ done:
 
 eagain:
 	*page_size = kgsl_get_page_size(size,
-			ilog2(size));
+	                                ilog2(size));
 	*align = ilog2(*page_size);
 	return -EAGAIN;
 }
@@ -410,7 +410,7 @@ void kgsl_pool_free_page(struct page *page)
 	page_order = compound_order(page);
 
 	if (!kgsl_pool_max_pages ||
-			(kgsl_pool_size_total() < kgsl_pool_max_pages)) {
+	    (kgsl_pool_size_total() < kgsl_pool_max_pages)) {
 		pool = _kgsl_get_pool_from_order(page_order);
 		if (pool != NULL) {
 			_kgsl_pool_add_page(pool, page);
@@ -444,7 +444,7 @@ static void kgsl_pool_reserve_pages(void)
 
 static unsigned long
 kgsl_pool_shrink_scan_objects(struct shrinker *shrinker,
-					struct shrink_control *sc)
+                              struct shrink_control *sc)
 {
 	/* nr represents number of pages to be removed*/
 	int nr = sc->nr_to_scan;
@@ -459,7 +459,7 @@ kgsl_pool_shrink_scan_objects(struct shrinker *shrinker,
 
 static unsigned long
 kgsl_pool_shrink_count_objects(struct shrinker *shrinker,
-					struct shrink_control *sc)
+                               struct shrink_control *sc)
 {
 	/* Return total pool size as everything in pool can be freed */
 	return kgsl_pool_size_total();
@@ -474,7 +474,7 @@ static struct shrinker kgsl_pool_shrinker = {
 };
 
 static void kgsl_pool_config(unsigned int order, unsigned int reserved_pages,
-		bool allocation_allowed)
+                             bool allocation_allowed)
 {
 #ifdef CONFIG_ALLOC_BUFFERS_IN_4K_CHUNKS
 	if (order > 0) {
@@ -483,7 +483,7 @@ static void kgsl_pool_config(unsigned int order, unsigned int reserved_pages,
 	}
 #endif
 	if ((order > KGSL_MAX_POOL_ORDER) ||
-			(reserved_pages > KGSL_MAX_RESERVED_PAGES))
+	    (reserved_pages > KGSL_MAX_RESERVED_PAGES))
 		return;
 
 	kgsl_pools[kgsl_num_pools].pool_order = order;
@@ -510,17 +510,17 @@ static void kgsl_of_parse_mempools(struct device_node *node)
 			continue;
 
 		if (of_property_read_u32(child, "qcom,mempool-page-size",
-					&page_size))
+		                         &page_size))
 			return;
 
 		of_property_read_u32(child, "qcom,mempool-reserved",
-				&reserved_pages);
+		                     &reserved_pages);
 
 		allocation_allowed = of_property_read_bool(child,
-				"qcom,mempool-allocate");
+		                     "qcom,mempool-allocate");
 
 		kgsl_pool_config(ilog2(page_size >> PAGE_SHIFT), reserved_pages,
-				allocation_allowed);
+		                 allocation_allowed);
 	}
 }
 
@@ -532,7 +532,7 @@ static void kgsl_of_get_mempools(struct device_node *parent)
 	if (node != NULL) {
 		/* Get Max pages limit for mempool */
 		of_property_read_u32(node, "qcom,mempool-max-pages",
-				&kgsl_pool_max_pages);
+		                     &kgsl_pool_max_pages);
 		kgsl_of_parse_mempools(node);
 	}
 }
