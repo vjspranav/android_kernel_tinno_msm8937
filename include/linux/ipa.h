@@ -428,7 +428,7 @@ struct ipa_ep_cfg_ctrl {
  */
 #define IPA_NUM_OF_FIFO_DESC(x) (x/sizeof(struct sps_iovec))
 typedef void (*ipa_notify_cb)(void *priv, enum ipa_dp_evt_type evt,
-		       unsigned long data);
+                              unsigned long data);
 
 /**
  * struct ipa_connect_params - low-level client connect input parameters. Either
@@ -611,8 +611,8 @@ enum ipa_rm_event {
 };
 
 typedef void (*ipa_rm_notify_cb)(void *user_data,
-		enum ipa_rm_event event,
-		unsigned long data);
+                                 enum ipa_rm_event event,
+                                 unsigned long data);
 /**
  * struct ipa_rm_register_params - information needed to
  *      register IPA RM client with IPA RM
@@ -785,8 +785,8 @@ struct ipa_tx_suspend_irq_data {
  * No return value
  */
 typedef void (*ipa_irq_handler_t)(enum ipa_irq_type interrupt,
-				void *private_data,
-				void *interrupt_data);
+                                  void *private_data,
+                                  void *interrupt_data);
 
 /**
  * struct IpaHwBamStats_t - Strucuture holding the BAM statistics
@@ -1078,7 +1078,7 @@ struct ipa_gsi_ep_config {
  * Connect / Disconnect
  */
 int ipa_connect(const struct ipa_connect_params *in, struct ipa_sps_params *sps,
-		u32 *clnt_hdl);
+                u32 *clnt_hdl);
 int ipa_disconnect(u32 clnt_hdl);
 
 /*
@@ -1106,14 +1106,14 @@ int ipa_cfg_ep_nat(u32 clnt_hdl, const struct ipa_ep_cfg_nat *ipa_ep_cfg);
 int ipa_cfg_ep_hdr(u32 clnt_hdl, const struct ipa_ep_cfg_hdr *ipa_ep_cfg);
 
 int ipa_cfg_ep_hdr_ext(u32 clnt_hdl,
-			const struct ipa_ep_cfg_hdr_ext *ipa_ep_cfg);
+                       const struct ipa_ep_cfg_hdr_ext *ipa_ep_cfg);
 
 int ipa_cfg_ep_mode(u32 clnt_hdl, const struct ipa_ep_cfg_mode *ipa_ep_cfg);
 
 int ipa_cfg_ep_aggr(u32 clnt_hdl, const struct ipa_ep_cfg_aggr *ipa_ep_cfg);
 
 int ipa_cfg_ep_deaggr(u32 clnt_hdl,
-		      const struct ipa_ep_cfg_deaggr *ipa_ep_cfg);
+                      const struct ipa_ep_cfg_deaggr *ipa_ep_cfg);
 
 int ipa_cfg_ep_route(u32 clnt_hdl, const struct ipa_ep_cfg_route *ipa_ep_cfg);
 
@@ -1122,10 +1122,10 @@ int ipa_cfg_ep_holb(u32 clnt_hdl, const struct ipa_ep_cfg_holb *ipa_ep_cfg);
 int ipa_cfg_ep_cfg(u32 clnt_hdl, const struct ipa_ep_cfg_cfg *ipa_ep_cfg);
 
 int ipa_cfg_ep_metadata_mask(u32 clnt_hdl, const struct ipa_ep_cfg_metadata_mask
-		*ipa_ep_cfg);
+                             *ipa_ep_cfg);
 
 int ipa_cfg_ep_holb_by_client(enum ipa_client_type client,
-				const struct ipa_ep_cfg_holb *ipa_ep_cfg);
+                              const struct ipa_ep_cfg_holb *ipa_ep_cfg);
 
 int ipa_cfg_ep_ctrl(u32 clnt_hdl, const struct ipa_ep_cfg_ctrl *ep_ctrl);
 
@@ -1200,7 +1200,7 @@ int ipa_nat_del_cmd(struct ipa_ioc_v4_nat_del *del);
  * Messaging
  */
 int ipa_send_msg(struct ipa_msg_meta *meta, void *buff,
-		  ipa_msg_free_fn callback);
+                 ipa_msg_free_fn callback);
 int ipa_register_pull_msg(struct ipa_msg_meta *meta, ipa_msg_pull_fn callback);
 int ipa_deregister_pull_msg(struct ipa_msg_meta *meta);
 
@@ -1208,10 +1208,10 @@ int ipa_deregister_pull_msg(struct ipa_msg_meta *meta);
  * Interface
  */
 int ipa_register_intf(const char *name, const struct ipa_tx_intf *tx,
-		       const struct ipa_rx_intf *rx);
+                      const struct ipa_rx_intf *rx);
 int ipa_register_intf_ext(const char *name, const struct ipa_tx_intf *tx,
-		       const struct ipa_rx_intf *rx,
-		       const struct ipa_ext_intf *ext);
+                          const struct ipa_rx_intf *rx,
+                          const struct ipa_ext_intf *ext);
 int ipa_deregister_intf(const char *name);
 
 /*
@@ -1227,7 +1227,7 @@ int ipa_set_single_ndp_per_mbim(bool enable);
  * Data path
  */
 int ipa_tx_dp(enum ipa_client_type dst, struct sk_buff *skb,
-		struct ipa_tx_meta *metadata);
+              struct ipa_tx_meta *metadata);
 
 /*
  * To transfer multiple data packets
@@ -1235,7 +1235,7 @@ int ipa_tx_dp(enum ipa_client_type dst, struct sk_buff *skb,
  * should be of type struct ipa_tx_data_desc not list_head
 */
 int ipa_tx_dp_mul(enum ipa_client_type dst,
-			struct ipa_tx_data_desc *data_desc);
+                  struct ipa_tx_data_desc *data_desc);
 
 void ipa_free_skb(struct ipa_rx_data *);
 
@@ -1247,7 +1247,7 @@ int ipa_setup_sys_pipe(struct ipa_sys_connect_params *sys_in, u32 *clnt_hdl);
 int ipa_teardown_sys_pipe(u32 clnt_hdl);
 
 int ipa_connect_wdi_pipe(struct ipa_wdi_in_params *in,
-		struct ipa_wdi_out_params *out);
+                         struct ipa_wdi_out_params *out);
 int ipa_disconnect_wdi_pipe(u32 clnt_hdl);
 int ipa_enable_wdi_pipe(u32 clnt_hdl);
 int ipa_disable_wdi_pipe(u32 clnt_hdl);
@@ -1283,40 +1283,40 @@ int ipa_rm_create_resource(struct ipa_rm_create_params *create_params);
 int ipa_rm_delete_resource(enum ipa_rm_resource_name resource_name);
 
 int ipa_rm_register(enum ipa_rm_resource_name resource_name,
-			struct ipa_rm_register_params *reg_params);
+                    struct ipa_rm_register_params *reg_params);
 
 int ipa_rm_deregister(enum ipa_rm_resource_name resource_name,
-			struct ipa_rm_register_params *reg_params);
+                      struct ipa_rm_register_params *reg_params);
 
 int ipa_rm_set_perf_profile(enum ipa_rm_resource_name resource_name,
-			struct ipa_rm_perf_profile *profile);
+                            struct ipa_rm_perf_profile *profile);
 
 int ipa_rm_add_dependency(enum ipa_rm_resource_name resource_name,
-			enum ipa_rm_resource_name depends_on_name);
+                          enum ipa_rm_resource_name depends_on_name);
 
 int ipa_rm_add_dependency_sync(enum ipa_rm_resource_name resource_name,
-		enum ipa_rm_resource_name depends_on_name);
+                               enum ipa_rm_resource_name depends_on_name);
 
 int ipa_rm_delete_dependency(enum ipa_rm_resource_name resource_name,
-			enum ipa_rm_resource_name depends_on_name);
+                             enum ipa_rm_resource_name depends_on_name);
 
 int ipa_rm_request_resource(enum ipa_rm_resource_name resource_name);
 
 int ipa_rm_release_resource(enum ipa_rm_resource_name resource_name);
 
 int ipa_rm_notify_completion(enum ipa_rm_event event,
-		enum ipa_rm_resource_name resource_name);
+                             enum ipa_rm_resource_name resource_name);
 
 int ipa_rm_inactivity_timer_init(enum ipa_rm_resource_name resource_name,
-				 unsigned long msecs);
+                                 unsigned long msecs);
 
 int ipa_rm_inactivity_timer_destroy(enum ipa_rm_resource_name resource_name);
 
 int ipa_rm_inactivity_timer_request_resource(
-				enum ipa_rm_resource_name resource_name);
+    enum ipa_rm_resource_name resource_name);
 
 int ipa_rm_inactivity_timer_release_resource(
-				enum ipa_rm_resource_name resource_name);
+    enum ipa_rm_resource_name resource_name);
 
 /*
  * Tethering bridge (Rmnet / MBIM)
@@ -1348,7 +1348,7 @@ int ipa_dma_disable(void);
 int ipa_dma_sync_memcpy(u64 dest, u64 src, int len);
 
 int ipa_dma_async_memcpy(u64 dest, u64 src, int len,
-			void (*user_cb)(void *user1), void *user_param);
+                         void (*user_cb)(void *user1), void *user_param);
 
 int ipa_dma_uc_memcpy(phys_addr_t dest, phys_addr_t src, int len);
 
@@ -1363,9 +1363,9 @@ int ipa_write_qmap_id(struct ipa_ioc_write_qmapid *param_in);
  * interrupts
  */
 int ipa_add_interrupt_handler(enum ipa_irq_type interrupt,
-		ipa_irq_handler_t handler,
-		bool deferred_flag,
-		void *private_data);
+                              ipa_irq_handler_t handler,
+                              bool deferred_flag,
+                              void *private_data);
 
 int ipa_remove_interrupt_handler(enum ipa_irq_type interrupt);
 
@@ -1426,7 +1426,7 @@ typedef void (*ipa_ready_cb)(void *user_data);
 * -EEXIST if IPA initialization is complete already.
 */
 int ipa_register_ipa_ready_cb(void (*ipa_ready_cb)(void *user_data),
-			      void *user_data);
+                              void *user_data);
 
 #else /* (CONFIG_IPA || CONFIG_IPA3) */
 
@@ -1434,7 +1434,7 @@ int ipa_register_ipa_ready_cb(void (*ipa_ready_cb)(void *user_data),
  * Connect / Disconnect
  */
 static inline int ipa_connect(const struct ipa_connect_params *in,
-		struct ipa_sps_params *sps,	u32 *clnt_hdl)
+                              struct ipa_sps_params *sps,	u32 *clnt_hdl)
 {
 	return -EPERM;
 }
@@ -1472,73 +1472,73 @@ static inline int ipa_disable_endpoint(u32 clnt_hdl)
  * Configuration
  */
 static inline int ipa_cfg_ep(u32 clnt_hdl,
-		const struct ipa_ep_cfg *ipa_ep_cfg)
+                             const struct ipa_ep_cfg *ipa_ep_cfg)
 {
 	return -EPERM;
 }
 
 static inline int ipa_cfg_ep_nat(u32 clnt_hdl,
-		const struct ipa_ep_cfg_nat *ipa_ep_cfg)
+                                 const struct ipa_ep_cfg_nat *ipa_ep_cfg)
 {
 	return -EPERM;
 }
 
 static inline int ipa_cfg_ep_hdr(u32 clnt_hdl,
-		const struct ipa_ep_cfg_hdr *ipa_ep_cfg)
+                                 const struct ipa_ep_cfg_hdr *ipa_ep_cfg)
 {
 	return -EPERM;
 }
 
 static inline int ipa_cfg_ep_hdr_ext(u32 clnt_hdl,
-		const struct ipa_ep_cfg_hdr_ext *ipa_ep_cfg)
+                                     const struct ipa_ep_cfg_hdr_ext *ipa_ep_cfg)
 {
 	return -EPERM;
 }
 
 static inline int ipa_cfg_ep_mode(u32 clnt_hdl,
-		const struct ipa_ep_cfg_mode *ipa_ep_cfg)
+                                  const struct ipa_ep_cfg_mode *ipa_ep_cfg)
 {
 	return -EPERM;
 }
 
 static inline int ipa_cfg_ep_aggr(u32 clnt_hdl,
-		const struct ipa_ep_cfg_aggr *ipa_ep_cfg)
+                                  const struct ipa_ep_cfg_aggr *ipa_ep_cfg)
 {
 	return -EPERM;
 }
 
 static inline int ipa_cfg_ep_deaggr(u32 clnt_hdl,
-		const struct ipa_ep_cfg_deaggr *ipa_ep_cfg)
+                                    const struct ipa_ep_cfg_deaggr *ipa_ep_cfg)
 {
 	return -EPERM;
 }
 
 static inline int ipa_cfg_ep_route(u32 clnt_hdl,
-		const struct ipa_ep_cfg_route *ipa_ep_cfg)
+                                   const struct ipa_ep_cfg_route *ipa_ep_cfg)
 {
 	return -EPERM;
 }
 
 static inline int ipa_cfg_ep_holb(u32 clnt_hdl,
-		const struct ipa_ep_cfg_holb *ipa_ep_cfg)
+                                  const struct ipa_ep_cfg_holb *ipa_ep_cfg)
 {
 	return -EPERM;
 }
 
 static inline int ipa_cfg_ep_cfg(u32 clnt_hdl,
-		const struct ipa_ep_cfg_cfg *ipa_ep_cfg)
+                                 const struct ipa_ep_cfg_cfg *ipa_ep_cfg)
 {
 	return -EPERM;
 }
 
 static inline int ipa_cfg_ep_metadata_mask(u32 clnt_hdl,
-		const struct ipa_ep_cfg_metadata_mask *ipa_ep_cfg)
+        const struct ipa_ep_cfg_metadata_mask *ipa_ep_cfg)
 {
 	return -EPERM;
 }
 
 static inline int ipa_cfg_ep_ctrl(u32 clnt_hdl,
-			const struct ipa_ep_cfg_ctrl *ep_ctrl)
+                                  const struct ipa_ep_cfg_ctrl *ep_ctrl)
 {
 	return -EPERM;
 }
@@ -1585,7 +1585,7 @@ static inline int ipa_copy_hdr(struct ipa_ioc_copy_hdr *copy)
  * Header Processing Context
  */
 static inline int ipa_add_hdr_proc_ctx(
-				struct ipa_ioc_add_hdr_proc_ctx *proc_ctxs)
+    struct ipa_ioc_add_hdr_proc_ctx *proc_ctxs)
 {
 	return -EPERM;
 }
@@ -1695,13 +1695,13 @@ static inline int ipa_nat_del_cmd(struct ipa_ioc_v4_nat_del *del)
  * Messaging
  */
 static inline int ipa_send_msg(struct ipa_msg_meta *meta, void *buff,
-		ipa_msg_free_fn callback)
+                               ipa_msg_free_fn callback)
 {
 	return -EPERM;
 }
 
 static inline int ipa_register_pull_msg(struct ipa_msg_meta *meta,
-		ipa_msg_pull_fn callback)
+                                        ipa_msg_pull_fn callback)
 {
 	return -EPERM;
 }
@@ -1715,16 +1715,16 @@ static inline int ipa_deregister_pull_msg(struct ipa_msg_meta *meta)
  * Interface
  */
 static inline int ipa_register_intf(const char *name,
-				     const struct ipa_tx_intf *tx,
-				     const struct ipa_rx_intf *rx)
+                                    const struct ipa_tx_intf *tx,
+                                    const struct ipa_rx_intf *rx)
 {
 	return -EPERM;
 }
 
 static inline int ipa_register_intf_ext(const char *name,
-		const struct ipa_tx_intf *tx,
-		const struct ipa_rx_intf *rx,
-		const struct ipa_ext_intf *ext)
+                                        const struct ipa_tx_intf *tx,
+                                        const struct ipa_rx_intf *rx,
+                                        const struct ipa_ext_intf *ext)
 {
 	return -EPERM;
 }
@@ -1756,7 +1756,7 @@ static inline int ipa_set_single_ndp_per_mbim(bool enable)
  * Data path
  */
 static inline int ipa_tx_dp(enum ipa_client_type dst, struct sk_buff *skb,
-		struct ipa_tx_meta *metadata)
+                            struct ipa_tx_meta *metadata)
 {
 	return -EPERM;
 }
@@ -1765,8 +1765,8 @@ static inline int ipa_tx_dp(enum ipa_client_type dst, struct sk_buff *skb,
  * To transfer multiple data packets
  */
 static inline int ipa_tx_dp_mul(
-	enum ipa_client_type dst,
-	struct ipa_tx_data_desc *data_desc)
+    enum ipa_client_type dst,
+    struct ipa_tx_data_desc *data_desc)
 {
 	return -EPERM;
 }
@@ -1785,7 +1785,7 @@ static inline u16 ipa_get_smem_restr_bytes(void)
 }
 
 static inline int ipa_setup_sys_pipe(struct ipa_sys_connect_params *sys_in,
-		u32 *clnt_hdl)
+                                     u32 *clnt_hdl)
 {
 	return -EPERM;
 }
@@ -1796,7 +1796,7 @@ static inline int ipa_teardown_sys_pipe(u32 clnt_hdl)
 }
 
 static inline int ipa_connect_wdi_pipe(struct ipa_wdi_in_params *in,
-		struct ipa_wdi_out_params *out)
+                                       struct ipa_wdi_out_params *out)
 {
 	return -EPERM;
 }
@@ -1827,13 +1827,13 @@ static inline int ipa_suspend_wdi_pipe(u32 clnt_hdl)
 }
 
 static inline int ipa_uc_wdi_get_dbpa(
-	struct ipa_wdi_db_params *out)
+    struct ipa_wdi_db_params *out)
 {
 	return -EPERM;
 }
 
 static inline int ipa_uc_reg_rdyCB(
-	struct ipa_wdi_uc_ready_params *param)
+    struct ipa_wdi_uc_ready_params *param)
 {
 	return -EPERM;
 }
@@ -1848,96 +1848,96 @@ static inline int ipa_uc_dereg_rdyCB(void)
  * Resource manager
  */
 static inline int ipa_rm_create_resource(
-		struct ipa_rm_create_params *create_params)
+    struct ipa_rm_create_params *create_params)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_delete_resource(
-		enum ipa_rm_resource_name resource_name)
+    enum ipa_rm_resource_name resource_name)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_register(enum ipa_rm_resource_name resource_name,
-			struct ipa_rm_register_params *reg_params)
+                                  struct ipa_rm_register_params *reg_params)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_set_perf_profile(
-		enum ipa_rm_resource_name resource_name,
-		struct ipa_rm_perf_profile *profile)
+    enum ipa_rm_resource_name resource_name,
+    struct ipa_rm_perf_profile *profile)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_deregister(enum ipa_rm_resource_name resource_name,
-			struct ipa_rm_register_params *reg_params)
+                                    struct ipa_rm_register_params *reg_params)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_add_dependency(
-		enum ipa_rm_resource_name resource_name,
-		enum ipa_rm_resource_name depends_on_name)
+    enum ipa_rm_resource_name resource_name,
+    enum ipa_rm_resource_name depends_on_name)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_add_dependency_sync(
-		enum ipa_rm_resource_name resource_name,
-		enum ipa_rm_resource_name depends_on_name)
+    enum ipa_rm_resource_name resource_name,
+    enum ipa_rm_resource_name depends_on_name)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_delete_dependency(
-		enum ipa_rm_resource_name resource_name,
-		enum ipa_rm_resource_name depends_on_name)
+    enum ipa_rm_resource_name resource_name,
+    enum ipa_rm_resource_name depends_on_name)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_request_resource(
-		enum ipa_rm_resource_name resource_name)
+    enum ipa_rm_resource_name resource_name)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_release_resource(
-		enum ipa_rm_resource_name resource_name)
+    enum ipa_rm_resource_name resource_name)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_notify_completion(enum ipa_rm_event event,
-		enum ipa_rm_resource_name resource_name)
+        enum ipa_rm_resource_name resource_name)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_inactivity_timer_init(
-		enum ipa_rm_resource_name resource_name,
-			unsigned long msecs)
+    enum ipa_rm_resource_name resource_name,
+    unsigned long msecs)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_inactivity_timer_destroy(
-		enum ipa_rm_resource_name resource_name)
+    enum ipa_rm_resource_name resource_name)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_inactivity_timer_request_resource(
-				enum ipa_rm_resource_name resource_name)
+    enum ipa_rm_resource_name resource_name)
 {
 	return -EPERM;
 }
 
 static inline int ipa_rm_inactivity_timer_release_resource(
-				enum ipa_rm_resource_name resource_name)
+    enum ipa_rm_resource_name resource_name)
 {
 	return -EPERM;
 }
@@ -1956,7 +1956,7 @@ static inline int teth_bridge_disconnect(enum ipa_client_type client)
 }
 
 static inline int teth_bridge_connect(struct teth_bridge_connect_params
-				      *connect_params)
+                                      *connect_params)
 {
 	return -EPERM;
 }
@@ -1965,7 +1965,7 @@ static inline int teth_bridge_connect(struct teth_bridge_connect_params
  * Tethering client info
  */
 static inline void ipa_set_client(int index, enum ipacm_client_enum client,
-	bool uplink)
+                                  bool uplink)
 {
 	return;
 }
@@ -1999,14 +1999,14 @@ static inline int ipa_dma_disable(void)
 }
 
 static inline int ipa_dma_sync_memcpy(phys_addr_t dest, phys_addr_t src
-			, int len)
+                                      , int len)
 {
 	return -EPERM;
 }
 
 static inline int ipa_dma_async_memcpy(phys_addr_t dest, phys_addr_t src
-			, int len, void (*user_cb)(void *user1),
-			void *user_param)
+                                       , int len, void (*user_cb)(void *user1),
+                                       void *user_param)
 {
 	return -EPERM;
 }
@@ -2033,9 +2033,9 @@ static inline int ipa_write_qmap_id(struct ipa_ioc_write_qmapid *param_in)
  * interrupts
  */
 static inline int ipa_add_interrupt_handler(enum ipa_irq_type interrupt,
-		ipa_irq_handler_t handler,
-		bool deferred_flag,
-		void *private_data)
+        ipa_irq_handler_t handler,
+        bool deferred_flag,
+        void *private_data)
 {
 	return -EPERM;
 }
@@ -2097,7 +2097,7 @@ static inline enum ipa_client_type ipa_get_client_mapping(int pipe_idx)
 }
 
 static inline enum ipa_rm_resource_name ipa_get_rm_resource_from_ep(
-	int pipe_idx)
+    int pipe_idx)
 {
 	return -EFAULT;
 }
@@ -2123,13 +2123,13 @@ static inline struct iommu_domain *ipa_get_smmu_domain(void)
 }
 
 static inline int ipa_create_wdi_mapping(u32 num_buffers,
-		struct ipa_wdi_buffer_info *info)
+        struct ipa_wdi_buffer_info *info)
 {
 	return -EINVAL;
 }
 
 static inline int ipa_release_wdi_mapping(u32 num_buffers,
-		struct ipa_wdi_buffer_info *info)
+        struct ipa_wdi_buffer_info *info)
 {
 	return -EINVAL;
 }
@@ -2150,8 +2150,8 @@ static inline int ipa_stop_gsi_channel(u32 clnt_hdl)
 }
 
 static inline int ipa_register_ipa_ready_cb(
-	void (*ipa_ready_cb)(void *user_data),
-	void *user_data)
+    void (*ipa_ready_cb)(void *user_data),
+    void *user_data)
 {
 	return -EPERM;
 }

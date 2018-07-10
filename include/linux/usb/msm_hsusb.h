@@ -500,10 +500,10 @@ struct msm_otg {
 	 * voltage regulator(VDDCX).
 	 */
 #define ALLOW_PHY_RETENTION		BIT(1)
-	  /*
-	   * Allow putting the core in Low Power mode, when
-	   * USB bus is suspended but cable is connected.
-	   */
+	/*
+	 * Allow putting the core in Low Power mode, when
+	 * USB bus is suspended but cable is connected.
+	 */
 #define ALLOW_LPM_ON_DEV_SUSPEND	BIT(2)
 	/*
 	 * Allowing PHY regulators LPM puts the HSUSB 3.3v and 1.8v
@@ -559,9 +559,9 @@ struct msm_otg {
 	bool phy_irq_pending;
 	enum usb_id_state id_state;
 	bool rm_pulldown;
-/* Maximum debug message length */
+	/* Maximum debug message length */
 #define DEBUG_MSG_LEN   128UL
-/* Maximum number of messages */
+	/* Maximum number of messages */
 #define DEBUG_MAX_MSG   256UL
 	unsigned int dbg_idx;
 	rwlock_t dbg_lock;
@@ -664,15 +664,24 @@ static inline void msm_bam_set_usb_host_dev(struct device *dev) {}
 static inline void msm_bam_set_hsic_host_dev(struct device *dev) {}
 static inline void msm_bam_wait_for_usb_host_prod_granted(void) {}
 static inline void msm_bam_wait_for_hsic_host_prod_granted(void) {}
-static inline bool msm_bam_hsic_lpm_ok(void) { return true; }
+static inline bool msm_bam_hsic_lpm_ok(void)
+{
+	return true;
+}
 static inline void msm_bam_hsic_host_notify_on_resume(void) {}
 static inline void msm_bam_usb_host_notify_on_resume(void) {}
-static inline bool msm_bam_hsic_host_pipe_empty(void) { return true; }
+static inline bool msm_bam_hsic_host_pipe_empty(void)
+{
+	return true;
+}
 static inline bool msm_usb_bam_enable(enum usb_ctrl ctrl, bool bam_enable)
 {
 	return true;
 }
-int msm_do_bam_disable_enable(enum usb_ctrl ctrl) { return true; }
+int msm_do_bam_disable_enable(enum usb_ctrl ctrl)
+{
+	return true;
+}
 #endif
 #ifdef CONFIG_USB_CI13XXX_MSM
 void msm_hw_soft_reset(void);
@@ -697,7 +706,10 @@ static inline int get_pm_runtime_counter(struct device *dev)
 	return atomic_read(&dev->power.usage_count);
 }
 #else /* !CONFIG_PM_RUNTIME */
-static inline int get_pm_runtime_counter(struct device *dev) { return -ENOSYS; }
+static inline int get_pm_runtime_counter(struct device *dev)
+{
+	return -ENOSYS;
+}
 #endif
 
 #ifdef CONFIG_USB_DWC3_MSM
@@ -705,13 +717,13 @@ int msm_ep_config(struct usb_ep *ep, struct usb_request *request);
 int msm_ep_unconfig(struct usb_ep *ep);
 void dwc3_tx_fifo_resize_request(struct usb_ep *ep, bool qdss_enable);
 int msm_data_fifo_config(struct usb_ep *ep, phys_addr_t addr, u32 size,
-	u8 dst_pipe_idx);
+                         u8 dst_pipe_idx);
 bool msm_dwc3_reset_ep_after_lpm(struct usb_gadget *gadget);
 int msm_dwc3_reset_dbm_ep(struct usb_ep *ep);
 
 #else
 static inline int msm_data_fifo_config(struct usb_ep *ep, phys_addr_t addr,
-	u32 size, u8 dst_pipe_idx)
+                                       u32 size, u8 dst_pipe_idx)
 {
 	return -ENODEV;
 }
@@ -727,7 +739,7 @@ static inline int msm_ep_unconfig(struct usb_ep *ep)
 }
 
 static inline void dwc3_tx_fifo_resize_request(
-					struct usb_ep *ep, bool qdss_enable)
+    struct usb_ep *ep, bool qdss_enable)
 {
 }
 

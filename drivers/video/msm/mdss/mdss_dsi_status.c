@@ -49,7 +49,7 @@ static void check_dsi_ctrl_status(struct work_struct *work)
 	struct dsi_status_data *pdsi_status = NULL;
 
 	pdsi_status = container_of(to_delayed_work(work),
-		struct dsi_status_data, check_status);
+	                           struct dsi_status_data, check_status);
 
 	if (!pdsi_status) {
 		pr_err("%s: DSI status data not available\n", __func__);
@@ -62,7 +62,7 @@ static void check_dsi_ctrl_status(struct work_struct *work)
 	}
 
 	if (mdss_panel_is_power_off(pdsi_status->mfd->panel_power_state) ||
-			pdsi_status->mfd->shutdown_pending) {
+	    pdsi_status->mfd->shutdown_pending) {
 		pr_debug("%s: panel off\n", __func__);
 		return;
 	}
@@ -82,7 +82,7 @@ static void check_dsi_ctrl_status(struct work_struct *work)
 irqreturn_t hw_vsync_handler(int irq, void *data)
 {
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata =
-			(struct mdss_dsi_ctrl_pdata *)data;
+	    (struct mdss_dsi_ctrl_pdata *)data;
 	if (!ctrl_pdata) {
 		pr_err("%s: DSI ctrl not available\n", __func__);
 		return IRQ_HANDLED;
@@ -90,7 +90,7 @@ irqreturn_t hw_vsync_handler(int irq, void *data)
 
 	if (pstatus_data)
 		mod_delayed_work(system_wq, &pstatus_data->check_status,
-			msecs_to_jiffies(interval));
+		                 msecs_to_jiffies(interval));
 	else
 		pr_err("Pstatus data is NULL\n");
 
@@ -112,11 +112,11 @@ irqreturn_t hw_vsync_handler(int irq, void *data)
  * PANEL_STATUS_CHECK_INTERVAL or cancelled based on the event.
  */
 static int fb_event_callback(struct notifier_block *self,
-				unsigned long event, void *data)
+                             unsigned long event, void *data)
 {
 	struct fb_event *evdata = data;
 	struct dsi_status_data *pdata = container_of(self,
-				struct dsi_status_data, fb_notifier);
+	                                struct dsi_status_data, fb_notifier);
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
 	struct mdss_panel_info *pinfo;
 	struct msm_fb_data_type *mfd;
@@ -132,7 +132,7 @@ static int fb_event_callback(struct notifier_block *self,
 
 	mfd = evdata->info->par;
 	ctrl_pdata = container_of(dev_get_platdata(&mfd->pdev->dev),
-				struct mdss_dsi_ctrl_pdata, panel_data);
+	                          struct mdss_dsi_ctrl_pdata, panel_data);
 	if (!ctrl_pdata) {
 		pr_err("%s: DSI ctrl not available\n", __func__);
 		return NOTIFY_BAD;
@@ -141,8 +141,8 @@ static int fb_event_callback(struct notifier_block *self,
 	pinfo = &ctrl_pdata->panel_data.panel_info;
 
 	if ((!(pinfo->esd_check_enabled) &&
-			dsi_status_disable) ||
-			(dsi_status_disable == DSI_STATUS_CHECK_DISABLE)) {
+	     dsi_status_disable) ||
+	    (dsi_status_disable == DSI_STATUS_CHECK_DISABLE)) {
 		pr_debug("ESD check is disabled.\n");
 		cancel_delayed_work(&pdata->check_status);
 		return NOTIFY_DONE;
@@ -152,13 +152,13 @@ static int fb_event_callback(struct notifier_block *self,
 	if (event == FB_EVENT_BLANK) {
 		int *blank = evdata->data;
 		struct dsi_status_data *pdata = container_of(self,
-				struct dsi_status_data, fb_notifier);
+		                                struct dsi_status_data, fb_notifier);
 		pdata->mfd = evdata->info->par;
 
 		switch (*blank) {
 		case FB_BLANK_UNBLANK:
 			schedule_delayed_work(&pdata->check_status,
-				msecs_to_jiffies(interval));
+			                      msecs_to_jiffies(interval));
 			break;
 		case FB_BLANK_POWERDOWN:
 		case FB_BLANK_HSYNC_SUSPEND:
@@ -184,7 +184,7 @@ static int param_dsi_status_disable(const char *val, struct kernel_param *kp)
 		return ret;
 
 	pr_info("%s: Set DSI status disable to %d\n",
-			__func__, int_val);
+	        __func__, int_val);
 	*((int *)kp->arg) = int_val;
 	return ret;
 }
@@ -199,11 +199,11 @@ static int param_set_interval(const char *val, struct kernel_param *kp)
 		return ret;
 	if (int_val < STATUS_CHECK_INTERVAL_MIN_MS) {
 		pr_err("%s: Invalid value %d used, ignoring\n",
-						__func__, int_val);
+		       __func__, int_val);
 		ret = -EINVAL;
 	} else {
 		pr_info("%s: Set check interval to %d msecs\n",
-						__func__, int_val);
+		        __func__, int_val);
 		*((int *)kp->arg) = int_val;
 	}
 	return ret;
@@ -224,7 +224,7 @@ int __init mdss_dsi_status_init(void)
 	rc = fb_register_client(&pstatus_data->fb_notifier);
 	if (rc < 0) {
 		pr_err("%s: fb_register_client failed, returned with rc=%d\n",
-								__func__, rc);
+		       __func__, rc);
 		kfree(pstatus_data);
 		return -EPERM;
 	}
@@ -247,15 +247,15 @@ void __exit mdss_dsi_status_exit(void)
 }
 
 module_param_call(interval, param_set_interval, param_get_uint,
-						&interval, 0644);
+                  &interval, 0644);
 MODULE_PARM_DESC(interval,
-		"Duration in milliseconds to send BTA command for checking"
-		"DSI status periodically");
+                 "Duration in milliseconds to send BTA command for checking"
+                 "DSI status periodically");
 
 module_param_call(dsi_status_disable, param_dsi_status_disable, param_get_uint,
-						&dsi_status_disable, 0644);
+                  &dsi_status_disable, 0644);
 MODULE_PARM_DESC(dsi_status_disable,
-		"Disable DSI status check");
+                 "Disable DSI status check");
 
 module_init(mdss_dsi_status_init);
 module_exit(mdss_dsi_status_exit);

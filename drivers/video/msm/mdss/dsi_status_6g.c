@@ -29,7 +29,7 @@
  * gets re-scheduled. Otherwise, report the panel to be dead due to ESD attack.
  */
 static bool mdss_check_te_status(struct mdss_dsi_ctrl_pdata *ctrl_pdata,
-		struct dsi_status_data *pstatus_data, uint32_t interval)
+                                 struct dsi_status_data *pstatus_data, uint32_t interval)
 {
 	bool ret;
 
@@ -44,7 +44,7 @@ static bool mdss_check_te_status(struct mdss_dsi_ctrl_pdata *ctrl_pdata,
 	ret = !atomic_read(&ctrl_pdata->te_irq_ready);
 	if (ret) {
 		schedule_delayed_work(&pstatus_data->check_status,
-			msecs_to_jiffies(interval));
+		                      msecs_to_jiffies(interval));
 		pr_debug("%s: TE IRQ line not enabled yet\n", __func__);
 	}
 
@@ -71,7 +71,7 @@ void mdss_check_dsi_ctrl_status(struct work_struct *work, uint32_t interval)
 	int ret = 0;
 
 	pstatus_data = container_of(to_delayed_work(work),
-		struct dsi_status_data, check_status);
+	                            struct dsi_status_data, check_status);
 	if (!pstatus_data || !(pstatus_data->mfd)) {
 		pr_err("%s: mfd not available\n", __func__);
 		return;
@@ -85,19 +85,19 @@ void mdss_check_dsi_ctrl_status(struct work_struct *work, uint32_t interval)
 	mipi = &pdata->panel_info.mipi;
 
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
-							panel_data);
+	                          panel_data);
 	if (!ctrl_pdata || (!ctrl_pdata->check_status &&
-		(ctrl_pdata->status_mode != ESD_TE))) {
+	                    (ctrl_pdata->status_mode != ESD_TE))) {
 		pr_err("%s: DSI ctrl or status_check callback not available\n",
-								__func__);
+		       __func__);
 		return;
 	}
 
 	if (!pdata->panel_info.esd_rdy) {
 		pr_debug("%s: unblank not complete, reschedule check status\n",
-			__func__);
+		         __func__);
 		schedule_delayed_work(&pstatus_data->check_status,
-				msecs_to_jiffies(interval));
+		                      msecs_to_jiffies(interval));
 		return;
 	}
 
@@ -133,13 +133,13 @@ void mdss_check_dsi_ctrl_status(struct work_struct *work, uint32_t interval)
 	mutex_lock(&ctl->offlock);
 
 	if (mdss_panel_is_power_off(pstatus_data->mfd->panel_power_state) ||
-			pstatus_data->mfd->shutdown_pending) {
+	    pstatus_data->mfd->shutdown_pending) {
 		mutex_unlock(&ctl->offlock);
 		if ((mipi->mode == DSI_CMD_MODE) &&
 		    !ctrl_pdata->burst_mode_enabled)
 			mutex_unlock(&mdp5_data->ov_lock);
 		pr_err("%s: DSI turning off, avoiding panel status check\n",
-							__func__);
+		       __func__);
 		return;
 	}
 
@@ -169,7 +169,7 @@ void mdss_check_dsi_ctrl_status(struct work_struct *work, uint32_t interval)
 	if ((pstatus_data->mfd->panel_power_state == MDSS_PANEL_POWER_ON)) {
 		if (ret > 0)
 			schedule_delayed_work(&pstatus_data->check_status,
-				msecs_to_jiffies(interval));
+			                      msecs_to_jiffies(interval));
 		else
 			goto status_dead;
 	}

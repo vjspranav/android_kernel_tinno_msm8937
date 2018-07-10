@@ -115,39 +115,39 @@ struct wan_ioctl_query_dl_filter_stats {
 };
 
 #define WAN_IOC_ADD_FLT_RULE _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_ADD_FLT_RULE, \
-		struct ipa_install_fltr_rule_req_msg_v01 *)
+                                   WAN_IOCTL_ADD_FLT_RULE, \
+                                   struct ipa_install_fltr_rule_req_msg_v01 *)
 
 #define WAN_IOC_ADD_FLT_RULE_INDEX _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_ADD_FLT_INDEX, \
-		struct ipa_fltr_installed_notif_req_msg_v01 *)
+        WAN_IOCTL_ADD_FLT_INDEX, \
+        struct ipa_fltr_installed_notif_req_msg_v01 *)
 
 #define WAN_IOC_VOTE_FOR_BW_MBPS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_VOTE_FOR_BW_MBPS, \
-		uint32_t *)
+                                       WAN_IOCTL_VOTE_FOR_BW_MBPS, \
+                                       uint32_t *)
 
 #define WAN_IOC_POLL_TETHERING_STATS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_POLL_TETHERING_STATS, \
-		struct wan_ioctl_poll_tethering_stats *)
+        WAN_IOCTL_POLL_TETHERING_STATS, \
+        struct wan_ioctl_poll_tethering_stats *)
 
 #define WAN_IOC_SET_DATA_QUOTA _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_SET_DATA_QUOTA, \
-		struct wan_ioctl_set_data_quota *)
+                                     WAN_IOCTL_SET_DATA_QUOTA, \
+                                     struct wan_ioctl_set_data_quota *)
 
 #define WAN_IOC_SET_TETHER_CLIENT_PIPE _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_SET_TETHER_CLIENT_PIPE, \
-		struct wan_ioctl_set_tether_client_pipe *)
+        WAN_IOCTL_SET_TETHER_CLIENT_PIPE, \
+        struct wan_ioctl_set_tether_client_pipe *)
 
 #define WAN_IOC_QUERY_TETHER_STATS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_QUERY_TETHER_STATS, \
-		struct wan_ioctl_query_tether_stats *)
+        WAN_IOCTL_QUERY_TETHER_STATS, \
+        struct wan_ioctl_query_tether_stats *)
 
 #define WAN_IOC_RESET_TETHER_STATS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_RESET_TETHER_STATS, \
-		struct wan_ioctl_reset_tether_stats *)
+        WAN_IOCTL_RESET_TETHER_STATS, \
+        struct wan_ioctl_reset_tether_stats *)
 
 #define WAN_IOC_QUERY_DL_FILTER_STATS _IOWR(WAN_IOC_MAGIC, \
-		WAN_IOCTL_QUERY_DL_FILTER_STATS, \
-		struct wan_ioctl_query_dl_filter_stats *)
+        WAN_IOCTL_QUERY_DL_FILTER_STATS, \
+        struct wan_ioctl_query_dl_filter_stats *)
 
 #endif /* _RMNET_IPA_FD_IOCTL_H */

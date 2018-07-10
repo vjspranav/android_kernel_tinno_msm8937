@@ -32,17 +32,18 @@
  */
 
 #define POWER_SUPPLY_ATTR(_name)					\
-{									\
-	.attr = { .name = #_name },					\
-	.show = power_supply_show_property,				\
-	.store = power_supply_store_property,				\
-}
+	{									\
+		.attr = { .name = #_name },					\
+		        .show = power_supply_show_property,				\
+		                .store = power_supply_store_property,				\
+	}
 
 static struct device_attribute power_supply_attrs[];
 
 static ssize_t power_supply_show_property(struct device *dev,
-					  struct device_attribute *attr,
-					  char *buf) {
+        struct device_attribute *attr,
+        char *buf)
+{
 	static char *type_text[] = {
 		"Unknown", "Battery", "UPS", "Mains", "USB",
 		"USB_DCP", "USB_CDP", "USB_ACA",
@@ -85,10 +86,10 @@ static ssize_t power_supply_show_property(struct device *dev,
 		if (ret < 0) {
 			if (ret == -ENODATA)
 				dev_dbg(dev, "driver has no data for `%s' property\n",
-					attr->attr.name);
+				        attr->attr.name);
 			else if (ret != -ENODEV)
 				dev_err(dev, "driver failed to report `%s' property: %zd\n",
-					attr->attr.name, ret);
+				        attr->attr.name, ret);
 			return ret;
 		}
 	}
@@ -117,8 +118,9 @@ static ssize_t power_supply_show_property(struct device *dev,
 }
 
 static ssize_t power_supply_store_property(struct device *dev,
-					   struct device_attribute *attr,
-					   const char *buf, size_t count) {
+        struct device_attribute *attr,
+        const char *buf, size_t count)
+{
 	ssize_t ret;
 	struct power_supply *psy = dev_get_drvdata(dev);
 	const ptrdiff_t off = attr - power_supply_attrs;
@@ -266,8 +268,8 @@ static struct attribute *
 __power_supply_attrs[ARRAY_SIZE(power_supply_attrs) + 1];
 
 static umode_t power_supply_attr_is_visible(struct kobject *kobj,
-					   struct attribute *attr,
-					   int attrno)
+        struct attribute *attr,
+        int attrno)
 {
 	struct device *dev = container_of(kobj, struct device, kobj);
 	struct power_supply *psy = dev_get_drvdata(dev);

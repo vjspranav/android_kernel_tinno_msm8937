@@ -259,7 +259,7 @@ void kgsl_pool_free_pages(struct page **pages, unsigned int pcount)
  * Return total page count on success and negative value on failure
  */
 int kgsl_pool_alloc_page(int page_size, struct page **pages,
-					unsigned int pages_len)
+                         unsigned int pages_len)
 {
 	int j;
 	int pcount = 0;
@@ -282,7 +282,7 @@ int kgsl_pool_alloc_page(int page_size, struct page **pages,
 		gfp_t gfp_mask = kgsl_gfp_mask(get_order(page_size));
 
 		page = alloc_pages(gfp_mask,
-					get_order(page_size));
+		                   get_order(page_size));
 
 		if (!page)
 			return -ENOMEM;
@@ -323,7 +323,7 @@ void kgsl_pool_free_page(struct page *page)
 
 static unsigned long
 kgsl_pool_shrink_scan_objects(struct shrinker *shrinker,
-					struct shrink_control *sc)
+                              struct shrink_control *sc)
 {
 	/* nr represents number of pages to be removed*/
 	int nr = sc->nr_to_scan;
@@ -338,7 +338,7 @@ kgsl_pool_shrink_scan_objects(struct shrinker *shrinker,
 
 static unsigned long
 kgsl_pool_shrink_count_objects(struct shrinker *shrinker,
-					struct shrink_control *sc)
+                               struct shrink_control *sc)
 {
 	/* Return total pool size as everything in pool can be freed */
 	return kgsl_pool_size_total();

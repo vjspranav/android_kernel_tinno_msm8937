@@ -39,15 +39,15 @@ extern struct ipa_qmi_context *ipa_qmi_ctx;
 extern struct mutex ipa_qmi_lock;
 
 struct ipa_qmi_context {
-struct ipa_ioc_ext_intf_prop q6_ul_filter_rule[MAX_NUM_Q6_RULE];
-u32 q6_ul_filter_rule_hdl[MAX_NUM_Q6_RULE];
-int num_ipa_install_fltr_rule_req_msg;
-struct ipa_install_fltr_rule_req_msg_v01
+	struct ipa_ioc_ext_intf_prop q6_ul_filter_rule[MAX_NUM_Q6_RULE];
+	u32 q6_ul_filter_rule_hdl[MAX_NUM_Q6_RULE];
+	int num_ipa_install_fltr_rule_req_msg;
+	struct ipa_install_fltr_rule_req_msg_v01
 		ipa_install_fltr_rule_req_msg_cache[MAX_NUM_QMI_RULE_CACHE];
-int num_ipa_fltr_installed_notif_req_msg;
-struct ipa_fltr_installed_notif_req_msg_v01
+	int num_ipa_fltr_installed_notif_req_msg;
+	struct ipa_fltr_installed_notif_req_msg_v01
 		ipa_fltr_installed_notif_req_msg_cache[MAX_NUM_QMI_RULE_CACHE];
-bool modem_cfg_emb_pipe_flt;
+	bool modem_cfg_emb_pipe_flt;
 };
 
 struct rmnet_mux_val {
@@ -114,13 +114,13 @@ int qmi_filter_notify_send(struct ipa_fltr_installed_notif_req_msg_v01 *req);
 int vote_for_bus_bw(uint32_t *bw_mbps);
 
 int qmi_enable_force_clear_datapath_send(
-	struct ipa_enable_force_clear_datapath_req_msg_v01 *req);
+    struct ipa_enable_force_clear_datapath_req_msg_v01 *req);
 
 int qmi_disable_force_clear_datapath_send(
-	struct ipa_disable_force_clear_datapath_req_msg_v01 *req);
+    struct ipa_disable_force_clear_datapath_req_msg_v01 *req);
 
 int copy_ul_filter_rule_to_ipa(struct ipa_install_fltr_rule_req_msg_v01
-	*rule_req, uint32_t *rule_hdl);
+                               *rule_req, uint32_t *rule_hdl);
 
 int wwan_update_mux_channel_prop(void);
 
@@ -141,16 +141,16 @@ int rmnet_ipa_set_data_quota(struct wan_ioctl_set_data_quota *data);
 void ipa_broadcast_quota_reach_ind(uint32_t mux_id);
 
 int rmnet_ipa_set_tether_client_pipe(struct wan_ioctl_set_tether_client_pipe
-	*data);
+                                     *data);
 
 int rmnet_ipa_query_tethering_stats(struct wan_ioctl_query_tether_stats *data,
-	bool reset);
+                                    bool reset);
 
 int ipa_qmi_get_data_stats(struct ipa_get_data_stats_req_msg_v01 *req,
-	struct ipa_get_data_stats_resp_msg_v01 *resp);
+                           struct ipa_get_data_stats_resp_msg_v01 *resp);
 
 int ipa_qmi_get_network_stats(struct ipa_get_apn_data_stats_req_msg_v01 *req,
-	struct ipa_get_apn_data_stats_resp_msg_v01 *resp);
+                              struct ipa_get_apn_data_stats_resp_msg_v01 *resp);
 
 int ipa_qmi_set_data_quota(struct ipa_set_data_usage_quota_req_msg_v01 *req);
 
@@ -173,32 +173,32 @@ static inline void ipa_qmi_service_exit(void) { }
 
 /* sending filter-install-request to modem*/
 static inline int qmi_filter_request_send(
-	struct ipa_install_fltr_rule_req_msg_v01 *req)
+    struct ipa_install_fltr_rule_req_msg_v01 *req)
 {
 	return -EPERM;
 }
 
 /* sending filter-installed-notify-request to modem*/
 static inline int qmi_filter_notify_send(
-	struct ipa_fltr_installed_notif_req_msg_v01 *req)
+    struct ipa_fltr_installed_notif_req_msg_v01 *req)
 {
 	return -EPERM;
 }
 
 static inline int qmi_enable_force_clear_datapath_send(
-	struct ipa_enable_force_clear_datapath_req_msg_v01 *req)
+    struct ipa_enable_force_clear_datapath_req_msg_v01 *req)
 {
 	return -EPERM;
 }
 
 static inline int qmi_disable_force_clear_datapath_send(
-	struct ipa_disable_force_clear_datapath_req_msg_v01 *req)
+    struct ipa_disable_force_clear_datapath_req_msg_v01 *req)
 {
 	return -EPERM;
 }
 
 static inline int copy_ul_filter_rule_to_ipa(
-	struct ipa_install_fltr_rule_req_msg_v01 *rule_req, uint32_t *rule_hdl)
+    struct ipa_install_fltr_rule_req_msg_v01 *rule_req, uint32_t *rule_hdl)
 {
 	return -EPERM;
 }
@@ -227,13 +227,13 @@ static inline int vote_for_bus_bw(uint32_t *bw_mbps)
 }
 
 static inline int rmnet_ipa_poll_tethering_stats(
-	struct wan_ioctl_poll_tethering_stats *data)
+    struct wan_ioctl_poll_tethering_stats *data)
 {
 	return -EPERM;
 }
 
 static inline int rmnet_ipa_set_data_quota(
-	struct wan_ioctl_set_data_quota *data)
+    struct wan_ioctl_set_data_quota *data)
 {
 	return -EPERM;
 }
@@ -241,21 +241,21 @@ static inline int rmnet_ipa_set_data_quota(
 static inline void ipa_broadcast_quota_reach_ind(uint32_t mux_id) { }
 
 static inline int ipa_qmi_get_data_stats(
-	struct ipa_get_data_stats_req_msg_v01 *req,
-	struct ipa_get_data_stats_resp_msg_v01 *resp)
+    struct ipa_get_data_stats_req_msg_v01 *req,
+    struct ipa_get_data_stats_resp_msg_v01 *resp)
 {
 	return -EPERM;
 }
 
 static inline int ipa_qmi_get_network_stats(
-	struct ipa_get_apn_data_stats_req_msg_v01 *req,
-	struct ipa_get_apn_data_stats_resp_msg_v01 *resp)
+    struct ipa_get_apn_data_stats_req_msg_v01 *req,
+    struct ipa_get_apn_data_stats_resp_msg_v01 *resp)
 {
 	return -EPERM;
 }
 
 static inline int ipa_qmi_set_data_quota(
-	struct ipa_set_data_usage_quota_req_msg_v01 *req)
+    struct ipa_set_data_usage_quota_req_msg_v01 *req)
 {
 	return -EPERM;
 }
