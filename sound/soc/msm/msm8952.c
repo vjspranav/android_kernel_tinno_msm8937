@@ -9,7 +9,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/gpio.h>
@@ -58,6 +57,41 @@ enum btsco_rates {
 	RATE_16KHZ_ID,
 };
 
+//++ tinno_mba,external pa TN:peter
+enum {
+	AW8155_P8W_8Ohm,
+
+	AW8737_P8W_6Ohm,
+	AW8737_P8W_8Ohm,
+	AW8737_1W_6Ohm,
+	AW8737_1W_8Ohm,
+	AW8737_1P2W_8Ohm,
+
+	AW87318_P8W_6Ohm,
+	AW87318_P8W_8Ohm,
+	AW87318_P9W_6Ohm,
+	AW87318_P9W_8Ohm,
+	AW87318_1W_6Ohm,
+	AW87318_1P5W_6Ohm,
+	AW87318_1W_8Ohm,
+	AW87318_1P1W_8Ohm,
+	AW87318_1P2W_8Ohm,
+
+	AW8XXX_OFF,
+} AW_PA_MODE;
+
+static int tinno_pa_mode = AW8XXX_OFF;
+bool tinno_ext_spk_pa_current_state = false;// add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink
+bool tinno_ext_spk_pa_support = false;
+bool tinno_ext_spk_i2s_support = false;
+//-- tinno_mba,external pa
+
+//++ tinno_mba,btn vol TN:peter
+unsigned int tinno_mbhc_btn_h[WCD_MBHC_DEF_RLOADS+1]= {0};
+unsigned int tinno_mbhc_btn_l[WCD_MBHC_DEF_RLOADS+1]= {0};
+//-- tinno_mba,btn vol
+
+
 static int msm8952_auxpcm_rate = 8000;
 static int msm_btsco_rate = BTSCO_RATE_8KHZ;
 static int msm_btsco_ch = 1;
@@ -94,9 +128,9 @@ static struct wcd_mbhc_config mbhc_cfg = {
 	.swap_gnd_mic = NULL,
 	.hs_ext_micbias = false,
 	.key_code[0] = KEY_MEDIA,
-	.key_code[1] = KEY_VOICECOMMAND,
-	.key_code[2] = KEY_VOLUMEUP,
-	.key_code[3] = KEY_VOLUMEDOWN,
+	.key_code[1] = KEY_VOLUMEUP,
+	.key_code[2] = KEY_VOLUMEDOWN,
+	.key_code[3] = 0,
 	.key_code[4] = 0,
 	.key_code[5] = 0,
 	.key_code[6] = 0,
@@ -240,13 +274,33 @@ done:
 	return ret;
 }
 
+
+
+
 int is_ext_spk_gpio_support(struct platform_device *pdev,
                             struct msm8916_asoc_mach_data *pdata)
 {
 	const char *spk_ext_pa = "qcom,msm-spk-ext-pa";
 
+	//++ tinno_mba,external pa TN:peter
+	int ret;
+	const char *tinno_ext_pa_mode = "qcom,msm-spk-ext-pa-mode";
+	const char *tinno_ext_pa_i2s = "qcom,msm-spk-ext-pa-i2s";
+	static bool ext_pa_gpio_requested = false;
+	int tinno_i2s = 0;
+	//-- tinno_mba,external pa
+
 	pr_debug("%s:Enter\n", __func__);
 
+	ret = of_property_read_u32(pdev->dev.of_node, tinno_ext_pa_i2s, &tinno_i2s);
+	if (ret) {
+		dev_err(&pdev->dev,	"%s: missing %s in dt node\n", __func__, tinno_ext_pa_mode);
+		//return -EINVAL;
+	} else {
+		if(tinno_i2s == 1)
+			tinno_ext_spk_i2s_support = true;
+
+	}
 	pdata->spk_ext_pa_gpio = of_get_named_gpio(pdev->dev.of_node,
 	                         spk_ext_pa, 0);
 
@@ -259,7 +313,222 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 			       __func__, pdata->spk_ext_pa_gpio);
 			return -EINVAL;
 		}
+		//++ tinno_mba,external pa TN:peter
+		if(!ext_pa_gpio_requested) {
+			ret = gpio_request(pdata->spk_ext_pa_gpio, "spk_ext_pa_gpio");
+			if (ret) {
+				pr_info("%s: gpio_request failed for spk_ext_pa_gpio.\n",
+				        __func__);
+				return -EINVAL;
+			}
+			ext_pa_gpio_requested = true;
+		}
+		gpio_direction_output(pdata->spk_ext_pa_gpio, 0);
+
+		ret = of_property_read_u32(pdev->dev.of_node, tinno_ext_pa_mode, &tinno_pa_mode);
+		if (ret) {
+			dev_err(&pdev->dev,	"%s: missing %s in dt node\n", __func__, tinno_ext_pa_mode);
+			return -EINVAL;
+		}
+		tinno_ext_spk_pa_support = true;
+		//-- tinno_mba,external pa
+
 	}
+	return 0;
+}
+
+//extern unsigned char AW87319_Audio_Speaker(void);
+//extern unsigned char AW87319_Audio_OFF(void);
+
+//++ tinno_mba,external pa TN:peter
+/**********************
+*Func: set Aw8xxx Pa Control Mode ,reference Aw81xxx IC datasheet
+*@pa_gpio: use to Aw8xxx control gpio ,This Gpio request for codec_Probe(), and set gpio out Mode.
+*@pa_mode: what the platform use Aw8xxx mode
+**********************/
+static void AW8xxx_Mode_set(int pa_gpio, int pa_mode)
+{
+	printk(KERN_ERR "AW8xxx_Mode_set\n");
+	gpio_set_value_cansleep(pa_gpio,0);
+	udelay(1);
+	if(pa_mode == AW8XXX_OFF)    //OFF the PA
+		return;
+	gpio_set_value_cansleep(pa_gpio,1);
+
+	switch(pa_mode) {
+	case AW8737_1P2W_8Ohm:
+	case AW87318_1P2W_8Ohm:                   //one Positive-Edge
+		printk(KERN_ERR "The AW8xxx Mode have ONE Positive_Edge\n");
+		break;
+	case AW8155_P8W_8Ohm:
+	case AW87318_1P5W_6Ohm:
+	case AW87318_1P1W_8Ohm:                   //two Positive-Edge
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		printk(KERN_ERR "The AW8xxx Mode have TWO Positive_Edge\n");
+		break;
+	case AW8737_P8W_8Ohm:
+	case AW8737_1W_6Ohm:
+	case AW87318_1W_8Ohm:                     //three Positive_edge
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		printk(KERN_ERR "The AW8xxx Mode have THREE Positive_Edge\n");
+		break;
+	case AW8737_P8W_6Ohm:                     //fore Positive_Edge
+	case AW87318_P9W_8Ohm:
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		printk(KERN_ERR "The AW8xxx Mode have FORE Positive_Edge\n");
+		break;
+	case AW87318_P8W_8Ohm:
+	case AW87318_1W_6Ohm:                      //five Positive_Edge
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		printk(KERN_ERR "The AW8xxx Mode have FIVE Positive_Edge\n");
+		break;
+	case AW87318_P9W_6Ohm:                     //six Positive_Edge
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		printk(KERN_ERR "The AW8xxx Mode have SIX Positive_Edge\n");
+		break;
+	case AW87318_P8W_6Ohm:                        //seven Positive_Edge
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,0);
+		udelay(1);
+		gpio_set_value_cansleep(pa_gpio,1);
+		printk(KERN_ERR "The AW8xxx Mode have SEVEN Positive_Edge\n");
+		break;
+	default:
+		printk(KERN_ERR "Not Found Aw8xxx Pa Mode\n");
+		break;
+	}
+
+	return;
+}
+//-- tinno_mba,external pa
+
+extern unsigned char aw87339_audio_kspk(void);
+extern unsigned char aw87339_audio_drcv(void);
+extern unsigned char aw87339_audio_off(void);
+static int aw87339_kspk_control = 0;
+static int aw87339_drcv_control = 0;
+static const char *const ext_kspk_amp_function[] = { "Off", "On" };
+static const char *const ext_drcv_amp_function[] = { "Off", "On" };
+
+static int ext_kspk_amp_get(struct snd_kcontrol *kcontrol,
+                            struct snd_ctl_elem_value *ucontrol)
+{
+	ucontrol->value.integer.value[0] = aw87339_kspk_control;
+	pr_debug("%s: aw87339_kspk_control = %d\n", __func__,
+	         aw87339_kspk_control);
+	return 0;
+}
+static int ext_kspk_amp_put(struct snd_kcontrol *kcontrol,
+                            struct snd_ctl_elem_value *ucontrol)
+{
+	if(ucontrol->value.integer.value[0] == aw87339_kspk_control)
+		return 1;
+	aw87339_kspk_control = ucontrol->value.integer.value[0];
+	if(ucontrol->value.integer.value[0]) {
+		aw87339_audio_kspk();
+	} else {
+		aw87339_audio_off();
+	}
+	pr_debug("%s: value.integer.value = %ld\n", __func__,
+	         ucontrol->value.integer.value[0]);
+	return 0;
+}
+static int ext_drcv_amp_get(struct snd_kcontrol *kcontrol,
+                            struct snd_ctl_elem_value *ucontrol)
+{
+	ucontrol->value.integer.value[0] = aw87339_drcv_control;
+	pr_debug("%s: aw87339_drcv_control = %d\n", __func__,
+	         aw87339_drcv_control);
+	return 0;
+}
+static int ext_drcv_amp_put(struct snd_kcontrol *kcontrol,
+                            struct snd_ctl_elem_value *ucontrol)
+{
+	aw87339_drcv_control = ucontrol->value.integer.value[0];
+	if(ucontrol->value.integer.value[0] == aw87339_drcv_control)
+		return 1;
+	if(ucontrol->value.integer.value[0]) {
+		aw87339_audio_drcv();
+	} else {
+		aw87339_audio_off();
+	}
+	pr_debug("%s: value.integer.value = %ld\n", __func__,
+	         ucontrol->value.integer.value[0]);
 	return 0;
 }
 
@@ -267,33 +536,61 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 {
 	struct snd_soc_card *card = codec->component.card;
 	struct msm8916_asoc_mach_data *pdata = snd_soc_card_get_drvdata(card);
-	int ret;
+	//int ret; //remove qcom code becase delay time too long ,about >50us TN:peter
 
-	if (!gpio_is_valid(pdata->spk_ext_pa_gpio)) {
-		pr_err("%s: Invalid gpio: %d\n", __func__,
-		       pdata->spk_ext_pa_gpio);
-		return false;
-	}
+	if( tinno_ext_spk_i2s_support ) {
+		pr_debug("%s: %s external speaker PA\n", __func__,
+		         enable ? "Enable" : "Disable");
+		if(enable) {
+			//AW87319_Audio_Speaker();
+			aw87339_audio_kspk();
+			tinno_ext_spk_pa_current_state = true; //yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
 
-	pr_debug("%s: %s external speaker PA\n", __func__,
-	         enable ? "Enable" : "Disable");
+		} else {
+			aw87339_audio_off();
+			tinno_ext_spk_pa_current_state = false; //yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
 
-	if (enable) {
-		ret = msm_gpioset_activate(CLIENT_WCD_INT, "ext_spk_gpio");
-		if (ret) {
-			pr_err("%s: gpio set cannot be de-activated %s\n",
-			       __func__, "ext_spk_gpio");
-			return ret;
 		}
-		gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, enable);
+
+		return 0;
 	} else {
-		gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, enable);
-		ret = msm_gpioset_suspend(CLIENT_WCD_INT, "ext_spk_gpio");
-		if (ret) {
-			pr_err("%s: gpio set cannot be de-activated %s\n",
-			       __func__, "ext_spk_gpio");
-			return ret;
+		if (!gpio_is_valid(pdata->spk_ext_pa_gpio)) {
+			pr_err("%s: Invalid gpio: %d\n", __func__,
+			       pdata->spk_ext_pa_gpio);
+			return false;
 		}
+
+		pr_debug("%s: %s external speaker PA\n", __func__,
+		         enable ? "Enable" : "Disable");
+
+		//++ tinno_mba,external pa TN:peter
+#if 0 //remove qcom code becase delay time too long ,about >50us TN:peter
+		if (enable) {
+			ret = msm_gpioset_activate(CLIENT_WCD_INT, "ext_spk_gpio");
+			if (ret) {
+				pr_err("%s: gpio set cannot be de-activated %s\n",
+				       __func__, "ext_spk_gpio");
+				return ret;
+			}
+			gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, enable);
+		} else {
+			gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, enable);
+			ret = msm_gpioset_suspend(CLIENT_WCD_INT, "ext_spk_gpio");
+			if (ret) {
+				pr_err("%s: gpio set cannot be de-activated %s\n",
+				       __func__, "ext_spk_gpio");
+				return ret;
+			}
+		}
+#endif
+		if (enable) {
+			tinno_ext_spk_pa_current_state = true;// add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink
+			AW8xxx_Mode_set(pdata->spk_ext_pa_gpio,tinno_pa_mode);
+		} else {
+			tinno_ext_spk_pa_current_state = false;// add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
+			AW8xxx_Mode_set(pdata->spk_ext_pa_gpio,AW8XXX_OFF);
+		}
+		//-- tinno_mba,external pa
 	}
 	return 0;
 }
@@ -1005,6 +1302,10 @@ static const struct soc_enum msm_snd_enum[] = {
 	                    vi_feed_ch_text),
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(mi2s_rx_sample_rate_text),
 	                    mi2s_rx_sample_rate_text),
+	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(ext_kspk_amp_function),
+	                    ext_kspk_amp_function),
+	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(ext_drcv_amp_function),
+	                    ext_drcv_amp_function),
 };
 
 static const struct snd_kcontrol_new msm_snd_controls[] = {
@@ -1024,6 +1325,10 @@ static const struct snd_kcontrol_new msm_snd_controls[] = {
 	             msm_vi_feed_tx_ch_get, msm_vi_feed_tx_ch_put),
 	SOC_ENUM_EXT("MI2S_RX SampleRate", msm_snd_enum[6],
 	             mi2s_rx_sample_rate_get, mi2s_rx_sample_rate_put),
+	SOC_ENUM_EXT("Ext_Speaker_Amp", msm_snd_enum[7],
+	             ext_kspk_amp_get, ext_kspk_amp_put),
+	SOC_ENUM_EXT("Ext_Receiver_Amp", msm_snd_enum[8],
+	             ext_drcv_amp_get, ext_drcv_amp_put),
 };
 
 static int msm8952_mclk_event(struct snd_soc_dapm_widget *w,
@@ -1065,6 +1370,7 @@ static int msm8952_wsa_switch_event(struct snd_soc_dapm_widget *w,
 	struct msm8916_asoc_mach_data *pdata = NULL;
 	struct on_demand_supply *supply;
 
+	pr_err("%s: msm8952_wsa_switch_event %d\n", __func__, event);
 	pdata = snd_soc_card_get_drvdata(w->codec->component.card);
 	supply = &pdata->wsa_switch_supply;
 	if (!supply->supply) {
@@ -1541,6 +1847,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	void *msm8952_wcd_cal;
 	struct wcd_mbhc_btn_detect_cfg *btn_cfg;
 	u16 *btn_low, *btn_high;
+	int i;// tinno_mba,btn vol TN:peter
 
 	msm8952_wcd_cal = kzalloc(WCD_MBHC_CAL_SIZE(WCD_MBHC_DEF_BUTTONS,
 	                          WCD_MBHC_DEF_RLOADS), GFP_KERNEL);
@@ -1549,6 +1856,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 
 #define S(X, Y) ((WCD_MBHC_CAL_PLUG_TYPE_PTR(msm8952_wcd_cal)->X) = (Y))
 	S(v_hs_max, 1500);
+#endif
 #undef S
 #define S(X, Y) ((WCD_MBHC_CAL_BTN_DET_PTR(msm8952_wcd_cal)->X) = (Y))
 	S(num_btn, WCD_MBHC_DEF_BUTTONS);
@@ -1571,16 +1879,24 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	 * 210-290 == Button 2
 	 * 360-680 == Button 3
 	 */
-	btn_low[0] = 75;
-	btn_high[0] = 75;
-	btn_low[1] = 150;
-	btn_high[1] = 150;
-	btn_low[2] = 225;
-	btn_high[2] = 225;
-	btn_low[3] = 450;
-	btn_high[3] = 450;
+	btn_low[0] = 110;
+	btn_high[0] = 110;
+	btn_low[1] = 200;
+	btn_high[1] = 200;
+	btn_low[2] = 480;
+	btn_high[2] = 480;
+	btn_low[3] = 500;
+	btn_high[3] = 500;
 	btn_low[4] = 500;
 	btn_high[4] = 500;
+	//++ tinno_mba,btn vol TN:peter
+	if((tinno_mbhc_btn_h[WCD_MBHC_DEF_RLOADS] == 1)&&(tinno_mbhc_btn_l[WCD_MBHC_DEF_RLOADS] ==1)) {
+		for (i = 0 ; i < WCD_MBHC_DEF_RLOADS ; i++) {
+			btn_low[i] = tinno_mbhc_btn_l[i];
+			btn_high[i] = tinno_mbhc_btn_h[i];
+		}
+	}
+	//-- tinno_mba,btn vol
 
 	return msm8952_wcd_cal;
 }
@@ -3059,11 +3375,16 @@ static struct snd_soc_card *msm8952_populate_sndcard_dailinks(
 		       sizeof(msm8952_hdmi_dba_dai_link));
 		len1 += ARRAY_SIZE(msm8952_hdmi_dba_dai_link);
 	} else {
-		dev_dbg(dev, "%s(): No hdmi dba present, add quin dai\n",
-		        __func__);
-		memcpy(dailink + len1, msm8952_quin_dai_link,
-		       sizeof(msm8952_quin_dai_link));
-		len1 += ARRAY_SIZE(msm8952_quin_dai_link);
+		//++ tinno_mba, quin  TN:peter
+		if (of_property_read_bool(dev->of_node,	"qcom,msm-I2S-quin")) {
+
+			dev_dbg(dev, "%s(): No hdmi dba present, add quin dai\n",
+			        __func__);
+			memcpy(dailink + len1, msm8952_quin_dai_link,
+			       sizeof(msm8952_quin_dai_link));
+			len1 += ARRAY_SIZE(msm8952_quin_dai_link);
+		}
+		//-- tinno_mba, quin
 	}
 	if (of_property_read_bool(dev->of_node,
 	                          "qcom,split-a2dp")) {
@@ -3077,6 +3398,72 @@ static struct snd_soc_card *msm8952_populate_sndcard_dailinks(
 	card->num_links = len1;
 	return card;
 }
+
+//++ tinno_mba,btn vol TN:peter
+static int tinno_dt_parse_mbhc_btn(struct platform_device *pdev)
+{
+	const char *mbhc_btn_high = "qcom,tinno_mbhc_btn_high";
+	const char *mbhc_btn_low = "qcom,tinno_mbhc_btn_low";
+	struct property *prop;
+	unsigned int *mbhc_btn_h;
+	unsigned int *mbhc_btn_l;
+	int ret = 0,i;
+	prop = of_find_property(pdev->dev.of_node, mbhc_btn_high, NULL);
+	if (prop && prop->length) {
+		mbhc_btn_h = devm_kzalloc(&pdev->dev,prop->length,GFP_KERNEL);
+		if (!mbhc_btn_h) {
+			printk("%s: zalloc fail \n",__func__);
+			return -EINVAL;
+		}
+		ret = of_property_read_u32_array(pdev->dev.of_node,mbhc_btn_high,mbhc_btn_h,prop->length / sizeof(u32));
+		if (ret < 0) {
+			printk("%s: %s of node fail(%d) \n",__func__,mbhc_btn_high,ret);
+			devm_kfree(&pdev->dev,mbhc_btn_h);
+			mbhc_btn_h = NULL;
+			return -EINVAL;
+		} else {
+			for (i = 0 ; i < WCD_MBHC_DEF_RLOADS ; i++) {
+				tinno_mbhc_btn_h[i] = mbhc_btn_h[i];
+				printk("%s: tinno_mbhc_btn_h[%d] = %d \n",__func__,i,tinno_mbhc_btn_h[i]);
+			}
+
+			tinno_mbhc_btn_h[WCD_MBHC_DEF_RLOADS] = 1;
+		}
+	} else {
+		return -EINVAL;
+	}
+
+	prop = of_find_property(pdev->dev.of_node, mbhc_btn_low, NULL);
+	if (prop && prop->length) {
+		mbhc_btn_l = devm_kzalloc(&pdev->dev,prop->length,GFP_KERNEL);
+		if (!mbhc_btn_l) {
+			printk("%s: zalloc fail \n",__func__);
+			return -EINVAL;
+		}
+		ret = of_property_read_u32_array(pdev->dev.of_node,mbhc_btn_low,mbhc_btn_l,prop->length / sizeof(u32));
+		if (ret < 0) {
+			printk("%s: %s of node fail(%d) \n",__func__,mbhc_btn_low,ret);
+			devm_kfree(&pdev->dev,mbhc_btn_l);
+			mbhc_btn_l = NULL;
+			return -EINVAL;
+		} else {
+			for (i = 0 ; i < WCD_MBHC_DEF_RLOADS ; i++) {
+				tinno_mbhc_btn_l[i] = mbhc_btn_l[i];
+				printk("%s: tinno_mbhc_btn_l[%d] = %d \n",__func__,i,tinno_mbhc_btn_l[i]);
+			}
+			tinno_mbhc_btn_l[WCD_MBHC_DEF_RLOADS] = 1;
+		}
+	} else {
+		return -EINVAL;
+	}
+
+	devm_kfree(&pdev->dev,mbhc_btn_h);
+	mbhc_btn_h = NULL;
+	devm_kfree(&pdev->dev,mbhc_btn_l);
+	mbhc_btn_l = NULL;
+	return ret;
+}
+//-- tinno_mba,btn vol
 
 static int msm8952_asoc_machine_probe(struct platform_device *pdev)
 {
@@ -3286,6 +3673,14 @@ parse_mclk_freq:
 		goto err;
 	}
 
+	//++ tinno_mba,btn vol TN:peter
+	ret = tinno_dt_parse_mbhc_btn(pdev);
+	if (ret < 0) {
+		pr_err("%s: failed to tinno btn voltage config %d\n",
+		       __func__, ret);
+	}
+	//-- tinno_mba,btn vol
+
 	ret = is_ext_spk_gpio_support(pdev, pdata);
 	if (ret < 0)
 		pr_err("%s:  doesn't support external speaker pa\n",
@@ -3372,6 +3767,7 @@ parse_mclk_freq:
 		        ret);
 		goto err;
 	}
+
 	return 0;
 err:
 	if (pdata->vaddr_gpio_mux_spkr_ctl)
@@ -3453,3 +3849,4 @@ MODULE_DESCRIPTION("ALSA SoC msm");
 MODULE_LICENSE("GPL v2");
 MODULE_ALIAS("platform:" DRV_NAME);
 MODULE_DEVICE_TABLE(of, msm8952_asoc_machine_of_match);
+
