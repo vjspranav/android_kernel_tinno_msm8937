@@ -283,7 +283,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 
 	#ifdef CONFIG_PROJECT_GARLIC
 	pr_err("%s: sensor_name is %s\n", __func__, sensor_name);
-	if((!strncmp(s_ctrl->sensordata->sensor_name, "imx258_guangbao_garlic", sizeof("imx258_guangbao_garlic")))) {
+	if((!strncmp(s_ctrl->sensordata->sensor_name, "imx258_guangbao_p7201", sizeof("imx258_guangbao_p7201")))) {
 		unsigned short addr_temp = 0;
 		addr_temp = sensor_i2c_client->cci_client->sid;
 		sensor_i2c_client->cci_client->sid = 0xA0>>1;
@@ -319,7 +319,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 
 	}
 
-	if((!strncmp(s_ctrl->sensordata->sensor_name, "imx258_sunny_garlic", sizeof("imx258_sunny_garlic")))) {
+	if((!strncmp(s_ctrl->sensordata->sensor_name, "imx258_sunny_p7201", sizeof("imx258_sunny_p7201")))) {
 		unsigned short addr_temp = 0;
 		addr_temp = sensor_i2c_client->cci_client->sid;
 		sensor_i2c_client->cci_client->sid = 0xA0 >>1;
