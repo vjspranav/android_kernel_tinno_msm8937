@@ -105,10 +105,7 @@ static ssize_t TGesture_store_key(struct device_driver *ddri, const char *buf, s
 	if(1 == sscanf(buf, "%d", &enable)) {
 		enable_key = enable;
 	} else {
-
-
-		APS_ERR("invalid enable content: '%s'\n", buf);
-
+		APS_ERR("invalid enable content: '%s', length = %ld\n", buf, count);
 	}
 	return count;
 }
@@ -127,8 +124,11 @@ static struct driver_attribute *TGesture_attr_list[] = {
 
 static ssize_t TGesture_config_read_proc(struct file *file, char __user *page, size_t size, loff_t *ppos)
 {
+#if 0
 	char *ptr = page;
-	if (*ppos) { 
+//    char temp_data[2] = {'a','\0'};
+//    int i;
+	if (*ppos) { // CMD call again
 		return 0;
 	}
 	printk("TGesture1:%d\n",gTGesture);
@@ -136,6 +136,22 @@ static ssize_t TGesture_config_read_proc(struct file *file, char __user *page, s
 	printk("TGesture2:%s\n",ptr);
 	*ppos += ptr - page;
 	return (ptr - page) ;
+#else
+	int ret;
+	char buf[256];
+
+	if (*ppos)
+		return 0;
+
+	memset(buf, 0, sizeof(buf));
+	ret = sprintf(buf, "0x%c,%s ", gTGesture, Tg_buf);
+	*ppos += ret;
+	if (copy_to_user(page, buf, ret)) {
+		return -1;
+	}
+
+	return ret;
+#endif
 }
 static ssize_t TGesture_config_write_proc(struct file *filp, const char __user *buffer, size_t count, loff_t *off)
 {

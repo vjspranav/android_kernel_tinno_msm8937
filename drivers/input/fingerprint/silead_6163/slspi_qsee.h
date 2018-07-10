@@ -34,18 +34,18 @@
 
 #define debug_level MSG_INFO
 #define DBG_MSG(level, msg, ...)\
-do {\
-    if ((level < MSG_MAX) && (level >= debug_level)) \
-    {\
-        char   buf[200];\
-        char  *s = buf;\
-        \
-        s += snprintf(s, sizeof(buf) - (size_t)(s-buf), "[silead %s %d]:",  __func__, __LINE__);\
-        \
-        snprintf(s, sizeof(buf) - (size_t)(s-buf), msg, ##__VA_ARGS__);\
-        printk(KERN_ERR "%s", buf);\
-    }\
-}while(0)
+	do {\
+		if ((level < MSG_MAX) && (level >= debug_level)) \
+		{\
+			char   buf[200];\
+			char  *s = buf;\
+			\
+			s += snprintf(s, sizeof(buf) - (size_t)(s-buf), "[silead %s %d]:",  __func__, __LINE__);\
+			\
+			snprintf(s, sizeof(buf) - (size_t)(s-buf), msg, ##__VA_ARGS__);\
+			printk(KERN_ERR "%s", buf);\
+		}\
+	}while(0)
 
 /* User space versions of kernel symbols for SPI clocking modes,
  * matching <linux/spi/spi.h>
@@ -128,8 +128,8 @@ struct spi_ioc_transfer {
 
 /* not all platforms use <asm-generic/ioctl.h> or _IOC_TYPECHECK() ... */
 #define SPI_MSGSIZE(N) \
-    ((((N)*(sizeof (struct spi_ioc_transfer))) < (1 << _IOC_SIZEBITS)) \
-        ? ((N)*(sizeof (struct spi_ioc_transfer))) : 0)
+	((((N)*(sizeof (struct spi_ioc_transfer))) < (1 << _IOC_SIZEBITS)) \
+	 ? ((N)*(sizeof (struct spi_ioc_transfer))) : 0)
 #define SPI_IOC_MESSAGE(N) _IOW(SPI_IOC_MAGIC, 0, char[SPI_MSGSIZE(N)])
 
 #define SPI_SYNC_READ               _IOR(SPI_IOC_MAGIC, 10, __u32)
@@ -221,32 +221,32 @@ struct spidev_data {
 	atomic_t is_suspend;
 	u32 shutdown_gpio;
 	/*IRQ wake-up control */
-	#ifdef GSL6313_INTERRUPT_CTRL
+#ifdef GSL6313_INTERRUPT_CTRL
 	struct workqueue_struct *int_wq;
 	struct work_struct int_work;
 	u32 int_wakeup_gpio;
 	int int_irq;
 	bool wakeup;
-	#endif
+#endif
 	/*IRQ wake-up control */
 	/* power control */
-	#if GSL6313_POWER_CTRL
+#if GSL6313_POWER_CTRL
 	struct regulator *vio;
 	struct regulator *vdd;
-	#endif
+#endif
 	/*shutdown active/suspend */
 	struct pinctrl *fp_pinctrl;
 	struct pinctrl_state *pinctrl_state_active;
 	struct pinctrl_state *pinctrl_state_suspend;
 	/*shutdown active/suspend */
 	/*IRQ wake-up control */
-	#ifdef GSL6313_INTERRUPT_CTRL
+#ifdef GSL6313_INTERRUPT_CTRL
 	struct pinctrl_state *pinctrl_state_interrupt;
-	#endif
+#endif
 
-	#ifdef IRQ_SVC_DEBOUNCE
+#ifdef IRQ_SVC_DEBOUNCE
 	atomic_t irq_svc_debounce;
-	#endif
+#endif
 
 	/*IRQ wake-up control */
 };

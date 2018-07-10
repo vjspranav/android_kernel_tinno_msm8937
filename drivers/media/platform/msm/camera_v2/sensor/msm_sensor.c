@@ -112,7 +112,7 @@ int32_t msm_sensor_free_sensor_data(struct msm_sensor_ctrl_t *s_ctrl)
 	return 0;
 }
 
-#ifdef CONFIG_PLATFORM_TINNO
+#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 /* This function only used in leds-msm-gpio-dual-flash.c ,if don't use dual flash,  please keep below code*/
 int  is_front_camera = 0;
 void msm_sensor_set_front_camera_status(int  status)
@@ -147,7 +147,7 @@ int msm_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 			__func__, __LINE__, s_ctrl);
 		return -EINVAL;
 	}
-	#ifdef CONFIG_PLATFORM_TINNO
+	#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 	msm_sensor_set_front_camera_status(0);
 	msm_sensor_set_mono_camera_status(2);
 	#endif
@@ -246,11 +246,6 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 	#ifdef CONFIG_PROJECT_GARLIC
 	uint16_t mid = 0;
 	uint16_t flag = 0;
-	#endif
-	#ifdef CONFIG_PLATFORM_TINNO
-	int addr_mid = 0;
-	uint16_t otp_flag = 0, _mid = 0;
-	uint16_t reg_5002 = 0;
 	#endif
 	struct msm_camera_i2c_client *sensor_i2c_client;
 	struct msm_camera_slave_info *slave_info;
@@ -355,7 +350,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 	pr_debug("%s: read id: 0x%x expected id 0x%x:\n",
 			__func__, chipid, slave_info->sensor_id);
 
-	#ifdef CONFIG_PLATFORM_TINNO
+	#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 	pr_err("%s: xiongdajun add %d\n",
 	       __func__, s_ctrl->id);
 

@@ -15,10 +15,10 @@
 #define INFO_LOG    (1)
 #define DEBUG_LOG   (2)
 #define fpsensor_debug(level, fmt, args...) do { \
-        if (fpsensor_debug_level >= level) {\
-            printk( "[chipone_fp] " fmt, ##args); \
-        } \
-    } while (0)
+		if (fpsensor_debug_level >= level) {\
+			printk( "[chipone_fp] " fmt, ##args); \
+		} \
+	} while (0)
 #define FUNC_ENTRY()  fpsensor_debug(DEBUG_LOG, "%s, %d, entry\n", __func__, __LINE__)
 #define FUNC_EXIT()   fpsensor_debug(DEBUG_LOG, "%s, %d, exit\n", __func__, __LINE__)
 
@@ -56,6 +56,7 @@ typedef struct {
 
 	unsigned int users;
 	u8 device_available;    /* changed during fingerprint chip sleep and wakeup phase */
+	// struct early_suspend early_suspend;
 	u8 probe_finish;
 	u8 irq_count;
 	/* bit24-bit32 of signal count */
@@ -65,13 +66,13 @@ typedef struct {
 	u8 sig_count;
 	u8 is_sleep_mode;
 	volatile unsigned int RcvIRQ;
-	// IRQ
+	//irq
 	int irq;
 	int irq_gpio;
 	int reset_gpio;
 	int power_gpio;
 	struct wake_lock ttw_wl;
-	// Wait queue
+	//wait queue
 	wait_queue_head_t wq_irq_return;
 	int cancel;
 } fpsensor_data_t;

@@ -45,10 +45,6 @@
 #include "msm8916-wcd-irq.h"
 #include "msm8x16_wcd_registers.h"
 
-#ifdef CONFIG_PLATFORM_TINNO
-#include <linux/switch.h>
-#endif
-
 #define MSM8X16_WCD_RATES (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |\
 			SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000)
 #define MSM8X16_WCD_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
@@ -152,18 +148,6 @@ static bool spkr_boost_en = true;
 	mutex_lock_nested(&x, SINGLE_DEPTH_NESTING)
 
 #define MSM8X16_WCD_RELEASE_LOCK(x) mutex_unlock(&x)
-
-#ifdef CONFIG_PLATFORM_TINNO
-#ifdef CONFIG_SWITCH
-struct switch_dev wcd_mbhc_headset_switch = {
-	.name = "h2w",
-};
-
-struct switch_dev wcd_mbhc_button_switch = {
-	.name = "linebtn",
-};
-#endif
-#endif
 
 /* Codec supports 2 IIR filters */
 enum {
@@ -5584,7 +5568,7 @@ static int msm8x16_wcd_device_down(struct snd_soc_codec *codec)
 	pdata = snd_soc_card_get_drvdata(codec->component.card);
 	dev_dbg(codec->dev, "%s: device down!\n", __func__);
 	msm8x16_wcd_write(codec,
-#ifdef CONFIG_PLATFORM_TINNO
+#ifdef CONFIG_PLATFORM_TINNO (* Hmmm *)
 		MSM8X16_WCD_A_ANALOG_TX_1_EN, 0x33);
 	msm8x16_wcd_write(codec,
 		MSM8X16_WCD_A_ANALOG_TX_2_EN, 0x33);
@@ -5962,18 +5946,6 @@ static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 
 	wcd_mbhc_init(&msm8x16_wcd_priv->mbhc, codec, &mbhc_cb, &intr_ids,
 	              wcd_mbhc_registers, true);
-	#ifdef CONFIG_PLATFORM_TINNO
-	#ifdef CONFIG_SWITCH 
-	ret = switch_dev_register(&wcd_mbhc_headset_switch);
-	if (ret < 0) {
-		dev_err(codec->dev, "not able to register switch device h2w\n");
-	}
-	ret = switch_dev_register(&wcd_mbhc_button_switch);
-	if (ret < 0) {
-		dev_err(codec->dev, "not able to register switch device linebtn\n");
-	}
-	#endif
-	#endif
 	msm8x16_wcd_priv->mclk_enabled = false;
 	msm8x16_wcd_priv->clock_active = false;
 	msm8x16_wcd_priv->config_mode_active = false;
@@ -6014,12 +5986,6 @@ static int msm8x16_wcd_codec_remove(struct snd_soc_codec *codec)
 	msm8x16_wcd_priv->on_demand_list[ON_DEMAND_MICBIAS].supply = NULL;
 	atomic_set(&msm8x16_wcd_priv->on_demand_list[ON_DEMAND_MICBIAS].ref, 0);
 	iounmap(msm8x16_wcd->dig_base);
-	#ifdef CONFIG_PLATFORM_TINNO
-	#ifdef CONFIG_SWITCH
-	switch_dev_unregister(&wcd_mbhc_headset_switch);
-	switch_dev_unregister(&wcd_mbhc_button_switch);
-	#endif
-	#endif
 	kfree(msm8x16_wcd_priv->fw_data);
 	kfree(msm8x16_wcd_priv);
 

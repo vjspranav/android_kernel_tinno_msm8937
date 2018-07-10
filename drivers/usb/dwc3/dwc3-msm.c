@@ -3361,12 +3361,14 @@ static int dwc3_msm_gadget_vbus_draw(struct dwc3_msm *mdwc, unsigned mA)
 	if (mdwc->charging_disabled)
 		return 0;
 
+	#ifndef CONFIG_PROJECT_V12BNLITE
 	if (mdwc->chg_type != DWC3_INVALID_CHARGER) {
 		dev_dbg(mdwc->dev,
 			"SKIP setting power supply type again,chg_type = %d\n",
 			mdwc->chg_type);
 		goto skip_psy_type;
 	}
+	#endif
 
 	dev_dbg(mdwc->dev, "Requested curr from USB = %u, max-type-c:%u\n",
 					mA, mdwc->typec_current_max);
@@ -3383,7 +3385,9 @@ static int dwc3_msm_gadget_vbus_draw(struct dwc3_msm *mdwc, unsigned mA)
 
 	power_supply_set_supply_type(&mdwc->usb_psy, power_supply_type);
 
+#ifndef CONFIG_PLATFORM_TINNO
 skip_psy_type:
+#endif
 
 	if (mdwc->chg_type == DWC3_CDP_CHARGER)
 		mA = DWC3_IDEV_CHG_MAX;
@@ -3439,7 +3443,11 @@ static void dwc3_check_float_lines(struct dwc3_msm *mdwc)
 
 	/* Get linestate with Idp_src enabled */
 	dpdm = usb_phy_dpdm_with_idp_src(mdwc->hs_phy);
+#ifdef CONFIG_PROJECT_V12BNLITE
+	if ( dpdm != 0 ) {
+#else
 	if (dpdm == 0x2) {
+#endif
 		/* DP is HIGH = lines are floating */
 		mdwc->chg_type = DWC3_PROPRIETARY_CHARGER;
 		mdwc->otg_state = OTG_STATE_B_IDLE;
@@ -3572,7 +3580,10 @@ static void dwc3_otg_sm_work(struct work_struct *w)
 				/* check dp/dm for SDP & runtime_put if !SDP */
 				if (mdwc->detect_dpdm_floating) {
 					dwc3_check_float_lines(mdwc);
-					if (mdwc->chg_type != DWC3_SDP_CHARGER)
+					if (mdwc->chg_type != DWC3_SDP_CHARGER) {
+						#ifdef CONFIG_PROJECT_V12BNLITE
+						work = 1;
+						#endif
 						break;
 				}
 				dwc3_otg_start_peripheral(mdwc, 1);
@@ -3611,11 +3622,20 @@ static void dwc3_otg_sm_work(struct work_struct *w)
 			dev_dbg(mdwc->dev, "b_sess_vld\n");
 			switch (mdwc->chg_type) {
 			case DWC3_DCP_CHARGER:
+			#ifndef CONFIG_PROJECT_V12BNLITE
 			case DWC3_PROPRIETARY_CHARGER:
+			#endif
 				dev_dbg(mdwc->dev, "lpm, DCP charger\n");
 				dwc3_msm_gadget_vbus_draw(mdwc,
 						dcp_max_current);
 				break;
+			#ifdef CONFIG_PROJECT_V12BNLITE
+			case DWC3_PROPRIETARY_CHARGER:
+				dev_dbg(mdwc->dev, "lpm, DWC3_PROPRIETARY_CHARGER\n");
+				dwc3_msm_gadget_vbus_draw(mdwc,
+				                          IDEV_CHG_MAX_TINNO);
+				break;
+			#endif
 			case DWC3_CDP_CHARGER:
 				dwc3_msm_gadget_vbus_draw(mdwc,
 						DWC3_IDEV_CHG_MAX);
@@ -3636,6 +3656,9 @@ static void dwc3_otg_sm_work(struct work_struct *w)
 				    mdwc->chg_type == DWC3_SDP_CHARGER) {
 					dwc3_check_float_lines(mdwc);
 					if (mdwc->chg_type != DWC3_SDP_CHARGER)
+						#ifdef CONFIG_PROJECT_V12BNLITE
+						work = 1;
+						#endif
 						break;
 				}
 				dwc3_otg_start_peripheral(mdwc, 1);

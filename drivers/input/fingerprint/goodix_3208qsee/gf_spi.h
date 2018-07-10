@@ -77,6 +77,7 @@ struct gf_ioc_chip_info {
 	unsigned char operation;
 	unsigned char chip_type;
 	unsigned char so_version[12];
+	//unsigned char reserved[4];
 };
 
 #define GF_IOC_MAGIC    'g'     //define magic number
@@ -105,8 +106,17 @@ struct gf_ioc_chip_info {
 #define  GFX1XM_IOC_FTM	_IOW(GF_IOC_MAGIC, 101, int)
 #define  GFX1XM_IOC_SET_MODE	_IOW(GFX1XM_IOC_MAGIC, 102, int)
 
+
+//#define AP_CONTROL_CLK       1
+
+//#if defined(CONFIG_FINGERPRINT_GOODIX_GF32X8_QSEE_PLATFORM)
 #define  USE_PLATFORM_BUS     1
 
+//#else
+//#define  USE_SPI_BUS	1
+
+//#endif
+//#define GF_FASYNC   1	/*If support fasync mechanism.*/
 #define GF_NETLINK_ENABLE 1
 #define GF_NET_EVENT_IRQ 1
 #define GF_NET_EVENT_FB_BLACK 2
@@ -116,11 +126,11 @@ struct gf_ioc_chip_info {
 struct gf_dev {
 	dev_t devt;
 	struct list_head device_entry;
-	#if defined(USE_SPI_BUS)
+#if defined(USE_SPI_BUS)
 	struct spi_device *spi;
-	#elif defined(USE_PLATFORM_BUS)
+#elif defined(USE_PLATFORM_BUS)
 	struct platform_device *spi;
-	#endif
+#endif
 	struct clk *core_clk;
 	struct clk *iface_clk;
 
@@ -133,15 +143,17 @@ struct gf_dev {
 	int irq;
 	int irq_enabled;
 	int clk_enabled;
-	#ifdef GF_FASYNC
+#ifdef GF_FASYNC
 	struct fasync_struct *async;
-	#endif
+#endif
 	struct notifier_block notifier;
 	char device_available;
 	char fb_black;
+	//<copy from 7701> add by yinglong.tang
 	u8           isPowerOn;
 	struct regulator *vdd;
 	struct regulator *vio;
+	//<copy from 7701> add by yinglong.tang
 };
 
 int gf_parse_dts(struct gf_dev* gf_dev);
@@ -152,9 +164,11 @@ int gf_power_off(struct gf_dev *gf_dev);
 
 int gf_hw_reset(struct gf_dev *gf_dev, unsigned int delay_ms);
 int gf_irq_num(struct gf_dev *gf_dev);
+//<copy from 7701> add by yinglong.tang
 extern int gf_power_ctl(struct gf_dev* gf_dev, bool on);
 extern int gf_power_init(struct gf_dev* gf_dev);
 extern int gf_power_deinit(struct gf_dev* gf_dev);
+//<copy from 7701> add by yinglong.tang
 
 void sendnlmsg(char *message);
 int netlink_init(void);

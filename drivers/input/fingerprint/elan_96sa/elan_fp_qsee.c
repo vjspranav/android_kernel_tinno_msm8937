@@ -39,26 +39,33 @@
 #include <linux/spi/spi.h>
 #include <linux/spi/spidev.h>
 #include <linux/regulator/consumer.h>
-#include "../fp_drv/fp_drv.h"
+#include "../fp_drv/fp_drv.h" //add by wenguangyu
 
-#define VERSION_LOG	"ELAN FINGER PRINT V1.4.4.1"
+//#ifdef INIT_COMPLETION
+//#define reinit_completion(x) INIT_COMPLETION(*(x))
+//#endif
+
+#define VERSION_LOG	"ELAN FINGER PRINT V88888888888"
 #define ELAN_FP_NAME "elan_fp"
 #define _ELAN_DEBUG_
 #ifdef _ELAN_DEBUG_
 static int elan_debug = 1;
 #define ELAN_DEBUG(format, args ...) \
-			do { \
-					if (elan_debug) \
-							printk("[ELAN] " format, ##args); \
-			} while (0)
+	do { \
+		if (elan_debug) \
+			printk("[ELAN] " format, ##args); \
+	} while (0)
 #else
 #define ELAN_DEBUG(format, args ...)
 #endif
 
 #define GPIO_FP_ID	880
-#define KEY_FP_INT	KEY_POWER //KEY_WAKEUP // change by customer & framework support
-#define KEY_FP_INT2	KEY_1 // change by customer & framework support
+#define KEY_FP_INT			KEY_POWER //KEY_WAKEUP // change by customer & framework support
+#define KEY_FP_INT2			KEY_1 // change by customer & framework support
 #define SET_SPI_OWNER 0
+
+static int elan_work_flag = 0;
+static DECLARE_WAIT_QUEUE_HEAD(elan_poll_wq);
 
 struct completion cmd_done_irq;
 static int factory_status = 0;
@@ -66,10 +73,12 @@ static DEFINE_MUTEX(elan_factory_mutex);
 static struct fasync_struct *fasync_queue = NULL;
 static int key_status = 0;
 
+//<copy from 7701> add by yinglong.tang
 #define GF_VDD_MIN_UV      2800000
 #define GF_VDD_MAX_UV	   2800000
 #define GF_VIO_MIN_UV      1800000
 #define GF_VIO_MAX_UV      1800000
+//<copy from 7701> add by yinglong.tang
 
 struct efsa120s_data  {
 	int 					irq_gpio;
@@ -78,13 +87,16 @@ struct efsa120s_data  {
 	int						irq_is_disable;
 	struct miscdevice		efsa120_dev;	/* char device for ioctl */
 	struct platform_device	*pdev;
+	//struct spi_device	*pdev;
 	struct input_dev		*input_dev;
 	spinlock_t				irq_lock;
 	wait_queue_head_t		efsa_wait;
 	struct wake_lock		wake_lock;
+	struct wake_lock	hal_wake_lock;
 	u8 isPowerOn;
 	struct regulator *vdd;
 	struct regulator *vio;
+	//int fpid_gpio;//TINNO LINE
 	struct notifier_block notifier;
 };
 
@@ -99,6 +111,8 @@ static char lib_ver_buf[MAX_LIB_BUF] = "unknow";
 //for power status detect
 #define POWER_NOTIFY
 static int is_screen_poweroff = 0;
+
+//static int is_interrupt = 0;
 
 void efsa120s_irq_enable(void *_fp)
 {
@@ -149,9 +163,9 @@ static DEVICE_ATTR(elan_debug, S_IRUGO, elan_debug_value, NULL);
 
 static struct attribute *efsa120s_attributes[] = {
 	&dev_attr_drv_version.attr,
-	#ifdef _ELAN_DEBUG_
+#ifdef _ELAN_DEBUG_
 	&dev_attr_elan_debug.attr,
-	#endif
+#endif
 	NULL
 };
 
@@ -186,6 +200,7 @@ static long efsa120s_ioctl(struct file *filp, unsigned int cmd, unsigned long ar
 {
 	struct efsa120s_data *fp = filp->private_data;
 	int ret = 0;
+	int wake_lock_arg;
 
 	ELAN_DEBUG("%s() : cmd = [%04X]\n", __func__, cmd);
 
@@ -195,11 +210,12 @@ static long efsa120s_ioctl(struct file *filp, unsigned int cmd, unsigned long ar
 		ELAN_DEBUG("ID_IOCTL_RESET\n");
 		break;
 	case ID_IOCTL_POLL_INIT: //20
-		reinit_completion(&cmd_done_irq);
+		elan_work_flag = 0;
 		ELAN_DEBUG("ID_IOCTL_POLL_INIT\n");
 		break;
 	case ID_IOCTL_POLL_EXIT: //23
-		complete(&cmd_done_irq);
+		elan_work_flag = 1;
+		wake_up(&fp->efsa_wait);
 		ELAN_DEBUG("ID_IOCTL_POLL_EXIT\n");
 		break;
 	case ID_IOCTL_READ_FACTORY_STATUS: //26
@@ -214,15 +230,26 @@ static long efsa120s_ioctl(struct file *filp, unsigned int cmd, unsigned long ar
 		ELAN_DEBUG("WRITE_FACTORY_STATUS = %d\n", factory_status);
 		mutex_unlock(&elan_factory_mutex);
 		break;
+	case ID_IOCTL_WAKE_LOCK_UNLOCK: //41
+		wake_lock_arg = (int __user)arg;
+		if(!wake_lock_arg) {
+			wake_unlock(&fp->hal_wake_lock);
+			ELAN_DEBUG("[IOCTL] HAL WAKE UNLOCK = %d", wake_lock_arg);
+		} else if(wake_lock_arg) {
+			wake_lock(&fp->hal_wake_lock);
+			ELAN_DEBUG("[IOCTL] HAL WAKE LOCK = %d", wake_lock_arg);
+		} else
+			ELAN_DEBUG("[IOCTL] ERROR WAKE LOCK ARGUMENT");
+		break;
 	case ID_IOCTL_EN_IRQ: //55
 		efsa120s_irq_enable(fp);
 		ELAN_DEBUG("ID_IOCTL_EN_IRQ\n");
 		break;
-	case ID_IOCTL_DIS_IRQ: 
+	case ID_IOCTL_DIS_IRQ: //66
 		efsa120s_irq_disable(fp);
 		ELAN_DEBUG("ID_IOCTL_DIS_IRQ\n");
 		break;
-	case ID_IOCTL_POWER_SET: 
+	case ID_IOCTL_POWER_SET: //77
 		if(arg) {
 			elan_power_ctl(fp, true);
 		} else {
@@ -234,7 +261,9 @@ static long efsa120s_ioctl(struct file *filp, unsigned int cmd, unsigned long ar
 		return (key_status == 1 ? 1 : 2);
 	case IOCTL_WRITE_KEY_STATUS:
 		ELAN_DEBUG("IOCTL_WRITE_KEY_STATUS,arg = %ld\n", arg);
-		key_status = arg;
+		key_status = (int)arg;
+		//guomingyi add .
+		FP_EVT_REPORT(key_status == 1 ? 1 : 2);
 		if (fasync_queue) {
 			ELAN_DEBUG("IOCTL_WRITE_KEY_STATUS,kill_fasync to send key event\n");
 			kill_fasync(&fasync_queue, SIGIO, POLL_IN);
@@ -270,16 +299,30 @@ static long efsa120s_ioctl(struct file *filp, unsigned int cmd, unsigned long ar
 static unsigned int efsa120s_poll(struct file *file, poll_table *wait)
 {
 	struct efsa120s_data *fp = file->private_data;
-	int mask=0;
-	wait_for_completion_interruptible(&cmd_done_irq);
+	int mask = 0;
+	//int ret = 0;
+	//wait_for_completion(&cmd_done_irq);
+	wake_unlock(&fp->hal_wake_lock); // for tinno 6901
+	//ret = wait_event_interruptible(elan_poll_wq, elan_work_flag > 0);
 	poll_wait(file, &fp->efsa_wait, wait);
-	mask |= POLLIN | POLLRDNORM;
+	//if(is_interrupt){
+	//	mask = is_interrupt;
+	//	is_interrupt = 0;
+	//}
+	//ELAN_DEBUG("%s() wait_event_interruptible pass 333, ret = %d\n", __func__, ret);
+	ELAN_DEBUG("%s()\n", __func__);
+	//mask |= POLLIN | POLLRDNORM;
+	if(elan_work_flag > 0)
+		mask = elan_work_flag;
+
+	elan_work_flag = 0;
 
 	return mask;
 }
 
 static int elan_fp_fasync(int fd, struct file * filp, int on)
 {
+	//elan_info("%s enter \n",__func__);
 	return fasync_helper(fd, filp, on, &fasync_queue);
 }
 
@@ -320,18 +363,27 @@ static irqreturn_t efsa120s_irq_handler(int irq, void *_fp)
 	struct efsa120s_data *fp = _fp;
 
 	ELAN_DEBUG("%s()\n", __func__);
+	// guomingyi add.
+	FP_EVT_REPORT(HW_EVENT_WAKEUP);
 	/* input power keyevent */
 	wake_lock_timeout(&fp->wake_lock,msecs_to_jiffies(1000));
-	#if 0
+#if 0
 	input_report_key(fp->input_dev, KEY_FP_INT, 1); /* Added for KEY Event */
 	input_sync(fp->input_dev);
 	msleep(1);
 	input_report_key(fp->input_dev, KEY_FP_INT, 0); /* Added for KEY Event */
 	input_sync(fp->input_dev);
 	msleep(1);
-	#endif
+#endif
 
-	complete(&cmd_done_irq);
+	elan_work_flag = 1;
+	wake_up(&fp->efsa_wait);
+	//is_interrupt |= 1;
+	//wake_up(&fp->efsa_wait);
+	//if (fasync_queue){
+	//	kill_fasync(&fasync_queue, SIGIO, POLL_IN);
+	//}
+
 	return IRQ_HANDLED;
 }
 
@@ -353,7 +405,7 @@ static int efsa120s_setup_cdev(struct efsa120s_data *fp)
 
 static int efsa120s_sysfs_create(struct efsa120s_data *sysfs)
 {
-	struct efsa120s_data *fp = platform_get_drvdata(sysfs->pdev);
+	struct efsa120s_data *fp = platform_get_drvdata(sysfs->pdev);//spi_get_drvdata(sysfs->pdev);//
 	int error = 0;
 
 	/* Register sysfs */
@@ -374,6 +426,7 @@ static char efsa120s_gpio_config(void *_fp)
 {
 	struct efsa120s_data *fp = _fp;
 	int ret;
+	//int fpid = -1; //TINNO LINE
 	/* Developement platform */
 	// Configure INT GPIO (Input)
 	ret = gpio_request(fp->irq_gpio, "efsa120-irq");
@@ -404,6 +457,7 @@ static char efsa120s_gpio_config(void *_fp)
 		ELAN_DEBUG("%s() Reset ...\n", __func__);
 	}
 
+	//TINNO BEGIN
 	/*ret =  gpio_request(fp->fpid_gpio, "efsa120-fpid");
 	if (ret < 0)
 	{
@@ -416,6 +470,7 @@ static char efsa120s_gpio_config(void *_fp)
 	       fpid = gpio_get_value(fp->fpid_gpio);
 		ELAN_DEBUG("%s() FPID = %d...\n", fpid,  __func__);
 	}*/
+	//TINNO END
 	return ret;
 }
 
@@ -435,10 +490,12 @@ static int elan_parse_dt(struct device *dev, struct efsa120s_data *pdata)
 	if (pdata->irq_gpio < 0)
 		return pdata->irq_gpio;
 
+	//TINNO BEGIN
 	/*pdata->fpid_gpio = of_get_named_gpio(np, "qcom,fpid-gpio", 0);
 	ELAN_DEBUG("fpid_gpio = %d\n", pdata->fpid_gpio);
 	if (pdata->fpid_gpio < 0)
 		return pdata->irq_gpio;	*/
+	//TINNO END
 	/* ---reset, irq gpio info--- */
 
 	/* ==optional== */
@@ -454,6 +511,7 @@ static int elan_parse_dt(struct device *dev, struct efsa120s_data *pdata)
 	return 0;
 }
 
+//<copy from 7701> add by yinglong.tang
 int elan_power_ctl(struct efsa120s_data *pdata, bool on)
 {
 	int rc = 0;
@@ -550,6 +608,7 @@ int elan_power_deinit(struct efsa120s_data *pdata)
 	return ret;
 }
 
+//<copy from 7701> add by yinglong.tang
 #ifdef POWER_NOTIFY
 static int elan_fb_state_chg_callback(struct notifier_block *nb,
                                       unsigned long val, void *data)
@@ -557,6 +616,9 @@ static int elan_fb_state_chg_callback(struct notifier_block *nb,
 	struct fb_event *evdata = data;
 	unsigned int blank;
 	struct efsa120s_data *fp = container_of(nb, struct efsa120s_data, notifier);
+
+	ELAN_DEBUG("=====%s() Start=====\n", __func__);
+	ELAN_DEBUG("TINNO: elan_fb_state_chg_callback FP\n");
 
 	if (val != FB_EARLY_EVENT_BLANK) {
 		return 0;
@@ -567,16 +629,23 @@ static int elan_fb_state_chg_callback(struct notifier_block *nb,
 		switch (blank) {
 		case FB_BLANK_POWERDOWN:
 			is_screen_poweroff = 1;
-			complete(&cmd_done_irq);
+			elan_work_flag = 1;
+			wake_up(&fp->efsa_wait);
+			//complete(&cmd_done_irq);
+			ELAN_DEBUG("Screen Off !!!->1.wait_event_interruptible notify\n");
+			//is_interrupt |= 2;
+			//wake_up(&fp->efsa_wait);
 			break;
 		case FB_BLANK_UNBLANK:
 			is_screen_poweroff = 0;
+			ELAN_DEBUG("Screen On !!!\n");
 			break;
 		default:
 			pr_info("%s defalut\n", __func__);
 			break;
 		}
 	}
+	ELAN_DEBUG("=====%s() END=====\n", __func__);
 	return NOTIFY_OK;
 }
 
@@ -586,8 +655,10 @@ static struct notifier_block elan_noti_block = {
 #endif
 
 static int efsa120s_probe(struct platform_device *pdev)
+//static int efsa120s_probe(struct spi_device *pdev)
 {
 	struct efsa120s_data *fp = NULL;
+	// struct input_dev *input_dev = NULL;
 	int err = 0;
 
 	ELAN_DEBUG("=====%s() Start=====\n", __func__);
@@ -613,9 +684,27 @@ static int efsa120s_probe(struct platform_device *pdev)
 	err = elan_parse_dt(&pdev->dev, fp);
 
 	/* Init Input Device */
+	// input_dev = input_allocate_device();
+	// if (!input_dev)
+	//	ELAN_DEBUG("alloc input_dev fail.\n");
+
 	fp->pdev = pdev;
+
 	platform_set_drvdata(pdev, fp);
+	//spi_set_drvdata(pdev, fp);
+
 	err = elan_power_init(fp);
+
+	// input_dev->name = "efsa120s";
+	//input_dev->id.bustype = BUS_SPI;
+	//input_dev->dev.parent = &pdev->dev;
+	//input_set_drvdata(input_dev, fp);
+
+	//input_dev->evbit[0] = BIT_MASK(EV_SYN) | BIT_MASK(EV_KEY);
+	//input_set_capability(input_dev, EV_KEY, KEY_FP_INT); // change by customer, send key event to framework. KEY_xxx could be changed.
+	// input_set_capability(input_dev, EV_KEY, KEY_FP_INT2); // change by customer, send key event to framework. KEY_xxx could be changed.
+
+	//fp->input_dev = input_dev;
 
 	/* Init Sysfs */
 	err = efsa120s_sysfs_create(fp);
@@ -627,40 +716,58 @@ static int efsa120s_probe(struct platform_device *pdev)
 	if(err < 0)
 		ELAN_DEBUG("efsa120s setup device fail.\n");
 
+	/* Register Input Device */
+	// err = input_register_device(input_dev);
+	//  if(err) {
+	//	ELAN_DEBUG("Unable to register input device, error: %d!\n", err);
+	// 	goto fp_probe_fail;
+	//}
+
 	/* Init EFSA120S GPIO */
 	err = efsa120s_gpio_config(fp);
 	if(err < 0)
 		ELAN_DEBUG("GPIO request fail (%d).\n", err);
 
 	wake_lock_init(&fp->wake_lock, WAKE_LOCK_SUSPEND, "fp_wake_lock");
+	wake_lock_init(&fp->hal_wake_lock, WAKE_LOCK_SUSPEND, "hal_fp_wake_lock");
 
-	#ifdef POWER_NOTIFY
+#ifdef POWER_NOTIFY
 	fp->notifier = elan_noti_block;
 	fb_register_client(&fp->notifier);
-	#endif
+#endif
 	/* Init IRQ FUNC */
 	/*err = request_threaded_irq(fp->isr, NULL, efsa120s_irq_handler,
 			IRQF_NO_SUSPEND | IRQF_TRIGGER_RISING | IRQF_ONESHOT,
 			pdev->dev.driver->name, fp);*/
-	// Move to elan_request_irq func.
+	// move to elan_request_irq func.
 
 	/* Set Spi to TZ */
-	#if SET_SPI_OWNER
+#if SET_SPI_OWNER
 	err = set_pipe_ownership();
-	#endif
+#endif
 
 	ELAN_DEBUG("=====%s() End=====\n", __func__);
 	return 0;
+
+//fp_probe_fail:
+//    platform_set_drvdata(pdev, NULL);
+	//spi_set_drvdata(pdev, NULL);
+	// input_free_device(input_dev);
+	//  input_dev = NULL;
+//   kfree(fp);
+//    return -ENOMEM;
 }
 
 
 static int efsa120s_remove(struct platform_device *pdev)
+//static int efsa120s_remove(struct spi_device *pdev)
 {
-	#if 1
+#if 1
 	struct efsa120s_data *fp = platform_get_drvdata(pdev);
-	#else
-	struct efsa120s_data *fp = spi_get_drvdata(pdev);
-	#endif
+#else
+	struct efsa120s_data *fp = spi_get_drvdata(pdev);//platform_get_drvdata(pdev);
+#endif
+	//struct efsa120s_data *fp = spi_get_drvdata(pdev);//platform_get_drvdata(pdev);
 
 	if (fp->isr)
 		free_irq(fp->isr, fp);
@@ -669,14 +776,15 @@ static int efsa120s_remove(struct platform_device *pdev)
 	gpio_free(fp->rst_gpio);
 
 	misc_deregister(&fp->efsa120_dev);
+	//input_free_device(fp->input_dev);
 	elan_power_deinit(fp);
 
 	kfree(fp);
-	#if 1
+#if 1
 	platform_set_drvdata(pdev, NULL);
-	#else
+#else
 	spi_set_drvdata(pdev, NULL);
-	#endif
+#endif
 	return 0;
 }
 
@@ -725,6 +833,7 @@ static int __init efsa120s_init(void)
 	int status = 0;
 	ELAN_DEBUG("=====%s() Start=====\n", __func__);
 	status = platform_driver_register(&efsa120s_driver);
+	//status = spi_register_driver(&efsa120s_driver);
 	ELAN_DEBUG("%s --->>>>>111>>>status = %d !\n",__func__,status);
 	ELAN_DEBUG("%s --->>>>>222>>>status = %d !\n",__func__,status);
 	if(status < 0)
@@ -738,6 +847,8 @@ static int __init efsa120s_init(void)
 static void __exit efsa120s_exist(void)
 {
 	platform_driver_unregister(&efsa120s_driver);
+	//spi_driver_unregister(&efsa120s_driver);
+	//spi_unregister_driver(&efsa120s_driver);
 }
 
 module_init(efsa120s_init);

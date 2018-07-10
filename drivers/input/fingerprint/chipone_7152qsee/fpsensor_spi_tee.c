@@ -32,12 +32,12 @@
 
 #include "fpsensor_spi_tee.h"
 
-#include "../fp_drv/fp_drv.h"
+#include "../fp_drv/fp_drv.h" //add by wenguangyu
 
 #define FPSENSOR_SPI_VERSION        "fpsensor_spi_tee_v0.20"
 
 /* debug log setting */
-static u8 fpsensor_debug_level = ERR_LOG;
+static u8 fpsensor_debug_level = DEBUG_LOG;
 /* global variables */
 static fpsensor_data_t *g_fpsensor = NULL;
 
@@ -169,7 +169,7 @@ static int fpsensor_get_gpio_dts_info(fpsensor_data_t *fpsensor)
 	        return -1;
 	    }
 
-	    // Get irq resourece
+	    // get irq resourece
 	    ret = fpsensor_request_named_gpio(fpsensor, "qcom,reset-gpio", &fpsensor->reset_gpio);
 	    if (ret)
 	    {
@@ -177,7 +177,7 @@ static int fpsensor_get_gpio_dts_info(fpsensor_data_t *fpsensor)
 	        return -1;
 	    }
 
-	    // Get power resourece
+	    // get power resourece
 	    ret = fpsensor_request_named_gpio(fpsensor, "fp-gpio-power", &fpsensor->power_gpio);
 	    if (ret)
 	    {
@@ -188,7 +188,7 @@ static int fpsensor_get_gpio_dts_info(fpsensor_data_t *fpsensor)
 	    gpio_direction_output(fpsensor->power_gpio, 1);
 	    gpio_set_value(fpsensor->power_gpio, 1);
 	*/
-	// Set reset direction output
+	// set reset direction output
 
 	request_irq_ret = fpsensor_parse_dt(fpsensor);
 
@@ -284,6 +284,7 @@ static irqreturn_t fpsensor_irq(int irq, void *handle)
 static void setRcvIRQ(int val)
 {
 	fpsensor_data_t *fpsensor_dev = g_fpsensor;
+	// fpsensor_debug(INFO_LOG, "[rickon]: %s befor val :  %d ; set val : %d   \n", __func__, fpsensor_dev-> RcvIRQ, val);
 	fpsensor_dev->RcvIRQ = val;
 }
 #define FPSENSOR_DEV_INFO "chipone_fp"
@@ -297,8 +298,10 @@ static long fpsensor_ioctl(struct file *filp, unsigned int cmd, unsigned long ar
 	unsigned int val = 0;
 	int irqf;
 
+	//FUNC_ENTRY();
 	fpsensor_debug(INFO_LOG, "[rickon]: fpsensor ioctl cmd : 0x%x \n", cmd );
 	fpsensor_dev = (fpsensor_data_t *)filp->private_data;
+	//clear cancel flag
 	fpsensor_dev->cancel = 0 ;
 	switch (cmd) {
 	case FPSENSOR_IOC_INIT:
@@ -309,6 +312,7 @@ static long fpsensor_ioctl(struct file *filp, unsigned int cmd, unsigned long ar
 			break;
 		}
 		fpsensor_irq_gpio_cfg(fpsensor_dev);
+		//regist irq
 		irqf = IRQF_TRIGGER_RISING | IRQF_ONESHOT;
 		retval = devm_request_threaded_irq(&g_fpsensor->spi->dev, g_fpsensor->irq, fpsensor_irq,
 		                                   NULL, irqf, dev_name(&g_fpsensor->spi->dev), g_fpsensor);
@@ -320,8 +324,10 @@ static long fpsensor_ioctl(struct file *filp, unsigned int cmd, unsigned long ar
 		enable_irq_wake(g_fpsensor->irq);
 		fpsensor_dev->device_available = 1;
 		fpsensor_dev->irq_count = 0;
+		// sunbo: add to avoid "unbalanced enable for IRQ 419" warning - begin
 		fpsensor_dev->irq_count = 1;
 		fpsensor_disable_irq(fpsensor_dev);
+		// sunbo: add to avoid "unbalanced enable for IRQ 419" warning - end
 		fpsensor_dev->sig_count = 0;
 		fpsensor_debug(INFO_LOG, "%s: fpsensor init finished======\n", __func__);
 		break;
@@ -407,6 +413,9 @@ static long fpsensor_ioctl(struct file *filp, unsigned int cmd, unsigned long ar
 			retval = -EFAULT;
 			break;
 		}
+		// guomingyi add ..
+		FP_EVT_REPORT(ftm_finger_status == 1 ? 1 : 2);
+
 		printk(KERN_INFO "%s: FPSENSOR_IOC_FTM_SET_FINGER_STATE: %d\n", __func__, ftm_finger_status);
 		if(fasync_queue) {
 			kill_fasync(&fasync_queue, SIGIO, POLL_IN);
@@ -419,7 +428,7 @@ static long fpsensor_ioctl(struct file *filp, unsigned int cmd, unsigned long ar
 			retval = -EFAULT;
 			break;
 		}
-		printk("%s: __put_user(ftm_finger_status)\n", __func__);
+		printk("[guomingyi] %s:%d __put_user(ftm_finger_status):%d\n", __func__,__LINE__, ftm_finger_status);
 		break;
 	case FPSENSOR_IOC_RELEASE_VERSION:
 		if (copy_from_user(fpsensor_ver_buf, (char __user*)arg, FPSENSOR_MAX_VER_BUF_LEN)) {
@@ -434,6 +443,8 @@ static long fpsensor_ioctl(struct file *filp, unsigned int cmd, unsigned long ar
 		fpsensor_debug(ERR_LOG, "fpsensor doesn't support this command(%d)\n", cmd);
 		break;
 	}
+
+	//FUNC_EXIT();
 	return retval;
 }
 
@@ -457,6 +468,8 @@ static unsigned int fpsensor_poll(struct file *filp, struct poll_table_struct *w
 	if ( g_fpsensor->RcvIRQ) {
 		fpsensor_debug(ERR_LOG, " get irq\n");
 		ret |= POLLRDNORM;
+		//guomingyi add .
+		FP_EVT_REPORT(HW_EVENT_WAKEUP);
 	} else {
 		ret = 0;
 	}
@@ -530,7 +543,7 @@ static const struct file_operations fpsensor_fops = {
 
 };
 
-// Create and register a char device for fpsensor
+// create and register a char device for fpsensor
 static int fpsensor_dev_setup(fpsensor_data_t *fpsensor)
 {
 	int ret = 0;
@@ -595,7 +608,7 @@ out:
 	return ret;
 }
 
-// Release and cleanup fpsensor char device
+// release and cleanup fpsensor char device
 static void fpsensor_dev_cleanup(fpsensor_data_t *fpsensor)
 {
 	FUNC_ENTRY();
@@ -612,6 +625,8 @@ static int fpsensor_probe(struct platform_device *pdev)
 {
 	int status = 0;
 	fpsensor_data_t *fpsensor_dev = NULL;
+
+	// FUNC_ENTRY();
 
 	fpsensor_debug(ERR_LOG, "new entry, %s", __func__);
 
@@ -642,6 +657,8 @@ static int fpsensor_probe(struct platform_device *pdev)
 	fpsensor_dev->irq_count         = 0;
 	fpsensor_dev->sig_count         = 0;
 
+	//fpsensor_parse_dt(fpsensor_dev);
+
 	/* setup a char device for fpsensor */
 	status = fpsensor_dev_setup(fpsensor_dev);
 	if (status) {
@@ -654,6 +671,7 @@ static int fpsensor_probe(struct platform_device *pdev)
 	fpsensor_dev->is_sleep_mode = 0;
 	fpsensor_dev->device_available = 1;
 
+	// fpsensor_spi_clk_enable(1);
 	fpsensor_debug(INFO_LOG, "%s probe finished, normal driver version: %s\n", __func__,
 	               FPSENSOR_SPI_VERSION);
 	goto out;
@@ -709,9 +727,9 @@ static struct platform_driver fpsensor_driver = {
 	.driver = {
 		.name = FPSENSOR_DEV_NAME,
 		.owner = THIS_MODULE,
-		#ifdef CONFIG_OF
+#ifdef CONFIG_OF
 		.of_match_table = of_match_ptr(fpsensor_of_match),
-		#endif
+#endif
 	},
 	.probe = fpsensor_probe,
 	.remove = fpsensor_remove,

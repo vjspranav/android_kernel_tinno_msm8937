@@ -1244,7 +1244,7 @@ error_regulator_enable:
 
 	return rc;
 }
-#ifdef CONFIG_PLATFORM_TINNO
+#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 extern int msm_sensor_is_front_camera(void);
 extern int msm_sensor_is_mono_camera(void);
 #endif
@@ -1255,7 +1255,7 @@ static void qpnp_flash_led_work(struct work_struct *work)
 	struct qpnp_flash_led *led =
 	    dev_get_drvdata(&flash_node->spmi_dev->dev);
 	union power_supply_propval psy_prop;
-	#ifdef CONFIG_PLATFORM_TINNO
+	#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 	int rc, brightness = flash_node->cdev.brightness;
 	#else
 	int rc, brightness;
@@ -1268,7 +1268,7 @@ static void qpnp_flash_led_work(struct work_struct *work)
 	/* Global lock is to synchronize between the flash leds and torch */
 	mutex_lock(&led->flash_led_lock);
 	/* Local lock is to synchronize for one led instance */
-	#ifndef CONFIG_PLATFORM_TINNO
+	#ifndef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 	mutex_lock(&flash_node->cdev.led_access);
 	brightness = flash_node->cdev.brightness;
 	#endif
@@ -1305,7 +1305,7 @@ static void qpnp_flash_led_work(struct work_struct *work)
 
 	if (led->open_fault) {
 		dev_err(&led->spmi_dev->dev, "Open fault detected\n");
-		#ifndef CONFIG_PLATFORM_TINNO
+		#ifndef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 		mutex_unlock(&flash_node->cdev.led_access);
 		#endif
 		mutex_unlock(&led->flash_led_lock);
@@ -1387,7 +1387,7 @@ static void qpnp_flash_led_work(struct work_struct *work)
 		}
 
 		if (flash_node->id == FLASH_LED_SWITCH) {
-			#ifdef CONFIG_PLATFORM_TINNO
+			#ifdef CONFIG_PLATFORM_TINNO || CONFIG_PROJECT_V12bnlite
 			if(flash_node->prgm_current)
 				flash_node->prgm_current = 150;
 			#endif
@@ -1405,6 +1405,10 @@ static void qpnp_flash_led_work(struct work_struct *work)
 			#ifdef CONFIG_PROJECT_GARLIC
 			if(flash_node->prgm_current2)
 				flash_node->prgm_current2 = 150;
+			#endif
+			#ifdef CONFIG_PROJECT_V12bnlite
+			if(flash_node->prgm_current2)
+				flash_node->prgm_current2 = 100;
 			#endif
 			val = (u8)(flash_node->prgm_current2 *
 						FLASH_TORCH_MAX_LEVEL
@@ -1595,6 +1599,10 @@ static void qpnp_flash_led_work(struct work_struct *work)
 			if(flash_node->prgm_current)
 				flash_node->prgm_current = 750;
 			#endif
+			#ifdef CONFIG_PROJECT_V12bnlite
+			if (flash_node->prgm_current)
+				flash_node->prgm_current = 1000;
+			#endif
 			val = (u8)(flash_node->prgm_current *
 				FLASH_MAX_LEVEL / flash_node->max_current);
 			rc = qpnp_led_masked_write(led->spmi_dev,
@@ -1607,6 +1615,9 @@ static void qpnp_flash_led_work(struct work_struct *work)
 			#ifdef CONFIG_PROJECT_GARLIC
 			if(flash_node->prgm_current2)
 				flash_node->prgm_current2 = 750;
+			#endif
+			#ifdef CONFIG_PROJECT_V12bnlite
+			flash_node->prgm_current2 = 150;
 			#endif
 			val = (u8)(flash_node->prgm_current2 *
 				FLASH_MAX_LEVEL / flash_node->max_current);
@@ -1806,7 +1817,7 @@ turn_off:
 				"Failed to read out fault status register\n");
 			goto exit_flash_led_work;
 		}
-		#ifndef CONFIG_PLATFORM_TINNO
+		#ifndef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 		led->open_fault |= (val & FLASH_LED_OPEN_FAULT_DETECTED);
 		#endif
 	}
@@ -1901,7 +1912,7 @@ static void qpnp_flash_led_brightness_set(struct led_classdev *led_cdev,
 					 flash_node->id == FLASH_LED_1) {
 			if (value < FLASH_LED_MIN_CURRENT_MA && value != 0)
 				value = FLASH_LED_MIN_CURRENT_MA;
-			#ifdef CONFIG_PLATFORM_TINNO
+			#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 			if ((strstr(saved_command_line, CAMERA_BOOT_FTM_MODE))&&(msm_sensor_is_mono_camera() == 0)&&(flash_node->id == FLASH_LED_0)) {
 				pr_err("ftm mode bayer sensor led0 current zero\n");
 

@@ -500,7 +500,7 @@ static int32_t msm_flash_init(
 	CDBG("Exit");
 	return 0;
 }
-#ifdef CONFIG_PLATFORM_TINNO
+#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 extern int msm_sensor_is_front_camera(void);
 #endif
 static int32_t msm_flash_low(
@@ -537,6 +537,13 @@ static int32_t msm_flash_low(
 				                  curr);
 			else if(i < 2)
 				led_trigger_event(flash_ctrl->torch_trigger[i],
+				                  curr);
+			#else if defined CONFIG_LEDS_MSM_GPIO_DUAL_FLASH
+			if((msm_sensor_is_front_camera()||flash_data->camera_id == 1))//LINE<20160601>wangyanhui add for cts test
+				led_trigger_event(flash_ctrl->torch_trigger[1],
+				                  curr);
+			else
+				led_trigger_event(flash_ctrl->torch_trigger[0],
 				                  curr);
 			#else
 			led_trigger_event(flash_ctrl->torch_trigger[i],
@@ -583,6 +590,13 @@ static int32_t msm_flash_high(
 				                  curr);
 			else if(i < 2)
 				led_trigger_event(flash_ctrl->flash_trigger[i],
+				                  curr);
+			#else if defined CONFIG_LEDS_MSM_GPIO_DUAL_FLASH
+			if((msm_sensor_is_front_camera()|| flash_data->camera_id == 1))//LINE<20160601>wangyanhui add for cts test
+				led_trigger_event(flash_ctrl->flash_trigger[1],
+				                  curr);
+			else
+				led_trigger_event(flash_ctrl->flash_trigger[0],
 				                  curr);
 			#else
 			led_trigger_event(flash_ctrl->flash_trigger[i],
@@ -936,7 +950,7 @@ static int32_t msm_flash_get_dt_data(struct device_node *of_node,
 		fctrl->flash_driver_type = FLASH_DRIVER_I2C;
 	}
 
-	#ifndef CONFIG_PLATFORM_TINNO
+	#ifndef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 	/* Read the flash and torch source info from device tree node */
 	rc = msm_flash_get_pmic_source_info(of_node, fctrl);
 	if (rc < 0) {
@@ -944,7 +958,7 @@ static int32_t msm_flash_get_dt_data(struct device_node *of_node,
 			__func__, __LINE__, rc);
 		return rc;
 	}
-#endif
+	#endif
 
 	/* Read the gpio information from device tree */
 	rc = msm_sensor_driver_get_gpio_data(
@@ -955,14 +969,14 @@ static int32_t msm_flash_get_dt_data(struct device_node *of_node,
 		return rc;
 	}
 
-#ifndef CONFIG_PROJECT_GARLIC
+	#ifndef CONFIG_PROJECT_GARLIC
 	if (fctrl->flash_driver_type == FLASH_DRIVER_DEFAULT)
 		fctrl->flash_driver_type = FLASH_DRIVER_GPIO;
-#endif
+	#endif
 	CDBG("%s:%d fctrl->flash_driver_type = %d", __func__, __LINE__,
 		fctrl->flash_driver_type);
 
-	#ifdef CONFIG_PLATFORM_TINNO
+	#ifdef CONFIG_LEDS_MSM_GPIO_DUAL_REAR_FLASH_AND_FRONT_FLASH
 	/* Read the flash and torch source info from device tree node */
 	rc = msm_flash_get_pmic_source_info(of_node, fctrl);
 	if (rc < 0) {

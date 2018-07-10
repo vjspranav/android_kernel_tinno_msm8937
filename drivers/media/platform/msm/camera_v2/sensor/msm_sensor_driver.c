@@ -766,22 +766,14 @@ int32_t msm_sensor_driver_probe(void *setting,
 		 * probe
 		 */
 		if (slave_info->sensor_id_info.sensor_id ==
-		    s_ctrl->sensordata->cam_slave_info->
-		    sensor_id_info.sensor_id) {
-			#ifdef CONFIG_PLATFORM_TINNO
-			if(!strncmp(slave_info->sensor_name, s_ctrl->sensordata->cam_slave_info->sensor_name,
-			            strlen(slave_info->sensor_name))) {
-			#endif
-				pr_err("add compare sensor name %s \n",s_ctrl->sensordata->cam_slave_info->sensor_name);
-				pr_err("slot%d: sensor id%d already probed\n",
-				       slave_info->camera_id,
-				       s_ctrl->sensordata->cam_slave_info->
-				       sensor_id_info.sensor_id);
-				msm_sensor_fill_sensor_info(s_ctrl,
-				                            probed_info, entity_name);
-				#ifdef CONFIG_PLATFORM_TINNO
-			}
-				#endif
+			s_ctrl->sensordata->cam_slave_info->
+				sensor_id_info.sensor_id) {
+			pr_err("slot%d: sensor id%d already probed\n",
+				slave_info->camera_id,
+				s_ctrl->sensordata->cam_slave_info->
+					sensor_id_info.sensor_id);
+			msm_sensor_fill_sensor_info(s_ctrl,
+				probed_info, entity_name);
 		} else
 			pr_err("slot %d has some other sensor\n",
 				slave_info->camera_id);

@@ -425,6 +425,66 @@ clean_up:
 	return rc;
 }
 
+#ifdef CONFIG_PROJECT|V12BNLITE
+/**
+  * eeprom_parse_memory_map_write - Parse mem map
+  * @e_ctrl:	ctrl structure
+  * @eeprom_map_array: eeprom map
+  *
+  * Returns success or failure
+  */
+static int eeprom_parse_memory_map_write(struct msm_eeprom_ctrl_t *e_ctrl,
+        struct msm_eeprom_memory_map_array *eeprom_map_array)
+{
+	int rc =  0, i, j;
+	struct msm_eeprom_mem_map_t *eeprom_map;
+
+	CDBG("eeprom_parse_memory_map_write Slave msm_size_of_max_mappings: 0x%X\n", eeprom_map_array->msm_size_of_max_mappings);
+
+	for (j = 0; j < eeprom_map_array->msm_size_of_max_mappings; j++) {
+		eeprom_map = &(eeprom_map_array->memory_map[j]);
+		if (e_ctrl->i2c_client.cci_client) {
+			e_ctrl->i2c_client.cci_client->sid =
+			    eeprom_map->slave_addr >> 1;
+		} else if (e_ctrl->i2c_client.client) {
+			e_ctrl->i2c_client.client->addr =
+			    eeprom_map->slave_addr >> 1;
+		}
+		CDBG("eeprom_parse_memory_map_write Slave Addr: 0x%X\n", eeprom_map->slave_addr);
+		CDBG("eeprom_parse_memory_map_write Memory map Size: %d",
+		     eeprom_map->memory_map_size);
+		for (i = 0; i < eeprom_map->memory_map_size; i++) {
+			switch (eeprom_map->mem_settings[i].i2c_operation) {
+			case MSM_CAM_WRITE: {
+				e_ctrl->i2c_client.addr_type =
+				    eeprom_map->mem_settings[i].addr_type;
+				rc = e_ctrl->i2c_client.i2c_func_tbl->i2c_write(
+				         &(e_ctrl->i2c_client),
+				         eeprom_map->mem_settings[i].reg_addr,
+				         eeprom_map->mem_settings[i].reg_data,
+				         eeprom_map->mem_settings[i].data_type);
+				msleep(eeprom_map->mem_settings[i].delay);
+				CDBG("%s: write %d %x \n",
+				     __func__,eeprom_map->mem_settings[i].reg_addr,
+				     eeprom_map->mem_settings[i].reg_data);
+				if (rc < 0) {
+					pr_err("%s: page write failed\n",
+					       __func__);
+					rc = 0;
+				}
+			}
+			break;
+			default:
+				pr_err("%s: %d Invalid i2c operation LC:%d\n",
+				       __func__, __LINE__, i);
+				return -EINVAL;
+			}
+		}
+	}
+	return rc;
+}
+#endif
+
 /**
   * msm_eeprom_power_up - Do eeprom power up here
   * @e_ctrl:	ctrl structure

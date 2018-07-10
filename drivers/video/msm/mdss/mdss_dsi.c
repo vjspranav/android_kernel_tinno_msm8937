@@ -285,16 +285,7 @@ static int mdss_dsi_panel_power_off(struct mdss_panel_data *pdata)
 
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 	                          panel_data);
-
-	#if defined(CONFIG_PROJECT_GARLIC) || defined(CONFIG_PROJECT_WIMLITE)
-	ret = msm_dss_enable_vreg(
-	          ctrl_pdata->panel_power_data.vreg_config,
-	          ctrl_pdata->panel_power_data.num_vreg, 0);
-	if (ret)
-		pr_err("%s: failed to disable vregs for %s\n",
-		       __func__, __mdss_dsi_pm_name(DSI_PANEL_PM));
-	msleep(5);
-
+#ifdef CONFIG_GPIO_TINNO_LCD_LDO
 	ret = mdss_dsi_panel_reset(pdata, 0);
 	if (ret) {
 		pr_warn("%s: Panel reset failed. rc=%d\n", __func__, ret);
@@ -304,8 +295,16 @@ static int mdss_dsi_panel_power_off(struct mdss_panel_data *pdata)
 	if (mdss_dsi_pinctrl_set_state(ctrl_pdata, false))
 		pr_debug("reset disable: pinctrl not enabled\n");
 
+	msleep(1);
 
-	msleep(5);
+	ret = msm_dss_enable_vreg(
+	          ctrl_pdata->panel_power_data.vreg_config,
+	          ctrl_pdata->panel_power_data.num_vreg, 0);
+	if (ret)
+		pr_err("%s: failed to disable vregs for %s\n",
+		       __func__, __mdss_dsi_pm_name(DSI_PANEL_PM));
+	msleep(1);
+
 	ret = mdss_dsi_panel_disp_en_gpio(pdata, 0);
 	if (ret) {
 		pr_err("%s: Panel disp_en_gpio failed. ret=%d\n",
@@ -347,12 +346,11 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
-	#if defined(CONFIG_PROJECT_GARLIC) || defined(CONFIG_PROJECT_WIMLITE)
+	#ifdef CONFIG_GPIO_TINNO_LCD_LDO
 	ret = mdss_dsi_panel_disp_en_gpio(pdata, 1);
 	if (ret)
 		pr_err("%s: Panel disp_en_gpio failed. ret=%d\n",
 		       __func__, ret);
-
 	msleep(5);
 	#endif
 
@@ -3961,6 +3959,20 @@ static int mdss_dsi_parse_gpio_params(struct platform_device *ctrl_pdev,
 					__func__, __LINE__);
 	}
 
+	#ifdef CONFIG_PROJECT_V12BNLITE
+	ctrl_pdata->tinno_vio_te_gpio= of_get_named_gpio(ctrl_pdev->dev.of_node,
+	                               "qcom,irq-te-tinno-vio", 0);
+	if (!gpio_is_valid(ctrl_pdata->tinno_vio_te_gpio)) {
+		pr_err("%s:%d, TE gpio not specified\n",
+		       __func__, __LINE__);
+		ctrl_pdata->tinno_vio_te_enable = false;
+	} else {
+		ctrl_pdata->tinno_vio_te_enable = true;
+		printk("%s: , gpio=%d\n", __func__, ctrl_pdata->tinno_vio_te_gpio);
+	}
+	#endif
+
+
 	ctrl_pdata->disp_te_gpio = of_get_named_gpio(ctrl_pdev->dev.of_node,
 		"qcom,platform-te-gpio", 0);
 
@@ -4176,6 +4188,11 @@ int dsi_panel_device_register(struct platform_device *ctrl_pdev,
 
 	panel_debug_register_base("panel",
 		ctrl_pdata->ctrl_base, ctrl_pdata->reg_size);
+
+	#ifdef CONFIG_PROJECT_V12BNLITE
+	if(ctrl_pdata->tinno_vio_te_enable)
+		init_te_irq(ctrl_pdata);
+	#endif
 
 	pr_debug("%s: Panel data initialized\n", __func__);
 	return 0;

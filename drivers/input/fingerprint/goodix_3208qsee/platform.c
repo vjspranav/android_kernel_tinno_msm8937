@@ -20,10 +20,12 @@
 #include <linux/platform_device.h>
 #endif
 
+//<copy from 7701> add by yinglong.tang
 #define GF_VDD_MIN_UV      2800000
-#define GF_VDD_MAX_UV	   2800000
+#define GF_VDD_MAX_UV	        2800000
 #define GF_VIO_MIN_UV      1800000
 #define GF_VIO_MAX_UV      1800000
+//<copy from 7701> add by yinglong.tang
 
 int gf_parse_dts(struct gf_dev* gf_dev)
 {
@@ -75,6 +77,7 @@ void gf_cleanup(struct gf_dev	* gf_dev)
 		pr_info("gf:remove reset_gpio success\n");
 	}
 }
+//<copy from 7701> add by yinglong.tang
 int gf_power_ctl(struct gf_dev* gf_dev, bool on)
 {
 	int rc = 0;
@@ -87,7 +90,7 @@ int gf_power_ctl(struct gf_dev* gf_dev, bool on)
 			return rc;
 		}
 
-		#if 0
+#if 0
 		rc = regulator_enable(gf_dev->vio);
 		if (rc) {
 			dev_err(&gf_dev->spi->dev,
@@ -95,7 +98,7 @@ int gf_power_ctl(struct gf_dev* gf_dev, bool on)
 			regulator_disable(gf_dev->vdd);
 			return rc;
 		}
-		#endif
+#endif
 		msleep(10);
 
 		gf_dev->isPowerOn = 1;
@@ -108,13 +111,13 @@ int gf_power_ctl(struct gf_dev* gf_dev, bool on)
 			return rc;
 		}
 
-		#if 0
+#if 0
 		rc = regulator_disable(gf_dev->vio);
 		if (rc) {
 			dev_err(&gf_dev->spi->dev,
 			        "Regulator vio disable failed rc=%d\n", rc);
 		}
-		#endif
+#endif
 
 		gf_dev->isPowerOn = 0;
 	} else {
@@ -190,7 +193,7 @@ int gf_power_init(struct gf_dev* gf_dev)
 		}
 	}
 
-	#if 0
+#if 0
 	gf_dev->vio = regulator_get(&gf_dev->spi->dev, "vio");
 	if (IS_ERR(gf_dev->vio)) {
 		ret = PTR_ERR(gf_dev->vio);
@@ -209,17 +212,17 @@ int gf_power_init(struct gf_dev* gf_dev)
 			goto reg_vio_put;
 		}
 	}
-	#endif
+#endif
 
 	return 0;
 
-	#if 0
+#if 0
 reg_vio_put:
 	regulator_put(gf_dev->vio);
 reg_vdd_set_vtg:
 	if (regulator_count_voltages(gf_dev->vdd) > 0)
 		regulator_set_voltage(gf_dev->vdd, 0, GF_VDD_MAX_UV);
-	#endif
+#endif
 reg_vdd_put:
 	regulator_put(gf_dev->vdd);
 	return ret;
@@ -237,7 +240,7 @@ int gf_power_deinit(struct gf_dev* gf_dev)
 		regulator_put(gf_dev->vdd);
 	}
 
-	#if 0
+#if 0
 	if (gf_dev->vio) {
 		if (regulator_count_voltages(gf_dev->vio) > 0)
 			regulator_set_voltage(gf_dev->vio, 0, GF_VIO_MAX_UV);
@@ -245,7 +248,7 @@ int gf_power_deinit(struct gf_dev* gf_dev)
 		regulator_disable(gf_dev->vio);
 		regulator_put(gf_dev->vio);
 	}
-	#endif
+#endif
 
 	return ret;
 }

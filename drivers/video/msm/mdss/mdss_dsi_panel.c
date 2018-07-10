@@ -224,7 +224,7 @@ static int mdss_dsi_request_gpios(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 {
 	int rc = 0;
 
-	#if (!defined(CONFIG_PROJECT_GARLIC) && !defined(CONFIG_PROJECT_WIMLITE))
+	#ifndef CONFIG_GPIO_TINNO_LCD_LDO
 	if (gpio_is_valid(ctrl_pdata->disp_en_gpio)) {
 		rc = gpio_request(ctrl_pdata->disp_en_gpio,
 		                  "disp_enable");
@@ -269,7 +269,7 @@ rst_gpio_err:
 	if (gpio_is_valid(ctrl_pdata->disp_en_gpio))
 		gpio_free(ctrl_pdata->disp_en_gpio);
 
-#if (!defined(CONFIG_PROJECT_GARLIC) && !defined(CONFIG_PROJECT_WIMLITE))
+#ifndef CONFIG_GPIO_TINNO_LCD_LDO
 disp_en_gpio_err:
 #endif
 	return rc;
@@ -319,7 +319,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 		}
 		if (!pinfo->cont_splash_enabled) {
 
-			#if (!defined(CONFIG_PROJECT_GARLIC) && !defined(CONFIG_PROJECT_WIMLITE))
+			#ifndef CONFIG_GPIO_TINNO_LCD_LDO
 			if (gpio_is_valid(ctrl_pdata->disp_en_gpio)) {
 				rc = gpio_direction_output(
 				         ctrl_pdata->disp_en_gpio, 1);
@@ -384,7 +384,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 			gpio_set_value((ctrl_pdata->bklt_en_gpio), 0);
 			gpio_free(ctrl_pdata->bklt_en_gpio);
 		}
-		#if (!defined(CONFIG_PROJECT_GARLIC) && && !defined(CONFIG_PROJECT_WIMLITE))
+	#ifndef CONFIG_GPIO_TINNO_LCD_LDO
 		if (gpio_is_valid(ctrl_pdata->disp_en_gpio)) {
 			gpio_set_value((ctrl_pdata->disp_en_gpio), 0);
 			gpio_free(ctrl_pdata->disp_en_gpio);
@@ -2651,7 +2651,7 @@ int mdss_dsi_panel_init(struct device_node *node,
 	return 0;
 }
 
-#if defined(CONFIG_PROJECT_GARLIC) || defined(CONFIG_PROJECT_WIMLITE)
+#ifdef CONFIG_GPIO_TINNO_LCD_LDO
 int mdss_dsi_panel_disp_en_gpio(struct mdss_panel_data *pdata, int enable)
 {
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
