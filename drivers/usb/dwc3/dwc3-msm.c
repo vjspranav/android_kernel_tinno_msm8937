@@ -3365,15 +3365,15 @@ static int dwc3_msm_gadget_vbus_draw(struct dwc3_msm *mdwc, unsigned mA)
 
 	if (mdwc->charging_disabled)
 		return 0;
-
-	if (mdwc->chg_type != DWC3_INVALID_CHARGER) {
-		dev_dbg(mdwc->dev,
-		        "SKIP setting power supply type again,chg_type = %d\n",
-		        mdwc->chg_type);
-		goto skip_psy_type;
-	}
-
-	dev_dbg(mdwc->dev, "Requested curr from USB = %u, max-type-c:%u\n",
+	/*//modified by zhengquan.qin,for plugging in charger slowly
+		if (mdwc->chg_type != DWC3_INVALID_CHARGER) {
+			dev_dbg(mdwc->dev,
+				"SKIP setting power supply type again,chg_type = %d\n",
+				mdwc->chg_type);
+			goto skip_psy_type;
+		}
+	*/
+	dev_err(mdwc->dev, "Requested curr from USB = %u, max-type-c:%u\n",
 	        mA, mdwc->typec_current_max);
 
 	if (mdwc->chg_type == DWC3_SDP_CHARGER)
@@ -3388,7 +3388,7 @@ static int dwc3_msm_gadget_vbus_draw(struct dwc3_msm *mdwc, unsigned mA)
 
 	power_supply_set_supply_type(&mdwc->usb_psy, power_supply_type);
 
-skip_psy_type:
+//skip_psy_type:
 
 	if (mdwc->chg_type == DWC3_CDP_CHARGER)
 		mA = DWC3_IDEV_CHG_MAX;
@@ -3444,7 +3444,10 @@ static void dwc3_check_float_lines(struct dwc3_msm *mdwc)
 
 	/* Get linestate with Idp_src enabled */
 	dpdm = usb_phy_dpdm_with_idp_src(mdwc->hs_phy);
-	if (dpdm == 0x2) {
+	dev_err (mdwc->dev, "%s: pony20171121:dpdm=%d\n", __func__,dpdm);
+
+	// pony.ma, DATE20171208, occation not charging, DATE20171208-01 LINE
+	if ( dpdm != 0 ) {
 		/* DP is HIGH = lines are floating */
 		mdwc->chg_type = DWC3_PROPRIETARY_CHARGER;
 		mdwc->otg_state = OTG_STATE_B_IDLE;
@@ -3577,8 +3580,11 @@ static void dwc3_otg_sm_work(struct work_struct *w)
 				/* check dp/dm for SDP & runtime_put if !SDP */
 				if (mdwc->detect_dpdm_floating) {
 					dwc3_check_float_lines(mdwc);
-					if (mdwc->chg_type != DWC3_SDP_CHARGER)
+					if (mdwc->chg_type != DWC3_SDP_CHARGER) {
+						// pony.ma, DATE20171208, poweroff charging fail when slow insert, DATE20171208-01 LINE
+						work = 1;
 						break;
+					}
 				}
 				dwc3_otg_start_peripheral(mdwc, 1);
 				mdwc->otg_state = OTG_STATE_B_PERIPHERAL;
@@ -3616,11 +3622,17 @@ static void dwc3_otg_sm_work(struct work_struct *w)
 			dev_dbg(mdwc->dev, "b_sess_vld\n");
 			switch (mdwc->chg_type) {
 			case DWC3_DCP_CHARGER:
-			case DWC3_PROPRIETARY_CHARGER:
 				dev_dbg(mdwc->dev, "lpm, DCP charger\n");
 				dwc3_msm_gadget_vbus_draw(mdwc,
 				                          dcp_max_current);
 				break;
+			// pony.ma, DATE20171208, non stardard charger current config, DATE20171208-01 START
+			case DWC3_PROPRIETARY_CHARGER:
+				dev_dbg(mdwc->dev, "lpm, DWC3_PROPRIETARY_CHARGER\n");
+				dwc3_msm_gadget_vbus_draw(mdwc,
+				                          IDEV_CHG_MAX_TINNO);
+				break;
+			// pony.ma, DATE20171208-01 END
 			case DWC3_CDP_CHARGER:
 				dwc3_msm_gadget_vbus_draw(mdwc,
 				                          DWC3_IDEV_CHG_MAX);
@@ -3639,9 +3651,14 @@ static void dwc3_otg_sm_work(struct work_struct *w)
 				/* check dp/dm for SDP & runtime_put if !SDP */
 				if (mdwc->detect_dpdm_floating &&
 				    mdwc->chg_type == DWC3_SDP_CHARGER) {
+					dev_err(mdwc->dev, "%s:pony20171121-1: mdwc->otg_state=%d,mdwc->chg_type=%d\n",
+					        __func__, mdwc->otg_state,mdwc->chg_type);
 					dwc3_check_float_lines(mdwc);
-					if (mdwc->chg_type != DWC3_SDP_CHARGER)
+					if (mdwc->chg_type != DWC3_SDP_CHARGER) {
+						// pony.ma, DATE20171110,  realize nonstartard charge, DATE20171110-01 LINE
+						work = 1;
 						break;
+					}
 				}
 				dwc3_otg_start_peripheral(mdwc, 1);
 				mdwc->otg_state = OTG_STATE_B_PERIPHERAL;

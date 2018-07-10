@@ -904,6 +904,15 @@ static int qpnp_mpp_set(struct qpnp_led_data *led)
 			}
 		}
 		if (led->mpp_cfg->pwm_mode == PWM_MODE) {
+#ifdef CONFIG_PLATFORM_TINNO
+			if(led->cdev.brightness > 250) {
+				rc = pwm_config(
+				         led->mpp_cfg->pwm_cfg->pwm_dev,
+				         1000000,
+				         1000000);
+			}//<20160329><add for green led output high not wait 2s>wangyanhui add
+			else {
+#else
 			/*config pwm for brightness scaling*/
 			period_us = led->mpp_cfg->pwm_cfg->pwm_period_us;
 			if (period_us > INT_MAX / NSEC_PER_USEC) {
@@ -920,128 +929,133 @@ static int qpnp_mpp_set(struct qpnp_led_data *led)
 				         led->mpp_cfg->pwm_cfg->pwm_dev,
 				         duty_ns,
 				         period_us * NSEC_PER_USEC);
+
 			}
-			if (rc < 0) {
-				dev_err(&led->spmi_dev->dev, "Failed to " \
-				        "configure pwm for new values\n");
-				goto err_mpp_reg_write;
-			}
+#ifdef CONFIG_PLATFORM_TINNO
 		}
-
-		if (led->mpp_cfg->pwm_mode != MANUAL_MODE)
-			pwm_enable(led->mpp_cfg->pwm_cfg->pwm_dev);
-		else {
-			if (led->cdev.brightness < LED_MPP_CURRENT_MIN)
-				led->cdev.brightness = LED_MPP_CURRENT_MIN;
-			else {
-				/*
-				 * PMIC supports LED intensity from 5mA - 40mA
-				 * in steps of 5mA. Brightness is rounded to
-				 * 5mA or nearest lower supported values
-				 */
-				led->cdev.brightness /= LED_MPP_CURRENT_MIN;
-				led->cdev.brightness *= LED_MPP_CURRENT_MIN;
-			}
-
-			val = (led->cdev.brightness / LED_MPP_CURRENT_MIN) - 1;
-
-			rc = qpnp_led_masked_write(led,
-			                           LED_MPP_SINK_CTRL(led->base),
-			                           LED_MPP_SINK_MASK, val);
-			if (rc) {
-				dev_err(&led->spmi_dev->dev,
-				        "Failed to write sink control reg\n");
-				goto err_mpp_reg_write;
-			}
-		}
-
-		val = (led->mpp_cfg->source_sel & LED_MPP_SRC_MASK) |
-		      (led->mpp_cfg->mode_ctrl & LED_MPP_MODE_CTRL_MASK);
-
-		rc = qpnp_led_masked_write(led,
-		                           LED_MPP_MODE_CTRL(led->base), LED_MPP_MODE_MASK,
-		                           val);
-		if (rc) {
-			dev_err(&led->spmi_dev->dev,
-			        "Failed to write led mode reg\n");
+#endif
+		if (rc < 0) {
+			dev_err(&led->spmi_dev->dev, "Failed to " \
+			        "configure pwm for new values\n");
 			goto err_mpp_reg_write;
 		}
-
-		rc = qpnp_led_masked_write(led,
-		                           LED_MPP_EN_CTRL(led->base), LED_MPP_EN_MASK,
-		                           LED_MPP_EN_ENABLE);
-		if (rc) {
-			dev_err(&led->spmi_dev->dev,
-			        "Failed to write led enable " \
-			        "reg\n");
-			goto err_mpp_reg_write;
-		}
-	} else {
-		if (led->mpp_cfg->pwm_mode != MANUAL_MODE) {
-			led->mpp_cfg->pwm_cfg->mode =
-			    led->mpp_cfg->pwm_cfg->default_mode;
-			led->mpp_cfg->pwm_mode =
-			    led->mpp_cfg->pwm_cfg->default_mode;
-			pwm_disable(led->mpp_cfg->pwm_cfg->pwm_dev);
-		}
-		rc = qpnp_led_masked_write(led,
-		                           LED_MPP_MODE_CTRL(led->base),
-		                           LED_MPP_MODE_MASK,
-		                           LED_MPP_MODE_DISABLE);
-		if (rc) {
-			dev_err(&led->spmi_dev->dev,
-			        "Failed to write led mode reg\n");
-			goto err_mpp_reg_write;
-		}
-
-		rc = qpnp_led_masked_write(led,
-		                           LED_MPP_EN_CTRL(led->base),
-		                           LED_MPP_EN_MASK,
-		                           LED_MPP_EN_DISABLE);
-		if (rc) {
-			dev_err(&led->spmi_dev->dev,
-			        "Failed to write led enable reg\n");
-			goto err_mpp_reg_write;
-		}
-
-		if (led->mpp_cfg->mpp_reg && led->mpp_cfg->enable) {
-			rc = regulator_disable(led->mpp_cfg->mpp_reg);
-			if (rc) {
-				dev_err(&led->spmi_dev->dev,
-				        "MPP regulator disable failed(%d)\n",
-				        rc);
-				return rc;
-			}
-
-			rc = regulator_set_voltage(led->mpp_cfg->mpp_reg,
-			                           0, led->mpp_cfg->max_uV);
-			if (rc) {
-				dev_err(&led->spmi_dev->dev,
-				        "MPP regulator voltage set failed(%d)\n",
-				        rc);
-				return rc;
-			}
-		}
-
-		led->mpp_cfg->enable = false;
 	}
 
 	if (led->mpp_cfg->pwm_mode != MANUAL_MODE)
-		led->mpp_cfg->pwm_cfg->blinking = false;
-	qpnp_dump_regs(led, mpp_debug_regs, ARRAY_SIZE(mpp_debug_regs));
+		pwm_enable(led->mpp_cfg->pwm_cfg->pwm_dev);
+	else {
+		if (led->cdev.brightness < LED_MPP_CURRENT_MIN)
+			led->cdev.brightness = LED_MPP_CURRENT_MIN;
+		else {
+			/*
+			 * PMIC supports LED intensity from 5mA - 40mA
+			 * in steps of 5mA. Brightness is rounded to
+			 * 5mA or nearest lower supported values
+			 */
+			led->cdev.brightness /= LED_MPP_CURRENT_MIN;
+			led->cdev.brightness *= LED_MPP_CURRENT_MIN;
+		}
 
-	return 0;
+		val = (led->cdev.brightness / LED_MPP_CURRENT_MIN) - 1;
+
+		rc = qpnp_led_masked_write(led,
+		                           LED_MPP_SINK_CTRL(led->base),
+		                           LED_MPP_SINK_MASK, val);
+		if (rc) {
+			dev_err(&led->spmi_dev->dev,
+			        "Failed to write sink control reg\n");
+			goto err_mpp_reg_write;
+		}
+	}
+
+	val = (led->mpp_cfg->source_sel & LED_MPP_SRC_MASK) |
+	      (led->mpp_cfg->mode_ctrl & LED_MPP_MODE_CTRL_MASK);
+
+	rc = qpnp_led_masked_write(led,
+	                           LED_MPP_MODE_CTRL(led->base), LED_MPP_MODE_MASK,
+	                           val);
+	if (rc) {
+		dev_err(&led->spmi_dev->dev,
+		        "Failed to write led mode reg\n");
+		goto err_mpp_reg_write;
+	}
+
+	rc = qpnp_led_masked_write(led,
+	                           LED_MPP_EN_CTRL(led->base), LED_MPP_EN_MASK,
+	                           LED_MPP_EN_ENABLE);
+	if (rc) {
+		dev_err(&led->spmi_dev->dev,
+		        "Failed to write led enable " \
+		        "reg\n");
+		goto err_mpp_reg_write;
+	}
+} else
+{
+	if (led->mpp_cfg->pwm_mode != MANUAL_MODE) {
+		led->mpp_cfg->pwm_cfg->mode =
+		    led->mpp_cfg->pwm_cfg->default_mode;
+		led->mpp_cfg->pwm_mode =
+		    led->mpp_cfg->pwm_cfg->default_mode;
+		pwm_disable(led->mpp_cfg->pwm_cfg->pwm_dev);
+	}
+	rc = qpnp_led_masked_write(led,
+	                           LED_MPP_MODE_CTRL(led->base),
+	                           LED_MPP_MODE_MASK,
+	                           LED_MPP_MODE_DISABLE);
+	if (rc) {
+		dev_err(&led->spmi_dev->dev,
+		        "Failed to write led mode reg\n");
+		goto err_mpp_reg_write;
+	}
+
+	rc = qpnp_led_masked_write(led,
+	                           LED_MPP_EN_CTRL(led->base),
+	                           LED_MPP_EN_MASK,
+	                           LED_MPP_EN_DISABLE);
+	if (rc) {
+		dev_err(&led->spmi_dev->dev,
+		        "Failed to write led enable reg\n");
+		goto err_mpp_reg_write;
+	}
+
+	if (led->mpp_cfg->mpp_reg && led->mpp_cfg->enable) {
+		rc = regulator_disable(led->mpp_cfg->mpp_reg);
+		if (rc) {
+			dev_err(&led->spmi_dev->dev,
+			        "MPP regulator disable failed(%d)\n",
+			        rc);
+			return rc;
+		}
+
+		rc = regulator_set_voltage(led->mpp_cfg->mpp_reg,
+		                           0, led->mpp_cfg->max_uV);
+		if (rc) {
+			dev_err(&led->spmi_dev->dev,
+			        "MPP regulator voltage set failed(%d)\n",
+			        rc);
+			return rc;
+		}
+	}
+
+	led->mpp_cfg->enable = false;
+}
+
+if (led->mpp_cfg->pwm_mode != MANUAL_MODE)
+	led->mpp_cfg->pwm_cfg->blinking = false;
+qpnp_dump_regs(led, mpp_debug_regs, ARRAY_SIZE(mpp_debug_regs));
+
+return 0;
 
 err_mpp_reg_write:
-	if (led->mpp_cfg->mpp_reg)
-		regulator_disable(led->mpp_cfg->mpp_reg);
+if (led->mpp_cfg->mpp_reg)
+	regulator_disable(led->mpp_cfg->mpp_reg);
 err_reg_enable:
-	if (led->mpp_cfg->mpp_reg)
-		regulator_set_voltage(led->mpp_cfg->mpp_reg, 0,
-		                      led->mpp_cfg->max_uV);
-	led->mpp_cfg->enable = false;
+if (led->mpp_cfg->mpp_reg)
+	regulator_set_voltage(led->mpp_cfg->mpp_reg, 0,
+	                      led->mpp_cfg->max_uV);
+led->mpp_cfg->enable = false;
 
-	return rc;
+return rc;
 }
 
 static int qpnp_gpio_set(struct qpnp_led_data *led)
@@ -2612,8 +2626,15 @@ restore:
 static void led_blink(struct qpnp_led_data *led,
                       struct pwm_config_data *pwm_cfg)
 {
-	int rc;
+	//int rc;
+//BEGIN<20160324><blinking use pwm>wangyanhui modify
+#ifdef CONFIG_TINNO_PLATFORM
+	printk("Ramiel led_blink.\n");
+	if(led->cdev.brightness>0)
+		led->cdev.brightness = 102;//LINE<HCABN-458><20161113><on-2s  off-3s>wangyanhui
 
+	qpnp_mpp_set(led);
+#else
 	flush_work(&led->work);
 	mutex_lock(&led->lock);
 	if (pwm_cfg->use_blink) {
@@ -2654,6 +2675,8 @@ static void led_blink(struct qpnp_led_data *led,
 		}
 	}
 	mutex_unlock(&led->lock);
+#endif
+//END<20160324><blinking use pwm>wangyanhui modify
 }
 
 static ssize_t blink_store(struct device *dev,
@@ -3430,7 +3453,11 @@ static int qpnp_get_config_pwm(struct pwm_config_data *pwm_cfg,
 	pwm_cfg->use_blink =
 	    of_property_read_bool(node, "qcom,use-blink");
 
+#ifdef CONFIG_PLATFORM_TINNO
+	if (pwm_cfg->mode == LPG_MODE) {//<20160324><blinking use pwm not LGP>wangyanhui modify
+#else
 	if (pwm_cfg->mode == LPG_MODE || pwm_cfg->use_blink) {
+#endif
 		pwm_cfg->duty_cycles =
 		    devm_kzalloc(&spmi_dev->dev,
 		                 sizeof(struct pwm_duty_cycles), GFP_KERNEL);

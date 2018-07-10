@@ -132,14 +132,13 @@ enum {
 static const DECLARE_TLV_DB_SCALE(digital_gain, 0, 1, 0);
 static const DECLARE_TLV_DB_SCALE(analog_gain, 0, 25, 1);
 static struct snd_soc_dai_driver msm8x16_wcd_i2s_dai[];
-/* By default enable the internal speaker boost */
-static bool spkr_boost_en = true;
+/* By default disable the internal speaker boost   TN:peter*/
+static bool spkr_boost_en = false;
 
 #define MSM8X16_WCD_ACQUIRE_LOCK(x) \
 	mutex_lock_nested(&x, SINGLE_DEPTH_NESTING)
 
 #define MSM8X16_WCD_RELEASE_LOCK(x) mutex_unlock(&x)
-
 
 /* Codec supports 2 IIR filters */
 enum {
@@ -4239,6 +4238,7 @@ static int msm8x16_wcd_lo_dac_event(struct snd_soc_dapm_widget *w,
 		                    MSM8X16_WCD_A_ANALOG_RX_LO_DAC_CTL, 0x08, 0x08);
 		snd_soc_update_bits(codec,
 		                    MSM8X16_WCD_A_ANALOG_RX_LO_DAC_CTL, 0x40, 0x40);
+		msleep(5);// huaidong.tan , IAAO-1966 , DATE20180130 , solve volume alteration issue
 		break;
 	case SND_SOC_DAPM_POST_PMU:
 		snd_soc_update_bits(codec,
@@ -4464,6 +4464,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"LINEOUT PA", NULL, "LINE_OUT"},
 	{"LINE_OUT", "Switch", "LINEOUT DAC"},
 	{"LINEOUT DAC", NULL, "RX3 CHAIN"},
+	{"Ext Spk Switch", "On", "LINEOUT PA"},//Tinno caoming add for c860
 
 	/* lineout to WSA */
 	{"WSA_SPK OUT", NULL, "LINEOUT PA"},
@@ -5860,7 +5861,6 @@ static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 
 	wcd_mbhc_init(&msm8x16_wcd_priv->mbhc, codec, &mbhc_cb, &intr_ids,
 	              wcd_mbhc_registers, true);
-
 	msm8x16_wcd_priv->mclk_enabled = false;
 	msm8x16_wcd_priv->clock_active = false;
 	msm8x16_wcd_priv->config_mode_active = false;
