@@ -256,12 +256,6 @@ struct wcd_mbhc_config {
 	int mbhc_micbias;
 	int anc_micbias;
 	bool enable_anc_mic_detect;
-// TINNO BEGIN
-// huaidong.tan , IAAO-2566 , DATE20180416 , detect headphone impedance
-#if defined(CONFIG_TINNO_AUDIO_HEADPHONES_HIGH_IMPED)
-	uint32_t headphones_high_imped_th;
-#endif
-// TINNO END
 };
 
 struct wcd_mbhc_intr {

@@ -583,11 +583,6 @@ static int g_battery_cmd_debug_status = 0xffff; //POWER_SUPPLY_STATUS_DISCHARGIN
 static int g_battery_cmd_debug_health = 0xffff; //POWER_SUPPLY_HEALTH_GOOD;
 int g_battery_cmd_debug_capacity = 0xffff; //50;
 int g_battery_cmd_debug_temperature = 0xffff; //250;
-//{ Added by LiZidong
-#ifdef CONFIG_PROJECT_I9031
-static bool charger_present_flag = false;
-#endif
-//}
 
 extern struct proc_dir_entry *g_battery_cmd_dir;
 static struct smbchg_chip *g_battery_cmd_chg_chip = NULL;
@@ -1134,21 +1129,6 @@ static void read_usb_type(struct smbchg_chip *chip, char **usb_type_name,
 	*usb_supply_type = get_usb_supply_type(type);
 }
 
-//{ Added by LiZidong
-#ifdef CONFIG_PROJECT_I9031
-static void set_charger_status(bool status)
-{
-	charger_present_flag = status;
-}
-
-bool get_charger_status(void)
-{
-	printk("get_charger_status=%d\n",charger_present_flag);
-	return charger_present_flag;
-}
-#endif
-//}
-
 #define CHGR_STS			0x0E
 #define BATT_LESS_THAN_2V		BIT(4)
 #define CHG_HOLD_OFF_BIT		BIT(3)
@@ -1169,11 +1149,7 @@ static int get_prop_batt_status(struct smbchg_chip *chip)
 
 	charger_present = is_usb_present(chip) | is_dc_present(chip) |
 			  chip->hvdcp_3_det_ignore_uv;
-//{ Added by LiZidong
-#ifdef CONFIG_PROJECT_I9031
-	set_charger_status(charger_present);
-#endif
-//}
+
 	if (!charger_present)
 		return POWER_SUPPLY_STATUS_DISCHARGING;
 
@@ -4097,22 +4073,8 @@ static int smbchg_config_chg_battery_type(struct smbchg_chip *chip)
 	if (chip->battery_type && !strcmp(prop.strval, chip->battery_type))
 		return 0;
 
-	// pony.ma, DATE20171009, ID usb wk battery model, DATE20171009-01 START
-	#ifdef FEATURE_REQS_UNIFY
-	if(is_Asia_area_id_bat){
-		batt_node = of_parse_phandle(node, "qcom,battery-data-1", 0);
-		if (!batt_node) {
-			batt_node = of_parse_phandle(node, "qcom,battery-data", 0);
-		}
-	}
-	else
-		batt_node = of_parse_phandle(node, "qcom,battery-data", 0);
-	pr_info("pony1009:node->name=%s,batt_node->name=%s\n", node->name,batt_node->name);	
-	#else
 	batt_node = of_parse_phandle(node, "qcom,battery-data", 0);
 	pr_info("pony-1009:node->name=%s,batt_node->name=%s\n", node->name,batt_node->name);	
-	#endif	
-	// pony.ma, DATE20171009-01 END
 	
 	if (!batt_node) {
 		pr_smb(PR_MISC, "No batterydata available\n");
@@ -9321,12 +9283,6 @@ static int smbchg_probe(struct spmi_device *spmi)
 			"Unable to intialize hardware rc = %d\n", rc);
 		goto out;
 	}
-	
-	// pony.ma, DATE20171009, ID usb wk battery model, DATE20171009-01 START
-	#ifdef FEATURE_REQS_UNIFY
-       Tinno_Get_Market_Area_is_Asia();
-	#endif
-	// pony.ma, DATE20171009-01 END
 
 	rc = determine_initial_status(chip);
 	if (rc < 0) {

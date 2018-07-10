@@ -437,23 +437,8 @@ static int eeprom_parse_memory_map_write(struct msm_eeprom_ctrl_t *e_ctrl,
 	struct msm_eeprom_memory_map_array *eeprom_map_array)
 {
 	int rc =  0, i, j;
-	//uint8_t *memptr;
 	struct msm_eeprom_mem_map_t *eeprom_map;
 
-	/*e_ctrl->cal_data.mapdata = NULL;
-	e_ctrl->cal_data.num_data = msm_get_read_mem_size(eeprom_map_array);
-	if (e_ctrl->cal_data.num_data <= 0) {
-		pr_err("%s:%d Error in reading mem size\n",
-			__func__, __LINE__);
-		e_ctrl->cal_data.num_data = 0;
-		return -EINVAL;
-	}
-	e_ctrl->cal_data.mapdata =
-		kzalloc(e_ctrl->cal_data.num_data, GFP_KERNEL);
-	if (!e_ctrl->cal_data.mapdata)
-		return -ENOMEM;
-
-	memptr = e_ctrl->cal_data.mapdata;*/
     CDBG("eeprom_parse_memory_map_write Slave msm_size_of_max_mappings: 0x%X\n", eeprom_map_array->msm_size_of_max_mappings);
 
 	for (j = 0; j < eeprom_map_array->msm_size_of_max_mappings; j++) {
@@ -486,43 +471,9 @@ static int eeprom_parse_memory_map_write(struct msm_eeprom_ctrl_t *e_ctrl,
 					pr_err("%s: page write failed\n",
 						__func__);
                             rc = 0;
-					//goto clean_up;
 				}
 			}
 			break;
-/*			case MSM_CAM_POLL: {
-				e_ctrl->i2c_client.addr_type =
-					eeprom_map->mem_settings[i].addr_type;
-				rc = e_ctrl->i2c_client.i2c_func_tbl->i2c_poll(
-					&(e_ctrl->i2c_client),
-					eeprom_map->mem_settings[i].reg_addr,
-					eeprom_map->mem_settings[i].reg_data,
-					eeprom_map->mem_settings[i].data_type,
-					eeprom_map->mem_settings[i].delay);
-				if (rc < 0) {
-					pr_err("%s: poll failed\n",
-						__func__);
-					goto clean_up;
-				}
-			}
-			break;
-			case MSM_CAM_READ: {
-				e_ctrl->i2c_client.addr_type =
-					eeprom_map->mem_settings[i].addr_type;
-				rc = e_ctrl->i2c_client.i2c_func_tbl->
-					i2c_read_seq(&(e_ctrl->i2c_client),
-					eeprom_map->mem_settings[i].reg_addr,
-					memptr,
-					eeprom_map->mem_settings[i].reg_data);
-				msleep(eeprom_map->mem_settings[i].delay);
-				if (rc < 0) {
-					pr_err("%s: read failed\n",
-						__func__);
-					goto clean_up;
-				}
-				memptr += eeprom_map->mem_settings[i].reg_data;
-			}
-			break;*/
 			default:
 				pr_err("%s: %d Invalid i2c operation LC:%d\n",
 					__func__, __LINE__, i);
@@ -530,16 +481,7 @@ static int eeprom_parse_memory_map_write(struct msm_eeprom_ctrl_t *e_ctrl,
 			}
 		}
 	}
-	/*memptr = e_ctrl->cal_data.mapdata;
-	for (i = 0; i < e_ctrl->cal_data.num_data; i++)
-		CDBG("memory_data[%d] = 0x%X\n", i, memptr[i]);*/
 	return rc;
-
-/*clean_up:
-	kfree(e_ctrl->cal_data.mapdata);
-	e_ctrl->cal_data.num_data = 0;
-	e_ctrl->cal_data.mapdata = NULL;
-	return rc;*/
 }
 
 /**

@@ -9,7 +9,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#define DEBUG
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -30,8 +29,6 @@
 #include <sound/jack.h>
 #include "wcd-mbhc-v2.h"
 #include "wcdcal-hwdep.h"
-
-#include <linux/switch.h>//yangliang add for ftm hph detect20150830
 
 #define WCD_MBHC_JACK_MASK (SND_JACK_HEADSET | SND_JACK_OC_HPHL | \
 			   SND_JACK_OC_HPHR | SND_JACK_LINEOUT | \
@@ -69,11 +66,6 @@ enum wcd_mbhc_cs_mb_en_flag {
 	WCD_MBHC_EN_PULLUP,
 	WCD_MBHC_EN_NONE,
 };
-
-#ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
-extern struct switch_dev wcd_mbhc_headset_switch ;
-extern struct switch_dev wcd_mbhc_button_switch ;
-#endif
 
 static void wcd_mbhc_jack_report(struct wcd_mbhc *mbhc,
 				struct snd_soc_jack *jack, int status, int mask)
@@ -583,10 +575,6 @@ static void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 
 	pr_debug("%s: enter insertion %d hph_status %x\n",
 		 __func__, insertion, mbhc->hph_status);
-	
-#ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
-	switch_set_state(&wcd_mbhc_headset_switch, insertion ? 1:0);
-#endif
 
 	if (!insertion) {
 		/* Report removal */
@@ -863,7 +851,6 @@ static void wcd_mbhc_find_plug_and_report(struct wcd_mbhc *mbhc,
 			if (mbhc->current_plug == MBHC_PLUG_TYPE_HEADSET)
 				wcd_mbhc_report_plug(mbhc, 0, SND_JACK_HEADSET);
 		wcd_mbhc_report_plug(mbhc, 1, SND_JACK_UNSUPPORTED);
-	//-- camera selfie stick
 	} else if (plug_type == MBHC_PLUG_TYPE_HEADSET) {
 		if (mbhc->mbhc_cfg->enable_anc_mic_detect)
 			anc_mic_found = wcd_mbhc_detect_anc_plug_type(mbhc);

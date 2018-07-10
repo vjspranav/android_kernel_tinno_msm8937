@@ -45,8 +45,6 @@
 #include "msm8916-wcd-irq.h"
 #include "msm8x16_wcd_registers.h"
 
-#include <linux/switch.h>//yangliang add fot ftm hph detect20150830
-
 #define MSM8X16_WCD_RATES (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |\
 			SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000)
 #define MSM8X16_WCD_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
@@ -141,15 +139,6 @@ static bool spkr_boost_en = false;
 	mutex_lock_nested(&x, SINGLE_DEPTH_NESTING)
 
 #define MSM8X16_WCD_RELEASE_LOCK(x) mutex_unlock(&x)
-
-//yangliang add for ftm hph detect20150830
-#ifdef CONFIG_SWITCH
-struct switch_dev wcd_mbhc_headset_switch = {
-	.name = "h2w",
-};
-struct switch_dev wcd_mbhc_button_switch = {
-	.name = "linebtn",};
-#endif
 
 /* Codec supports 2 IIR filters */
 enum {
@@ -5876,17 +5865,6 @@ static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 
 	wcd_mbhc_init(&msm8x16_wcd_priv->mbhc, codec, &mbhc_cb, &intr_ids,
 		      wcd_mbhc_registers, true);
-
-#ifdef CONFIG_SWITCH //yangliang add for ftm hph detect20150830
-	ret = switch_dev_register(&wcd_mbhc_headset_switch);
-	if (ret < 0) {
-		dev_err(codec->dev, "not able to register switch device h2w\n");
-	}
-	ret = switch_dev_register(&wcd_mbhc_button_switch);
-	if (ret < 0) {
-		dev_err(codec->dev, "not able to register switch device linebtn\n");
-	}
-#endif
 	msm8x16_wcd_priv->mclk_enabled = false;
 	msm8x16_wcd_priv->clock_active = false;
 	msm8x16_wcd_priv->config_mode_active = false;
@@ -5908,10 +5886,6 @@ static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 	if (!adsp_state_notifier) {
 		dev_err(codec->dev, "Failed to register adsp state notifier\n");
 		iounmap(msm8x16_wcd->dig_base);
- #ifdef CONFIG_SWITCH//yangliang add for ftm hph detect20150830
-		switch_dev_unregister(&wcd_mbhc_headset_switch);
-		switch_dev_unregister(&wcd_mbhc_button_switch);
- #endif		
 		kfree(msm8x16_wcd_priv->fw_data);
 		kfree(msm8x16_wcd_priv);
 		registered_codec = NULL;

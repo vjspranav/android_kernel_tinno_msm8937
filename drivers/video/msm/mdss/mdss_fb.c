@@ -276,7 +276,6 @@ static int mdss_fb_notify_update(struct msm_fb_data_type *mfd,
 static int lcd_backlight_registered;
 
 static u32 tinno_brightness = 0;   //tinno map backlight
-static bool tinno_is_asia_area =false;
 static int BRIGHT_MAP[256]={0,24,25,25,26,27,27,28,28,29,                 29,30,31,31,32,32,33,34,34,35,
 	                                   36,37,37,38,39,40,41,41,42,43,                44,45,46,47,48,49,50,51,52,53,
 	                                   54,55,56,57,58,59,61,62,63,64,                66,67,68,70,71,73,74,76,77,79,
@@ -290,31 +289,6 @@ static int BRIGHT_MAP[256]={0,24,25,25,26,27,27,28,28,29,                 29,30,
 	                                   1352,1379,1407,1436,1465,1495,1525,1556,1588,1620,1653,1687,1721,1756,1792,1829,1866,1904,1943,1982,
 	                                   2023,2064,2106,2149,2192,2237,2283,2329,2376,2425,2474,2525,2576,2628,2682,2736,2792,2849,2907,2966,
 	                                   3027,3088,3151,3215,3281,3348,3416,3485,3556,3629,3702,3778,3855,3933,4013,4095};
-
-#include <linux/tinno_project_info.h>
-static int tinno_market_area_is_asia(void)  //tinno map backlight
-{
-    char *market_area_name;
-        
-    market_area_name = tinno_get_market_area();
-
-    if (NULL != strstr(market_area_name, "_th_"))
-            tinno_is_asia_area = true;
-    else if  (NULL != strstr(market_area_name, "_vn_"))
-            tinno_is_asia_area = true;
-    else if  (NULL != strstr(market_area_name, "_id_"))
-            tinno_is_asia_area = true;
-    else if  (NULL != strstr(market_area_name, "_my_"))
-            tinno_is_asia_area = true;
-    else if  (NULL != strstr(market_area_name, "_as_"))
-            tinno_is_asia_area = true;
-    else
-            tinno_is_asia_area = false;
-
-    printk(KERN_INFO "tinno get market area :area = %s, tinno_is_asia_area = %d\n",market_area_name,tinno_is_asia_area);
-    return 0;
-    
-}
 
 static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 				      enum led_brightness value)
@@ -332,7 +306,7 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 
 	/* This maps android backlight level 0 to 255 into
 	   driver backlight level 0 to bl_max with rounding */
-	if((tinno_brightness)&&(!tinno_is_asia_area))
+	if (tinno_brightness)
 		bl_lvl = BRIGHT_MAP[value];         //tinno map backlight
 	else
 	      MDSS_BRIGHT_TO_BL(bl_lvl, value, mfd->panel_info->bl_max,

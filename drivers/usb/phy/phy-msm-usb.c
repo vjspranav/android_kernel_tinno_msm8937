@@ -50,7 +50,6 @@
 
 #include <linux/msm-bus.h>
 
-#include <linux/switch.h>//yangliang add for ftm-otg detect;20150902
 #include <linux/tinno_project_info.h>
 
 #define MSM_USB_BASE	(motg->regs)
@@ -133,8 +132,6 @@ static struct regulator *hsusb_1p8;
 static struct regulator *hsusb_vdd;
 static struct regulator *vbus_otg;
 static struct power_supply *psy;
-
-static struct switch_dev otg_state;//yangliang add for ftm-otg-cts detect;20150902
 
 static int vdd_val[VDD_VAL_MAX];
 static u32 bus_freqs[USB_NOC_NUM_VOTE][USB_NUM_BUS_CLOCKS]  /*bimc,snoc,pcnoc*/;
@@ -1947,7 +1944,6 @@ static void msm_otg_start_host(struct usb_otg *otg, int on)
 				     get_pm_runtime_counter(motg->phy.dev), 0);
 	pm_runtime_get_sync(otg->phy->dev);
 	if (on) {
-		switch_set_state((struct switch_dev *)&otg_state,1);//yangliang add for ftm-otg-cts detect;20150902
 		dev_dbg(otg->phy->dev, "host on\n");
 		msm_otg_dbg_log_event(&motg->phy, "HOST ON",
 				motg->inputs, otg->phy->state);
@@ -1977,7 +1973,6 @@ static void msm_otg_start_host(struct usb_otg *otg, int on)
 		schedule_delayed_work(&motg->perf_vote_work,
 				msecs_to_jiffies(1000 * PM_QOS_SAMPLE_SEC));
 	} else {
-		switch_set_state((struct switch_dev *)&otg_state,0);//yangliang add for ftm-otg-cts detect;20150902
 		dev_dbg(otg->phy->dev, "host off\n");
 		msm_otg_dbg_log_event(&motg->phy, "HOST OFF",
 				motg->inputs, otg->phy->state);
@@ -5207,18 +5202,6 @@ static int msm_otg_probe(struct platform_device *pdev)
 	msm_otg_dbg_log_event(phy, "OTG PROBE", motg->caps, motg->lpm_flags);
 
 	proc_create("otg_switch_config", 0666, NULL, &otg_switch_ops);
-//yangliang add for ftm-otg detect-cts;20150902
-	otg_state.name = "otg_state";	
-	otg_state.index = 0;
-	otg_state.state = 0;
-	ret = switch_dev_register(&otg_state);
-	if(ret)
-	{
-		dev_dbg(0,"switch_dev_register returned:%d!\n", ret);
-		return 1;
-	}
-//yangliang add for ftm-otg detect;20150902	
-
 	return 0;
 
 remove_cdev:

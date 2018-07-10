@@ -36,24 +36,6 @@
 #include <linux/alarmtimer.h>
 #include <linux/qpnp/qpnp-revid.h>
 
-#ifdef CONFIG_TINNO_NO_BATID
-const char* Tinno_battery_name;
-#endif
-
-// pony.ma, DATE20171009, ID usb wk battery model, DATE20171009-01 START
-#ifdef FEATURE_REQS_UNIFY
-extern char* Market_Area;
-bool is_Asia_area_id= false;
-static void Tinno_Get_Market_Area_is_Asia(void)
-{
-	pr_info("pony1009 Market_Area=%s\n",Market_Area);
-	if((Market_Area != NULL) &&  (!strcmp(Market_Area, "ID"))){
-			is_Asia_area_id = true;
-	}
-}
-#endif
-// pony.ma, DATE20171009-01 END
-
 // pony.ma, DATE20170609, power on is ok also when without battery NTC pin , DATE20170609-01 LINE
 //#define TINNO_WITHOUT_NTC_SUPPORT
 #define CONFIG_TNMB_SPECIAL_BATSOC
@@ -764,93 +746,6 @@ extern int g_battery_cmd_debug_mode;
 extern int g_battery_cmd_debug_capacity;
 extern int g_battery_cmd_debug_temperature;
 #endif  /* CONFIG_TINNO_BATTERY_CMD_DEBUG */
-
-// Jake.L, DATE20170311, FG trace information, DATE20170311-01 START
-static bool is_usb_present(struct fg_chip *chip);
-static int get_prop_capacity(struct fg_chip *chip);
-static int get_monotonic_soc_raw(struct fg_chip *chip);
-#define FULL_CAPACITY		100
-#define FULL_SOC_RAW		0xFF
-static void tinno_fg_status_trace(struct fg_chip *chip)
-{
-	static unsigned long last_sec = 0;
-	static unsigned long first_sec = 0;
-	static int last_soc = 50;
-	static int count = 0;
-	int curr_soc = 0;
-	struct timespec ts;
-	static int prechg_status = 0,prebat_health = 0;
-		
-	curr_soc = get_prop_capacity(chip);
-	if (curr_soc != last_soc)
-	{
-		getnstimeofday(&ts);
-		if ((ts.tv_sec - last_sec) > (3600*10))
-		{
-			first_sec = ts.tv_sec;
-		}
-		
-		printk("FG: BAT T[CHG,UI_SOC,OCV,VC,I,T]=%d[%d,%d,%d,%d,%d,%d],%lu,%lu\n",
-			count,
-			(is_usb_present(chip) ? 1 : 0), 		// plug/unplug
-			curr_soc,								// %
-			fg_data[FG_DATA_OCV].value/1000,		// mV
-			fg_data[FG_DATA_VOLTAGE].value/1000,	// mV
-			fg_data[FG_DATA_CURRENT].value/1000,	// mA
-			fg_data[FG_DATA_BATT_TEMP].value,		// 0.1.C
-			((ts.tv_sec - last_sec) > (3600*100) ? 0 : (ts.tv_sec - last_sec)),	// second, larger than 100 hours should be invalid.
-			(ts.tv_sec - first_sec)
-			);
-		last_sec = ts.tv_sec;
-		last_soc = curr_soc;
-	}
-	else
-	{
-		printk("FG: BAT V[CHG,UI_SOC,OCV,VC,CPRED_VOL,I,T,ESR,BAT_SOC,msoc,nsoc]=%d[%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d]\n",
-			count,
-			(is_usb_present(chip) ? 1 : 0), 			// plug/unplug
-			curr_soc,									// %
-			fg_data[FG_DATA_OCV].value/1000,			// mV
-			fg_data[FG_DATA_VOLTAGE].value/1000,		// mV
-			fg_data[FG_DATA_CPRED_VOLTAGE].value/1000,	// mV
-			fg_data[FG_DATA_CURRENT].value/1000,		// mA
-			fg_data[FG_DATA_BATT_TEMP].value,			// 0.1.C
-			fg_data[FG_DATA_BATT_ESR].value/1000,		// mohm
-			fg_data[FG_DATA_BATT_SOC].value,			// %
-			get_monotonic_soc_raw(chip),     			// 255 is 100%
-			DIV_ROUND_CLOSEST((get_monotonic_soc_raw(chip) - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1  // %
-			);
-	}
-	
-	if ((prechg_status != chip->status)||(prebat_health != chip->health))
-	{		
-		pr_info("BAT B[BAT_STATUS,HEALTH,BAT_TYPE]=%d[%d,%d,%d,%s]\n",
-			count,
-			(is_usb_present(chip) ? 1 : 0), 		// plug/unplug
-			chip->status,		// 
-			chip->health,		// 
-			chip->batt_type		//
-			);	
-		prechg_status = chip->status;
-		prebat_health = chip->health;
-	}
-	count ++;	
-}
-// Jake.L, DATE20170311-01 END
-
-#ifdef CONFIG_TINNO_KE_LOG_CTRL//add fg log contrl by lijian
-extern char * module_parser_mask(char *module);
-static void open_fg_debug_log(void)
-{
-	char *temp = module_parser_mask("msm_fg");
-	if(temp != NULL)
-	{
-		printk("%s, temp = %s\n",__func__,temp);
-		if(!strncmp(temp,"1",1))
-			fg_debug_mask = 0xFF;
-	}
-}
-#endif
 
 #define DEBUG_PRINT_BUFFER_SIZE 64
 static void fill_string(char *str, size_t str_len, u8 *buf, int buf_len)
@@ -2904,10 +2799,7 @@ resched:
 	}
 out:
 	fg_relax(&chip->update_sram_wakeup_source);
-	
-	// Jake.L, DATE20170311, FG trace information, DATE20170311-01 START
-	tinno_fg_status_trace(chip);
-	// Jake.L, DATE20170311-01 END
+
 	return rc;
 }
 
@@ -6738,32 +6630,11 @@ wait:
 		pr_info("battery id = %d\n",
 				get_sram_prop_now(chip, FG_DATA_BATT_ID));
 
-#ifdef CONFIG_TINNO_NO_BATID
-	rc = of_property_read_string(node, "qcom,tinno-battery-name",
-					&Tinno_battery_name);
-	profile_node = of_batterydata_get_best_profile(batt_node, "bms",
-							Tinno_battery_name);
-#else
-		profile_node = of_batterydata_get_best_profile(batt_node, "bms",
-							fg_batt_type);
-#endif	
-
 //pony20170929 for batid is wrong start
 	#ifdef TINNO_BAT_PROFILE_REDETECT
 	if (profile_node == NULL) {
 	   	pr_info("pony0920-2 first read battery id = %d\n",get_sram_prop_now(chip, FG_DATA_BATT_ID)); 
 		fg_hw_restart(chip);
-		
-		#ifdef CONFIG_TINNO_NO_BATID
-		rc = of_property_read_string(node, "qcom,tinno-battery-name",
-					&Tinno_battery_name);
-		profile_node = of_batterydata_get_best_profile(batt_node, "bms",
-							Tinno_battery_name);
-		#else
-		profile_node = of_batterydata_get_best_profile(batt_node, "bms",
-							fg_batt_type);
-		#endif	
-		
 		pr_info("pony0920-2 second read battery id = %d\n",get_sram_prop_now(chip, FG_DATA_BATT_ID)); 
 	}
 		
@@ -9305,15 +9176,6 @@ static int fg_probe(struct spmi_device *spmi)
 
 	chip->spmi = spmi;
 	chip->dev = &(spmi->dev);
-	#ifdef CONFIG_TINNO_KE_LOG_CTRL
-	open_fg_debug_log();
-	#endif
-	
-	// pony.ma, DATE20171009, ID usb wk battery model, DATE20171009-01 START
-	#ifdef FEATURE_REQS_UNIFY
-       Tinno_Get_Market_Area_is_Asia();
-	#endif
-	// pony.ma, DATE20171009-01 END
 
 	wakeup_source_init(&chip->empty_check_wakeup_source.source,
 			"qpnp_fg_empty_check");

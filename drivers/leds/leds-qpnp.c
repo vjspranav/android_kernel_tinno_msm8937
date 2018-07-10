@@ -904,20 +904,21 @@ static int qpnp_mpp_set(struct qpnp_led_data *led)
 			}
 		}
 		if (led->mpp_cfg->pwm_mode == PWM_MODE) {
+			#ifdef CONFIG_PLATFORM_TINNO
 			if(led->cdev.brightness > 250){
 				rc = pwm_config(
 						led->mpp_cfg->pwm_cfg->pwm_dev,
 						1000000,
 						1000000);
-			}//<20160329><add for green led output high not wait 2s>wangyanhui add 
+			}//<20160329><add for green led output high not wait 2s>wangyanhui add
 			else
 			{
+			#else
 			/*config pwm for brightness scaling*/
 			period_us = led->mpp_cfg->pwm_cfg->pwm_period_us;
 			if (period_us > INT_MAX / NSEC_PER_USEC) {
 				duty_us = (period_us * led->cdev.brightness) /
 					LED_FULL;
-					printk("led: blink pwm_config period_us=%d duty_us=%d.\n",period_us,duty_us);
 				rc = pwm_config_us(
 					led->mpp_cfg->pwm_cfg->pwm_dev,
 					duty_us,
@@ -929,8 +930,11 @@ static int qpnp_mpp_set(struct qpnp_led_data *led)
 					led->mpp_cfg->pwm_cfg->pwm_dev,
 					duty_ns,
 					period_us * NSEC_PER_USEC);
+				
 				}
+			#ifdef CONFIG_PLATFORM_TINNO
 			}
+			#endif
 			if (rc < 0) {
 				dev_err(&led->spmi_dev->dev, "Failed to " \
 					"configure pwm for new values\n");
@@ -1811,9 +1815,6 @@ static void qpnp_led_set(struct led_classdev *led_cdev,
 {
 	struct qpnp_led_data *led;
 
-	printk("led: qpnp_led_set:led_cdev->name=%s, led_cdev->brightness = %d\n",
-		led_cdev->name, led_cdev->brightness);
-
 	led = container_of(led_cdev, struct qpnp_led_data, cdev);
 	if (value < LED_OFF) {
 		dev_err(&led->spmi_dev->dev, "Invalid brightness value\n");
@@ -2627,12 +2628,13 @@ static void led_blink(struct qpnp_led_data *led,
 {
 	//int rc;
 //BEGIN<20160324><blinking use pwm>wangyanhui modify
+#ifdef CONFIG_TINNO_PLATFORM
 	printk("Ramiel led_blink.\n");
 	if(led->cdev.brightness>0)
 		led->cdev.brightness = 102;//LINE<HCABN-458><20161113><on-2s  off-3s>wangyanhui
 	
 	qpnp_mpp_set(led);
-#if 0
+#else
 	flush_work(&led->work);
 	mutex_lock(&led->lock);
 	if (pwm_cfg->use_blink) {
@@ -3451,8 +3453,11 @@ static int qpnp_get_config_pwm(struct pwm_config_data *pwm_cfg,
 	pwm_cfg->use_blink =
 		of_property_read_bool(node, "qcom,use-blink");
 
-	//if (pwm_cfg->mode == LPG_MODE || pwm_cfg->use_blink) {
+	#ifdef CONFIG_PLATFORM_TINNO
 	if (pwm_cfg->mode == LPG_MODE) {//<20160324><blinking use pwm not LGP>wangyanhui modify
+	#else
+	if (pwm_cfg->mode == LPG_MODE || pwm_cfg->use_blink) {
+	#endif
 		pwm_cfg->duty_cycles =
 			devm_kzalloc(&spmi_dev->dev,
 			sizeof(struct pwm_duty_cycles), GFP_KERNEL);

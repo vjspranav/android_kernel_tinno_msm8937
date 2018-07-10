@@ -44,7 +44,6 @@
 #include <linux/clk/msm-clk.h>
 #include <linux/msm-bus.h>
 #include <linux/irq.h>
-#include <linux/switch.h>//yangliang add for ftm-otg detect;20150902
 
 #include "power.h"
 #include "core.h"
@@ -142,8 +141,6 @@ MODULE_PARM_DESC(dcp_max_current, "max current drawn for DCP charger");
 
 #define	GSI_IF_STS	(QSCRATCH_REG_OFFSET + 0x1A4)
 #define	GSI_WR_CTRL_STATE_MASK	BIT(15)
-
-static struct switch_dev otg_state;//yangliang add for ftm-otg-cts detect;20150902
 
 struct dwc3_msm_req_complete {
 	struct list_head list_item;
@@ -3312,18 +3309,6 @@ static int dwc3_msm_probe(struct platform_device *pdev)
 		dwc3_ext_event_notify(mdwc);
 	}
 
-//yangliang add for ftm-otg detect-cts;20150902
-	otg_state.name = "otg_state";	
-	otg_state.index = 0;
-	otg_state.state = 0;
-	ret = switch_dev_register(&otg_state);
-	if(ret)
-	{
-		dev_dbg(0,"switch_dev_register returned:%d!\n", ret);
-		return 1;
-	}
-//yangliang add for ftm-otg detect;20150902
-
 	return 0;
 
 put_dwc3:
@@ -3565,7 +3550,6 @@ static int dwc3_otg_start_host(struct dwc3_msm *mdwc, int on)
 
 	if (on) {
 		dev_dbg(mdwc->dev, "%s: turn on host\n", __func__);
-		switch_set_state((struct switch_dev *)&otg_state,1);//yangliang add for ftm-otg-cts detect;20150902
 
 		pm_runtime_get_sync(mdwc->dev);
 		dbg_event(0xFF, "StrtHost gync",
@@ -3652,7 +3636,6 @@ static int dwc3_otg_start_host(struct dwc3_msm *mdwc, int on)
 			msecs_to_jiffies(1000 * PM_QOS_SAMPLE_SEC));
 	} else {
 		dev_dbg(mdwc->dev, "%s: turn off host\n", __func__);
-		switch_set_state((struct switch_dev *)&otg_state,0);//yangliang add for ftm-otg-cts detect;20150902
 
 		usb_unregister_atomic_notify(&mdwc->usbdev_nb);
 		if (!IS_ERR(mdwc->vbus_reg))
