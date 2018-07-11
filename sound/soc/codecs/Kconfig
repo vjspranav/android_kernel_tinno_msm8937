@@ -658,21 +658,6 @@ config SND_SOC_WCD9XXX_V2
 	tristate
 	default y if SND_SOC_WCD9335=y
 
-#yangliang add for smartpa 20161026
-config SND_SOC_TFA98XX
-	bool "for tinno smartPA solution"
-	default n
-
-#yangliang add for smartpa 20161026
-config SND_SOC_TFA9890
-	bool "for tinno smartPA solution"
-	default n
-
-#yangliang add for smartpa 20161026
-config SND_SOC_TFA9896
-	bool "for tinno smartPA solution"
-	default n
-
 config SND_SOC_WCD_CPE
 	tristate
 	default y if SND_SOC_WCD9330=y || SND_SOC_WCD9335=y
