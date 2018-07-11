@@ -30,7 +30,7 @@
 #include "mdss_panel.h"
 #include "mdss_mdp.h"
 
-#ifdef CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_HS2
 #define STATUS_CHECK_INTERVAL_MS 3000
 #else
 #define STATUS_CHECK_INTERVAL_MS 5000

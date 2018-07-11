@@ -11,15 +11,15 @@
  * GNU General Public License for more details.
  */
 
-#include "v12bnlite-audio.mtp"
-#include "v12bnlite-audio-mtp.dtsi"
-#include "v12bnlite-camera-pinctrl.dtsi"
-#include "v12bnlite-camera-sensor-mtp.dtsi"
-#include "v12bnlite-tinno.dtsi"
-#include "v12bnlite.dtsi"
-#include "v12bnlite-mdss.dtsi"
-#include "v12bnlite-mtp.dtsi"
-#include "v12bnlite-pinctrl.dtsi"
+#include "hs2-audio.mtp"
+#include "hs2-audio-mtp.dtsi"
+#include "hs2-camera-pinctrl.dtsi"
+#include "hs2-camera-sensor-mtp.dtsi"
+#include "hs2-tinno.dtsi"
+#include "hs2.dtsi"
+#include "hs2-mdss.dtsi"
+#include "hs2-mtp.dtsi"
+#include "hs2-pinctrl.dtsi"
 
 /{
 	mtp_batterydata: qcom,battery-data {

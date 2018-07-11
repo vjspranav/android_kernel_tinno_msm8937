@@ -56,7 +56,7 @@ enum btsco_rates {
 	RATE_16KHZ_ID,
 };
 
-#ifdef CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_HS2
 enum {
 	AW8155_P8W_8Ohm,
 
@@ -85,7 +85,7 @@ bool tinno_ext_spk_pa_support = false;
 bool tinno_ext_spk_i2s_support = false;
 #endif
 
-#ifdef CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_HS2
 unsigned int tinno_mbhc_btn_h[WCD_MBHC_DEF_RLOADS+1]= {0};
 unsigned int tinno_mbhc_btn_l[WCD_MBHC_DEF_RLOADS+1]= {0};
 #endif
@@ -302,7 +302,7 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 {
 	const char *spk_ext_pa = "qcom,msm-spk-ext-pa";
 
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	int ret;
 	const char *tinno_ext_pa_mode = "qcom,msm-spk-ext-pa-mode";
 	const char *tinno_ext_pa_i2s = "qcom,msm-spk-ext-pa-i2s";
@@ -312,7 +312,7 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 
 	pr_debug("%s:Enter\n", __func__);
 
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	ret = of_property_read_u32(pdev->dev.of_node, tinno_ext_pa_i2s, &tinno_i2s);
 	if (ret) {
 		dev_err(&pdev->dev,"%s: missing %s in dt node\n", __func__,
@@ -330,7 +330,7 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 	#endif
 
 	#ifdef CONFIG_PLATFORM_TINNO
-	#ifndef CONFIG_PROJECT_V12BNLITE (* Hack *)
+	#ifndef CONFIG_PROJECT_HS2 (* Hack *)
 	of_property_read_u32(pdev->dev.of_node, "qcom,spk-ext-pa_mode", &pdata->ext_pa_mode);
 	#endif
 	#endif
@@ -343,7 +343,7 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 				__func__, pdata->spk_ext_pa_gpio);
 			return -EINVAL;
 		}
-		#ifdef CONFIG_PROJECT_V12BNLITE
+		#ifdef CONFIG_PROJECT_HS2
 		if (!ext_pa_gpio_requested) {
 			ret = gpio_request(pdata->spk_ext_pa_gpio, "spk_ext_pa_gpio");
 			if (ret) {
@@ -357,7 +357,7 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 		#ifdef CONFIG_PLATFORM_TINNO
 		gpio_direction_output(pdata->spk_ext_pa_gpio, 0);
 		#endif
-		#ifdef CONFIG_PROJECT_V12BNLITE
+		#ifdef CONFIG_PROJECT_HS2
 		ret = of_property_read_u32(pdev->dev.of_node, tinno_ext_pa_mode, &tinno_pa_mode);
 		if (ret) {
 			dev_err(&pdev->dev,"%s: missing %s in dt node\n", __func__,
@@ -370,7 +370,7 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 	return 0;
 }
 
-#ifdef CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_HS2
 /**********************
 *Func: set Aw8xxx Pa Control Mode ,reference Aw81xxx IC datasheet
 *@pa_gpio: use to Aw8xxx control gpio ,This Gpio request for codec_Probe(), and set gpio out Mode.
@@ -561,7 +561,7 @@ static int ext_drcv_amp_put(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 #endif
-#ifdef CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_HS2
 static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 {
 	struct snd_soc_card *card = codec->component.card;
@@ -1406,7 +1406,7 @@ static const struct soc_enum msm_snd_enum[] = {
 				vi_feed_ch_text),
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(mi2s_rx_sample_rate_text),
 				mi2s_rx_sample_rate_text),
-#ifdef CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_HS2
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(ext_kspk_amp_function),
 				ext_kspk_amp_function),
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(ext_drcv_amp_function),
@@ -1431,7 +1431,7 @@ static const struct snd_kcontrol_new msm_snd_controls[] = {
 			msm_vi_feed_tx_ch_get, msm_vi_feed_tx_ch_put),
 	SOC_ENUM_EXT("MI2S_RX SampleRate", msm_snd_enum[6],
 			mi2s_rx_sample_rate_get, mi2s_rx_sample_rate_put),
-#ifdef CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_HS2
 	SOC_ENUM_EXT("Ext_Speaker_Amp", msm_snd_enum[7],
 			ext_kspk_amp_get, ext_kspk_amp_put),
 	SOC_ENUM_EXT("Ext_Receiver_Amp", msm_snd_enum[8],
@@ -1925,7 +1925,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	void *msm8952_wcd_cal;
 	struct wcd_mbhc_btn_detect_cfg *btn_cfg;
 	u16 *btn_low, *btn_high;
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	int i;
 	#endif
 
@@ -2002,7 +2002,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_low[4] = 500;
 	btn_high[4] = 500;
 	#endif
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	btn_low[0] = 110;
 	btn_high[0] = 110;
 	btn_low[1] = 200;
@@ -3394,7 +3394,7 @@ static struct snd_soc_card *msm8952_populate_sndcard_dailinks(
 				sizeof(msm8952_hdmi_dba_dai_link));
 		len1 += ARRAY_SIZE(msm8952_hdmi_dba_dai_link);
 	} else {
-		#ifdef CONFIG_PROJECT_V12BNLITE
+		#ifdef CONFIG_PROJECT_HS2
 		if (of_property_read_bool(dev->of_node,	"qcom,msm-I2S-quin")) {
 		#endif
 
@@ -3404,7 +3404,7 @@ static struct snd_soc_card *msm8952_populate_sndcard_dailinks(
 				sizeof(msm8952_quin_dai_link));
 		len1 += ARRAY_SIZE(msm8952_quin_dai_link);
 
-		#ifdef CONFIG_PROJECT_V12BNLITE
+		#ifdef CONFIG_PROJECT_HS2
 		}
 		#endif
 	}
@@ -3421,7 +3421,7 @@ static struct snd_soc_card *msm8952_populate_sndcard_dailinks(
 	return card;
 }
 
-#ifdef CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_HS2
 static int tinno_dt_parse_mbhc_btn(struct platform_device *pdev)
 {
 	const char *mbhc_btn_high = "qcom,tinno_mbhc_btn_high";
@@ -3695,7 +3695,7 @@ parse_mclk_freq:
 		goto err;
 	}
 
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	ret = tinno_dt_parse_mbhc_btn(pdev);
 	if (ret < 0) {
 		pr_err("%s: failed to tinno btn voltage config %d\n",

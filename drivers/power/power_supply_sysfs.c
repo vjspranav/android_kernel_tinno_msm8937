@@ -191,7 +191,7 @@ static struct device_attribute power_supply_attrs[] = {
 	POWER_SUPPLY_ATTR(capacity_alert_max),
 	POWER_SUPPLY_ATTR(capacity_level),
 	POWER_SUPPLY_ATTR(capacity_raw),
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	POWER_SUPPLY_ATTR(batt_vol), //add for Battery information
 	#endif
 	#ifdef CONFIG_PLATFORM_TINNO

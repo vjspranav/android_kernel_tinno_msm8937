@@ -257,7 +257,7 @@ static int mdss_fb_notify_update(struct msm_fb_data_type *mfd,
 
 static int lcd_backlight_registered;
 
-#ifdef CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_HS2
 static u32 tinno_brightness = 0;   //tinno map backlight
 static int BRIGHT_MAP[256]= {0,24,25,25,26,27,27,28,28,29,                 29,30,31,31,32,32,33,34,34,35,
                              36,37,37,38,39,40,41,41,42,43,                44,45,46,47,48,49,50,51,52,53,
@@ -290,7 +290,7 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 
 	/* This maps android backlight level 0 to 255 into
 	   driver backlight level 0 to bl_max with rounding */
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	if (tinno_brightness)
 		bl_lvl = BRIGHT_MAP[value];         //tinno map backlight
 	else

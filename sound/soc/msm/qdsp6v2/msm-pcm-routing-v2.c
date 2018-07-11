@@ -70,7 +70,7 @@ static int fm_pcmrx_switch_enable;
 static int lsm_mux_slim_port;
 static int slim0_rx_aanc_fb_port;
 
-#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_HS2
 static int msm_route_ec_ref_rx;
 #else
 static int msm_route_ec_ref_rx = 9; /* NONE */
@@ -78,7 +78,7 @@ static int msm_route_ec_ref_rx = 9; /* NONE */
 
 static uint32_t voc_session_id = ALL_SESSION_VSID;
 
-#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_HS2
 static int msm_route_ext_ec_ref;
 #else
 static int msm_route_ext_ec_ref = AFE_PORT_INVALID;
@@ -2159,7 +2159,7 @@ static int msm_routing_ext_ec_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_HS2
 static int msm_routing_ext_ec_put(struct snd_kcontrol *kcontrol,
                                   struct snd_ctl_elem_value *ucontrol)
 {
@@ -5335,7 +5335,7 @@ static const struct snd_kcontrol_new quat_mi2s_rx_port_mixer_controls[] = {
 	msm_routing_put_port_mixer),
 };
 
-#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_HS2
 static const struct snd_kcontrol_new quin_mi2s_rx_port_mixer_controls[] = {
 	SOC_SINGLE_EXT("PRI_MI2S_TX", MSM_BACKEND_DAI_QUINARY_MI2S_RX,
 	MSM_BACKEND_DAI_PRI_MI2S_TX, 1, 0, msm_routing_get_port_mixer,
@@ -5987,7 +5987,7 @@ static const struct snd_kcontrol_new quat_mi2s_rx_switch_mixer_controls =
 	0, 1, 0, msm_routing_get_quat_mi2s_switch_mixer,
 	msm_routing_put_quat_mi2s_switch_mixer);
 
-#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_HS2
 static const struct snd_kcontrol_new quin_mi2s_rx_switch_mixer_controls =
 	SOC_SINGLE_EXT("Switch", SND_SOC_NOPM,
 	0, 1, 0, msm_routing_get_switch_mixer,
@@ -6910,7 +6910,7 @@ static const struct snd_soc_dapm_widget msm_qdsp6_widgets[] = {
 		"Quaternary MI2S_RX Hostless Playback",
 		0, 0, 0, 0),
 
-	#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_HS2
 	SND_SOC_DAPM_AIF_IN("QUIN_MI2S_DL_HL",
 		"Quinary MI2S_RX Hostless Playback",
 		0, 0, 0, 0),
@@ -7664,7 +7664,7 @@ static const struct snd_soc_dapm_widget msm_qdsp6_widgets[] = {
 	quat_mi2s_rx_port_mixer_controls,
 	ARRAY_SIZE(quat_mi2s_rx_port_mixer_controls)),
 
-	#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_HS2
 	SND_SOC_DAPM_MIXER("QUIN_MI2S_RX Port Mixer", SND_SOC_NOPM, 0, 0,
 	quin_mi2s_rx_port_mixer_controls,
 	ARRAY_SIZE(quin_mi2s_rx_port_mixer_controls)),
@@ -8852,7 +8852,7 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"QUAT_MI2S_RX_DL_HL", "Switch", "QUAT_MI2S_DL_HL"},
 	{"QUAT_MI2S_RX", NULL, "QUAT_MI2S_RX_DL_HL"},
 
-	#ifdef CONFIG_PROJECT_WIMLITE  || CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_WIMLITE  || CONFIG_PROJECT_HS2
 	{"QUIN_MI2S_RX_DL_HL", "Switch", "PRI_MI2S_DL_HL"},
 	{"QUIN_MI2S_RX", NULL, "QUIN_MI2S_RX_DL_HL"},
 	#endif
@@ -9175,7 +9175,7 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"QUAT_MI2S_RX Port Mixer", "SLIM_0_TX", "SLIMBUS_0_TX"},
 	{"QUAT_MI2S_RX Port Mixer", "INTERNAL_FM_TX", "INT_FM_TX"},
 
-	#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_HS2
 	{"QUIN_MI2S_RX Port Mixer", "INTERNAL_FM_TX", "INT_FM_TX"},
 	#endif
 

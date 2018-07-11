@@ -123,7 +123,7 @@ enum msm_usb_phy_type {
 #define IDEV_CHG_MAX	1500
 #define IUNIT		100
 #define IDEV_HVDCP_CHG_MAX	1800
-#ifdef CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_HS2
 #define IDEV_CHG_MAX_TINNO 500
 #endif
 

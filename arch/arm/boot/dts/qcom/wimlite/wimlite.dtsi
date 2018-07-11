@@ -11,10 +11,10 @@
  * GNU General Public License for more details.
  */
 
-#include "p7201-mdss-panels.dtsi"
-#include "p7201-pinctrl.dtsi"
-#include "p7201-audio.dtsi"
-#include "p7201-camera-sensor.dtsi"
+#include "wimlite-mdss-panels.dtsi"
+#include "wimlite-pinctrl.dtsi"
+#include "wimlite-audio.dtsi"
+#include "wimlite-camera-sensor.dtsi"
 
 /delete-node/ &mtp_batterydata;
 
@@ -65,32 +65,12 @@
 		qcom,master-id = <84>;
 	};
 
-	gpio_keys {
-		/delete-node/ camera_focus;
-		/delete-node/ camera_snapshot;
-		vol_up {
-			label = "volume_up";
-			gpios = <&tlmm 91 0x1>;
-			linux,input-type = <1>;
-			linux,code = <115>;
-			debounce-interval = <15>;
-		};
-		home { 
-			label = "home";
-			gpios = <&tlmm 128 0x1>;
-			linux,input-type = <1>;
-			linux,code = <0x66>;
-			gpio-key,wakeup;
-			debounce-interval = <15>;
-		};
-	};
-
 	hall-ic{
 		compatible = "hall-switch";
 		interrupt-parent = <&tlmm>;
-		interrupts = <45 0x0>;
+		interrupts = <126 0x0>;
 		vddio-supply = <&pm8937_l6>;
-		linux,gpio-int = <&tlmm 45 0x1>;
+		linux,gpio-int = <&tlmm 126 0x1>;
 		linux,wakeup;
 		linux,min-uv = <1800000>;
 		linux,max-uv = <1800000>;
@@ -103,17 +83,33 @@
 		vio-supply = <&pm8937_l6>;
 		reg = <0 0>;
 		interrupt-parent = <&tlmm>;
-		interrupts = <17 1>;
-		qcom,irq-gpio = <&tlmm 17 0>;
-		qcom,fpid-gpio = <&tlmm 16 0>;
-		qcom,reset-gpio = <&tlmm 19 0>;
+		interrupts = <17 0x1>;
+		qcom,irq-gpio = <&tlmm 12 0x00>;
+		qcom,reset-gpio = <&tlmm 13 0x00>;
+		qcom,fpid-gpio = <&tlmm 25 0x00>;
 		pinctrl-names = "tlmm_gpio_fpid_active";
 		pinctrl-0 = <&gpio_fpid_active>;
 		spi-max-frequency = <8000000>;
 	};
+
+	qcom_fp_chipone{
+		status = "ok";
+		compatible = "qcom,fingerprint-chipone";
+		vdd-supply = <&pm8937_l10>;
+		vio-supply = <&pm8937_l6>;
+		reg = <0 0>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <12 0x1>;
+		qcom,irq-gpio = <&tlmm 12 0x00>;
+		qcom,reset-gpio = <&tlmm 13 0x00>;
+        qcom,fpid-gpio = <&tlmm 25 0x00>;
+        pinctrl-names = "tlmm_gpio_fpid_active";
+        pinctrl-0 = <&gpio_fpid_active>;
+		spi-max-frequency = <8000000>;
+	};
 };
 
-&i2c_3{
+&i2c_3 {
 	status = "ok";
 		focaltech@38 {
 			compatible = "focaltech,5x06";
@@ -149,8 +145,22 @@
 };
 
 &i2c_2{
+	status = "okay";
+	qcom,clk-freq-out = <100000>;
+
 	/delete-node/ pericom-type-c@1d;
 	/delete-node/ adv7533@39;
+
+	tfa98xx@34 {
+		compatible = "nxp,tfa9890";
+		reg = <0x34>;
+		pinctrl-names = "tlmm_gpio_key_active_reset_pa","tlmm_gpio_key_suspend_reset_pa";
+		pinctrl-0 = <&gpio_key_active_reset_pa>;
+		pinctrl-1 = <&gpio_key_suspend_reset_pa>;
+		nxp,reset-gpio = <&tlmm 89 0x0>;
+		nxp,irq-gpio = <&tlmm 90 0x0>;
+		status = "okay";
+	};
 };
 
 &i2c_5 {
@@ -159,24 +169,6 @@
 
 &spi_3 {
 	status="disabled";
-};
-
-&spi_6 {
-    qcom_fp@0 {
-		status = "ok";
-		compatible = "qcom,fingerprint";
-		vdd-supply = <&pm8937_l10>;
-		vio-supply = <&pm8937_l6>;
-		reg = <0 0>;
-		interrupt-parent = <&tlmm>;
-		interrupts = <17 1>;
-		qcom,irq-gpio = <&tlmm 17 0>;
-		qcom,fpid-gpio = <&tlmm 16 0>;
-		qcom,reset-gpio = <&tlmm 19 0>;
-		pinctrl-names = "tlmm_gpio_fpid_active";
-		pinctrl-0 = <&gpio_fpid_active>;
-		spi-max-frequency = <8000000>;
-    };
 };
 
 &pmi8950_fg {
@@ -208,4 +200,8 @@
 		qcom,duty = <500000>; 
 		label = "pwm";
 	};
+};
+
+&usb_otg {
+		qcom,hsusb-otg-phy-init-seq = <0x73 0x80 0x35 0x81 0x3f 0x82 0x13 0x83 0xffffffff>; /*USB eye chart*/
 };

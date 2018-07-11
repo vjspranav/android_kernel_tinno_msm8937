@@ -15,7 +15,7 @@
 
 #include "msm8940.dtsi"
 #include "msm8940-pmi8950-mtp.dtsi"
-#include "p6901/p6901.dtsi"
+#include "wimlite/wimlite.dtsi"
 
 / {
 	model = "Qualcomm Technologies, Inc. MSM8940-PMI8950 MTP P6901";

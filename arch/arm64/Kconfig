@@ -776,22 +776,22 @@ config ARCH_HAS_CACHE_LINE_SIZE
 
 source "mm/Kconfig"
 
-config PROJECT_P7201
+config PROJECT_GARLIC
 	bool "P7201 project support"
 	help
 	  This option enables support project name
 
-config PROJECT_P6901
+config PROJECT_WIMLITE
 	bool "P6901 project support"
 	help
 	  This option enables support project name
 
-config PROJECT_V12BNLITE
+config PROJECT_HS2
 	bool "P6901 project support"
 	help
 	  This option enables support project name
 
-config PROJECT_V12BNLITE
+config PROJECT_HS2
 	bool "P6901 project support"
 	help
 	  This option enables support project name
@@ -1082,23 +1082,23 @@ config PLATFORM_TINNO
 	help
 	  Tells whether it is a tinno device or not
 
-config PROJECT_P7201
-	bool "P7201 project support"
+config PROJECT_GARLIC
+	bool "GARLIC project support"
 	help
 	  This option enables support project name
 
-config PROJECT_P6901
-	bool "P6901 project support"
+config PROJECT_WIMLITE
+	bool "WIMLITE project support"
 	help
 	  This option enables support project name
 
-config PROJECT_V12BNLITE
-	bool "P6901 project support"
+config PROJECT_HS2
+	bool "HS2 project support"
 	help
 	  This option enables support project name
 
-config PROJECT_V12BNLITE
-	bool "P6901 project support"
+config PROJECT_HS3
+	bool "H23 project support"
 	help
 	  This option enables support project name
 

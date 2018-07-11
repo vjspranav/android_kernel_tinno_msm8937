@@ -425,7 +425,7 @@ clean_up:
 	return rc;
 }
 
-#ifdef CONFIG_PROJECT|V12BNLITE
+#ifdef CONFIG_PROJECT_V12BNLITE
 /**
   * eeprom_parse_memory_map_write - Parse mem map
   * @e_ctrl:	ctrl structure

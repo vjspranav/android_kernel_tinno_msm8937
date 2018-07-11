@@ -513,7 +513,7 @@ static void wcd_mbhc_set_and_turnoff_hph_padac(struct wcd_mbhc *mbhc)
 	#ifdef CONFIG_PROJECT_GARLIC
 	if(ext_spk_pa_current_state == false)
 		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
-	#else if defined CONFIG_PROJECT_V12BNLITE
+	#else if defined CONFIG_PROJECT_HS2
 	extern bool tinno_ext_spk_pa_current_state;
 	extern bool tinno_ext_spk_pa_support;
 	if (tinno_ext_spk_pa_support) {
@@ -2251,7 +2251,7 @@ static void wcd_mbhc_fw_read(struct work_struct *work)
 	(void) wcd_mbhc_initialise(mbhc);
 }
 
-#ifdef CONFIG_PROJECT_V12BNLITE
+#ifdef CONFIG_PROJECT_HS2
 static void tinno_dt_parse_mbhc_keycode(struct wcd_mbhc *mbhc)
 {
 	const char *mbhc_keycode = "qcom,tinno_mbhc_keycode";
@@ -2288,7 +2288,7 @@ int wcd_mbhc_set_keycode(struct wcd_mbhc *mbhc)
 	int i, ret, result = 0;
 	int *btn_key_code;
 
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	tinno_dt_parse_mbhc_keycode(mbhc);
 	#endif
 

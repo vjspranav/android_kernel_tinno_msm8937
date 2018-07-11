@@ -2842,7 +2842,7 @@ static void msm_otg_sm_work(struct work_struct *w)
 				case USB_DCP_CHARGER:
 					/* fall through */
 				case USB_PROPRIETARY_CHARGER:
-					#ifdef CONFIG_PROJECT_V12BNLITE
+					#ifdef CONFIG_PROJECT_HS2
 					if(motg->pdata->enable_floated_charger)
 						msm_otg_notify_charger(motg,
 						                       IDEV_CHG_MAX_TINNO);
@@ -4374,7 +4374,7 @@ struct msm_otg_platform_data *msm_otg_dt_to_pdata(struct platform_device *pdev)
 	if (pdata->enable_floated_charger == FLOATING_AS_DCP ||
 		pdata->enable_floated_charger == FLOATING_AS_INVALID)
 		debug_floated_charger_enabled = true;
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	pdata->vbus_low_as_hostmode = of_property_read_bool(node,
 	                              "qcom,vbus-low-as-hostmode");
 	#endif
@@ -4393,7 +4393,7 @@ static int msm_otg_probe(struct platform_device *pdev)
 	void __iomem *tcsr;
 	int id_irq = 0;
 
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	struct qpnp_vadc_chip *vadc_dev = NULL;
 	#endif
 
@@ -4554,7 +4554,7 @@ static int msm_otg_probe(struct platform_device *pdev)
 	of_property_read_u32(pdev->dev.of_node, "qcom,pm-qos-latency",
 				&motg->pm_qos_latency);
 
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	if (of_find_property(pdev->dev.of_node, "qcom,usbin-vadc", NULL))
 		vadc_dev = qpnp_get_vadc(&pdev->dev, "usbin");
 	#endif
@@ -4873,7 +4873,7 @@ static int msm_otg_probe(struct platform_device *pdev)
 	phy->set_suspend = msm_otg_set_suspend;
 	phy->dbg_event = msm_otg_dbg_log_event;
 
-	#ifdef CONFIG_PROJECT_V12BNLITE
+	#ifdef CONFIG_PROJECT_HS2
 	motg->vadc_dev = vadc_dev;
 	#endif
 
