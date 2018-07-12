@@ -36,12 +36,12 @@
 #include <linux/alarmtimer.h>
 #include <linux/qpnp/qpnp-revid.h>
 
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 #define CONFIG_TNMB_SPECIAL_BATSOC
 #endif
 
 #ifdef CONFIG_TINNO_CHARGER_CONFIG
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 #define TINNO_BAT_PROFILE_REDETECT
 #endif
 #define TINNO_BAT_EST_DIFF_DETECT
@@ -322,7 +322,7 @@ static struct fg_mem_data fg_backup_regs[FG_BACKUP_MAX] = {
 	BACKUP(MAH_TO_SOC,	0x4A0,   0,      4,     -EINVAL),
 };
 
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 static int fg_debug_mask = FG_IRQS;
 #else
 static int fg_debug_mask;
@@ -668,7 +668,7 @@ struct fg_chip {
 	bool			spebatenabled;
 	u32			spebatsoc[3];
 #endif
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 	bool			batt_soft_cold;
 	bool			batt_soft_hot;
 #endif
@@ -2297,7 +2297,7 @@ static int get_prop_capacity(struct fg_chip *chip)
 			                         (FULL_CAPACITY - 1),
 			                         FULL_SOC_RAW - 2) + 1;
 		}
-		#else if defined CONFIG_PLATFORM_TINNO
+		#elif defined(CONFIG_PLATFORM_TINNO)
 		return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1;
 		#else
 		return DIV_ROUND_CLOSEST((chip->last_soc - 1) *
@@ -2367,7 +2367,7 @@ static int get_prop_capacity(struct fg_chip *chip)
 		return nsoc;
 	} else
 		return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1;
-	#else if defined CONFIG_PLATFORM_TINNO
+	#elif defined(CONFIG_PLATFORM_TINNO)
 	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1;
 	#else
 	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 2),
@@ -4238,14 +4238,14 @@ static void check_gain_compensation(struct fg_chip *chip)
 		schedule_work(&chip->gain_comp_work);
 	}
 }
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 #define COOL_HYSTERESIS	20
 #define WARM_HYSTERESIS	20
 #endif
 static void fg_hysteresis_config(struct fg_chip *chip)
 {
 	int hard_hot = 0, hard_cold = 0;
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	int soft_cold = 0, soft_hot = 0;
 	#endif
 
@@ -4268,7 +4268,7 @@ static void fg_hysteresis_config(struct fg_chip *chip)
 		if (fg_debug_mask & FG_STATUS)
 			pr_info("hard cold hysteresis: old cold=%d, new cold=%d\n",
 			        hard_cold, hard_cold + chip->hot_hysteresis);
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	} else if (chip->health == POWER_SUPPLY_HEALTH_COOL&&//add up cool threshold by lijian
 	           !chip->batt_soft_cold) {
 		/* turn up the soft cold threshold */
@@ -4308,7 +4308,7 @@ static void fg_hysteresis_config(struct fg_chip *chip)
 			pr_info("restore hard cold threshold: old cold=%d, new cold=%d\n",
 			        hard_cold,
 			        hard_cold - chip->cold_hysteresis);
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	} else if (chip->health != POWER_SUPPLY_HEALTH_COOL&&//add restore cool threshold by lijian
 	           chip->batt_soft_cold) {
 		/* restore the soft cold threshold */
@@ -4329,6 +4329,8 @@ static void fg_hysteresis_config(struct fg_chip *chip)
 			pr_info("restore soft hot threshold: old warm=%d, new warm=%d\n",
 			        soft_hot,
 			        soft_hot + WARM_HYSTERESIS);
+	}
+	#else
 	}
 	#endif
 }
@@ -6670,7 +6672,7 @@ wait:
 		pr_info("Battery profile not same, clearing data\n");
 		clear_cycle_counter(chip);
 		chip->learning_data.learned_cc_uah = 0;
-		#ifdef CONFIG_PROJECT_HS2
+		#ifdef CONFIG_PLATFORM_V12BN
 		chip->soc_empty = false;
 		#endif
 	}

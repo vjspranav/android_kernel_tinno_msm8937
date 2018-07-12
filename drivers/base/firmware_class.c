@@ -299,7 +299,7 @@ static void fw_free_buf(struct firmware_buf *buf)
 static char fw_path_para[256];
 static const char * const fw_path[] = {
 	fw_path_para,
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	"/system/etc/firmware/",
 	#endif
 	"/lib/firmware/updates/" UTS_RELEASE,

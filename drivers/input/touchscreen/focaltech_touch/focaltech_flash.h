@@ -124,10 +124,6 @@ int fts_ctpm_auto_upgrade(struct i2c_client *client);
 int fts_fw_upgrade(struct device *dev, bool force);
 int fts_ctpm_auto_clb(struct i2c_client *client);
 
-#ifdef CONFIG_DEV_INFO
-extern int store_tp_info(const char *const str);
-#endif
-
 /*****************************************************************************
 * Static function prototypes
 *****************************************************************************/

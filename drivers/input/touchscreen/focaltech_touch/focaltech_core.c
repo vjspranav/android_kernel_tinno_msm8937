@@ -66,9 +66,6 @@ struct i2c_client *fts_i2c_client;
 struct fts_ts_data *fts_wq_data;
 struct input_dev *fts_input_dev;
 
-//Add by Luoxingxing
-static char *project_name = NULL;
-
 #ifdef CONFIG_FT5XX_TGESTURE_FUNCTION
 #if FTS_GESTURE_EN
 struct input_dev *ft5xx_key_dev;
@@ -556,7 +553,7 @@ static int fts_input_dev_report_b(struct ts_event *event, struct fts_ts_data *da
 			break;
 		}
 
-#if defined(CONFIG_PROJECT_V12bn) || defined(CONFIG_PROJECT_V12cn_s)
+#ifdef CONFIG_PROJECT_HS3
 		{
 			int  TINNO_TP_BORDER_TOUCH = 16;    // tinnotp border touch function
 			const struct fts_ts_platform_data *pdata = data->pdata;
@@ -1160,39 +1157,34 @@ static int  fts_ts_compability(struct device *dev, struct fts_ts_platform_data *
 	struct device_node *np = dev->of_node;
 	int rc = 0;
 
-	project_name = tinno_get_project_name();
-	FTS_INFO("Prject_name:%s", project_name);
-
 	/*ID gpio info*/
-	if (!strcmp("c800", project_name)) {
-		pdata->id_gpio = of_get_named_gpio_flags(np, "focaltech,id-gpio", 0, &pdata->id_gpio_flags);
-		if (pdata->id_gpio < 0) {
-			FTS_ERROR("Unable to get id_gpio");
-		}
-		/* request reset gpio */
-
-		if (gpio_is_valid(pdata->id_gpio)) {
-			rc= gpio_request(pdata->id_gpio, "fts_id_gpio");
-			if (rc) {
-				FTS_ERROR("[GPIO]id gpio request failed");
-				//            goto err_irq_gpio_dir;
-			}
-
-			rc = gpio_direction_input(pdata->id_gpio);
-			if (rc) {
-				FTS_ERROR("[GPIO]set_direction for id gpio failed");
-
-			}
-		}
-		if (gpio_get_value(pdata->id_gpio) == 0) {
-			FTS_INFO("The id_gpio valus is 0.");
-			rc = fts_get_dt_coords(dev, "focaltech,display-coords-old", pdata);
-			if (rc)
-				FTS_ERROR("Unable to get display-coords-old");
-		} else {
-			FTS_INFO("The id_gpio valus is 1.");
-		}
+	#ifndef CONFIG_PROJECT_C800
+	pdata->id_gpio = of_get_named_gpio_flags(np, "focaltech,id-gpio", 0, &pdata->id_gpio_flags);
+	if (pdata->id_gpio < 0) {
+		FTS_ERROR("Unable to get id_gpio");
 	}
+	/* request reset gpio */
+		if (gpio_is_valid(pdata->id_gpio)) {
+		rc= gpio_request(pdata->id_gpio, "fts_id_gpio");
+		if (rc) {
+			FTS_ERROR("[GPIO]id gpio request failed");
+			//            goto err_irq_gpio_dir;
+		}
+			rc = gpio_direction_input(pdata->id_gpio);
+		if (rc) {
+			FTS_ERROR("[GPIO]set_direction for id gpio failed");
+			}
+	}
+	if (gpio_get_value(pdata->id_gpio) == 0) {
+		FTS_INFO("The id_gpio valus is 0.");
+		rc = fts_get_dt_coords(dev, "focaltech,display-coords-old", pdata);
+		if (rc)
+			FTS_ERROR("Unable to get display-coords-old");
+	} else {
+		FTS_INFO("The id_gpio valus is 1.");
+	}
+	#endif
+
 	return rc;
 }
 

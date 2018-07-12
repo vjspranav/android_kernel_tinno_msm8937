@@ -1387,7 +1387,7 @@ static void qpnp_flash_led_work(struct work_struct *work)
 		}
 
 		if (flash_node->id == FLASH_LED_SWITCH) {
-			#ifdef CONFIG_PLATFORM_TINNO || CONFIG_PROJECT_V12bnlite
+			#if defined(CONFIG_PROJECT_GARLIC) || defined(CONFIG_PROJECT_WIMLITE) || defined(CONFIG_PROJECT_HS2)
 			if(flash_node->prgm_current)
 				flash_node->prgm_current = 150;
 			#endif
@@ -1406,7 +1406,7 @@ static void qpnp_flash_led_work(struct work_struct *work)
 			if(flash_node->prgm_current2)
 				flash_node->prgm_current2 = 150;
 			#endif
-			#ifdef CONFIG_PROJECT_V12bnlite
+			#ifdef CONFIG_PROJECT_HS2
 			if(flash_node->prgm_current2)
 				flash_node->prgm_current2 = 100;
 			#endif
@@ -1599,7 +1599,7 @@ static void qpnp_flash_led_work(struct work_struct *work)
 			if(flash_node->prgm_current)
 				flash_node->prgm_current = 750;
 			#endif
-			#ifdef CONFIG_PROJECT_V12bnlite
+			#ifdef CONFIG_PROJECT_HS2
 			if (flash_node->prgm_current)
 				flash_node->prgm_current = 1000;
 			#endif
@@ -1616,8 +1616,9 @@ static void qpnp_flash_led_work(struct work_struct *work)
 			if(flash_node->prgm_current2)
 				flash_node->prgm_current2 = 750;
 			#endif
-			#ifdef CONFIG_PROJECT_V12bnlite
-			flash_node->prgm_current2 = 150;
+			#ifdef CONFIG_PROJECT_HS2
+			if(flash_node->prgm_current2)
+				flash_node->prgm_current2 = 150;
 			#endif
 			val = (u8)(flash_node->prgm_current2 *
 				FLASH_MAX_LEVEL / flash_node->max_current);

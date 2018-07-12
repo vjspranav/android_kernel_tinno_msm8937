@@ -542,7 +542,7 @@ struct mdss_dsi_ctrl_pdata {
 	struct workqueue_struct *workq;
 	struct delayed_work dba_work;
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	struct delayed_work te_event_work;
 	int tinno_vio_te_irq;
 	int tinno_vio_te_gpio;

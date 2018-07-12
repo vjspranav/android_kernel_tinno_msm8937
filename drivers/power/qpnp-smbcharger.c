@@ -54,7 +54,7 @@ extern const char* Tinno_battery_name;
 bool g_do_not_support_qc = false;
 #endif
 
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 #define TINNO_SPECIAL_TEMP_SETTING
 #define CONFIG_SMART_CHARGING_CONTROL //enable smart charging control.
 int tinno_battery_capacity;
@@ -113,7 +113,7 @@ struct smbchg_version_tables {
 	int				rchg_thr_mv;
 };
 
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 #define SMBCHG_GET_INPUT_VOLTAGE_DELAY_MS      1000
 #endif
 #ifdef CONFIG_SMART_CHARGING_CONTROL
@@ -175,7 +175,7 @@ struct smbchg_chip {
 	int				jeita_temp_hard_limit;
 	int				aicl_rerun_period_s;
 	bool				use_vfloat_adjustments;
-	#ifdef CONFIG_PLATFORM_TINNO (* Hmm *)
+	#ifdef CONFIG_PLATFORM_TINNO /* Hmmmm */
 	bool				jeita_adjust_float_voltage_comp;
 	#endif
 	bool				iterm_disabled;
@@ -342,7 +342,7 @@ struct smbchg_chip {
 
 	struct votable			*hvdcp_enable_votable;
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	struct delayed_work		get_input_voltage_work;
 	#endif
 };
@@ -493,7 +493,7 @@ enum hvdcp_voters {
 	HVDCP_PULSING_VOTER,
 	NUM_HVDCP_VOTERS,
 };
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 static int smbchg_debug_mask = PR_INTERRUPT|PR_STATUS;
 #else
 static int smbchg_debug_mask;
@@ -1156,7 +1156,7 @@ static int get_prop_batt_status(struct smbchg_chip *chip)
 	int rc, status = POWER_SUPPLY_STATUS_DISCHARGING;
 	u8 reg = 0, chg_type;
 	bool charger_present, chg_inhibit;
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	int soc = 0;
 	#endif
 
@@ -1172,7 +1172,7 @@ static int get_prop_batt_status(struct smbchg_chip *chip)
 	}
 
 	if (reg & BAT_TCC_REACHED_BIT)
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 		soc = get_prop_batt_capacity(chip);
 		if(soc == 100) {
 			pr_smb(PR_STATUS, "POWER_SUPPLY_STATUS_FULL\n");
@@ -1360,7 +1360,7 @@ static int get_prop_batt_resistance_id(struct smbchg_chip *chip)
 	}
 	return rbatt;
 }
-#ifndef CONFIG_PROJECT_HS2
+#ifndef CONFIG_PLATFORM_V12BN
 #define DEFAULT_BATT_FULL_CHG_CAPACITY	0
 static int get_prop_batt_full_charge(struct smbchg_chip *chip)
 {
@@ -4119,7 +4119,7 @@ struct regulator_ops smbchg_otg_reg_ops = {
 #define USBIN_ADAPTER_9V		0x3
 #define USBIN_ADAPTER_5V_9V_CONT	0x2
 #define USBIN_ADAPTER_5V_UNREGULATED_9V	0x5
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 #define USBIN_ADAPTER_5V		0x0
 #endif
 static int smbchg_external_otg_regulator_enable(struct regulator_dev *rdev)
@@ -4324,7 +4324,7 @@ static int smbchg_chg_led_controls(struct smbchg_chip *chip)
 
 	rc = smbchg_masked_write(chip, chip->bat_if_base + CMD_CHG_LED_REG,
 	                         mask, reg);
-	#ifdef CONFIG_PLATFORM_TINNO (* Hmmmm *)
+	#ifdef CONFIG_PLATFORM_TINNO /* Hmmmm */
 	smbchg_read(chip,&reg,chip->bat_if_base + CMD_CHG_LED_REG,1);
 	printk("led reg=%X\n",reg);
 	#endif
@@ -4990,7 +4990,7 @@ static int smbchg_restricted_charging(struct smbchg_chip *chip, bool enable)
 static int smbchg_charge_speed_restore(struct smbchg_chip *chip);
 #endif
 
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 static int smbchg_get_input_voltage(struct smbchg_chip *chip)
 {
 	int rc;
@@ -5035,7 +5035,7 @@ static void handle_usb_removal(struct smbchg_chip *chip)
 	/* cancel/wait for hvdcp pending work if any */
 	cancel_delayed_work_sync(&chip->hvdcp_det_work);
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	smbchg_relax(chip, PM_DETECT_HVDCP);
 	#endif
 	smbchg_change_usb_supply_type(chip, POWER_SUPPLY_TYPE_UNKNOWN);
@@ -5081,7 +5081,7 @@ static void handle_usb_removal(struct smbchg_chip *chip)
 	smbchg_charge_speed_restore(chip);
 	#endif
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	cancel_delayed_work(&chip->get_input_voltage_work);
 	#endif
 }
@@ -5106,7 +5106,7 @@ static void handle_usb_insertion(struct smbchg_chip *chip)
 	int rc;
 	char *usb_type_name = "null";
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	smbchg_get_input_voltage(chip);
 	#endif
 
@@ -6136,7 +6136,7 @@ static enum power_supply_property smbchg_battery_properties[] = {
 	POWER_SUPPLY_PROP_INPUT_CURRENT_LIMITED,
 	POWER_SUPPLY_PROP_RERUN_AICL,
 	POWER_SUPPLY_PROP_RESTRICTED_CHARGING,
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 	POWER_SUPPLY_PROP_BATT_VOL,
 #endif
 	POWER_SUPPLY_PROP_ALLOW_HVDCP3,
@@ -6144,7 +6144,7 @@ static enum power_supply_property smbchg_battery_properties[] = {
 #ifdef CONFIG_SMART_CHARGING_CONTROL
 	POWER_SUPPLY_PROP_CHARGE_SPEED
 #endif
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN
 #endif
 };
@@ -6279,7 +6279,7 @@ static int smbchg_battery_get_property(struct power_supply *psy,
 				struct smbchg_chip, batt_psy);
 
 	switch (prop) {
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	case POWER_SUPPLY_PROP_BATT_VOL:
 		val->intval = get_prop_batt_voltage_now(chip)/1000;
 		break;
@@ -6362,7 +6362,7 @@ static int smbchg_battery_get_property(struct power_supply *psy,
 		val->intval = get_prop_batt_resistance_id(chip);
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_FULL:
-		#ifdef CONFIG_PROJECT_HS2
+		#ifdef CONFIG_PLATFORM_V12BN
 		val->intval = tinno_battery_capacity*1000;
 		#else
 		val->intval = get_prop_batt_full_charge(chip);
@@ -6401,7 +6401,7 @@ static int smbchg_battery_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_MAX_PULSE_ALLOWED:
 		val->intval = chip->max_pulse_allowed;
 		break;
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
 		val->intval = tinno_battery_capacity*1000; // mAh
 		break;
@@ -6494,7 +6494,7 @@ static int smbchg_dc_is_writeable(struct power_supply *psy,
 	return rc;
 }
 
-#ifdef CONFIG_PLATFORM_TINNO (* Hmmm *)
+#ifdef CONFIG_PLATFORM_TINNO /* Hmmmm */
 static int batt_float_voltage_comp_set(struct smbchg_chip *chip, int code)
 {
 	int rc;
@@ -6565,7 +6565,7 @@ static irqreturn_t batt_warm_handler(int irq, void *_chip)
 	struct smbchg_chip *chip = _chip;
 	u8 reg = 0;
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	u8 fv_comp, fcc_comp;
 	int test_cool_temp, test_warm_temp, test_temp;
 	#endif
@@ -6575,7 +6575,7 @@ static irqreturn_t batt_warm_handler(int irq, void *_chip)
 	pr_smb(PR_INTERRUPT, "triggered: 0x%02x\n", reg);
 	smbchg_parallel_usb_check_ok(chip);
 
-	#ifdef CONFIG_PLATFORM_TINNO (* Hmmm *)
+	#ifdef CONFIG_PLATFORM_TINNO /* Hmmmm */
 	if (chip->jeita_adjust_float_voltage_comp && chip->batt_warm)
 		batt_float_voltage_comp_set(chip, chip->float_voltage_comp);
 	#endif
@@ -6585,7 +6585,7 @@ static irqreturn_t batt_warm_handler(int irq, void *_chip)
 	set_property_on_fg(chip, POWER_SUPPLY_PROP_HEALTH,
 			get_prop_batt_health(chip));
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	get_property_from_fg(chip, POWER_SUPPLY_PROP_COOL_TEMP, &test_cool_temp);
 	get_property_from_fg(chip, POWER_SUPPLY_PROP_WARM_TEMP, &test_warm_temp);
 	get_property_from_fg(chip, POWER_SUPPLY_PROP_TEMP, &test_temp);
@@ -6637,7 +6637,7 @@ static irqreturn_t batt_cool_handler(int irq, void *_chip)
 	struct smbchg_chip *chip = _chip;
 	u8 reg = 0;
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	u8 fv_comp, fcc_comp;
 	int test_cool_temp, test_warm_temp, test_temp;
 	#endif
@@ -6647,7 +6647,7 @@ static irqreturn_t batt_cool_handler(int irq, void *_chip)
 	pr_smb(PR_INTERRUPT, "triggered: 0x%02x\n", reg);
 	smbchg_parallel_usb_check_ok(chip);
 
-	#ifdef CONFIG_PLATFORM_TINNO (* Hmmm *)
+	#ifdef CONFIG_PLATFORM_TINNO /* Hmmmm */
 	if (chip->jeita_adjust_float_voltage_comp && chip->batt_cool)
 		batt_float_voltage_comp_set(chip, 0);
 	#endif
@@ -6657,7 +6657,7 @@ static irqreturn_t batt_cool_handler(int irq, void *_chip)
 	set_property_on_fg(chip, POWER_SUPPLY_PROP_HEALTH,
 			get_prop_batt_health(chip));
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	get_property_from_fg(chip, POWER_SUPPLY_PROP_COOL_TEMP, &test_cool_temp);
 	get_property_from_fg(chip, POWER_SUPPLY_PROP_WARM_TEMP, &test_warm_temp);
 	get_property_from_fg(chip, POWER_SUPPLY_PROP_TEMP, &test_temp);
@@ -7331,12 +7331,12 @@ static int smbchg_hw_init(struct smbchg_chip *chip)
 	int rc, i;
 	u8 reg, mask;
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	if (g_do_not_support_qc)
 		chip->hvdcp_not_supported = true;
 	#endif
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	if (chip->hvdcp_not_supported) {
 		rc = smbchg_sec_masked_write(chip,
 		                             chip->usb_chgpth_base + USBIN_CHGR_CFG,
@@ -7764,7 +7764,7 @@ static int smbchg_hw_init(struct smbchg_chip *chip)
 	if (rc)
 		dev_err(chip->dev, "Couldn't switch to Syson LDO, rc=%d\n",
 			rc);
-	#ifdef CONFIG_PLATFORM_TINNO (* Hmmmm *)
+	#ifdef CONFIG_PLATFORM_TINNO /* Hmmmm */
 	rc = smbchg_sec_masked_write(chip, chip->usb_chgpth_base + CHGPTH_CFG, HVDCP_EN_BIT, HVDCP_EN_BIT);
 	dev_err(chip->dev, "Couldn't turn on hvdcp, rc=%d\n",
 	        rc);
@@ -7940,7 +7940,7 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 	}
 	#endif
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	OF_PROP_READ(chip, tinno_battery_capacity, "tinno-battery-capacity",
 	             rc, 1);
 	#endif
@@ -8019,7 +8019,7 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 	g_do_not_support_qc = of_property_read_bool(node,
 	                      "qcom,no_support_qc");
 	#endif
-	#ifdef CONFIG_PLATFORM_TINNO (* hmmm *)
+	#ifdef CONFIG_PLATFORM_TINNO /* Hmmmm */
 	chip->jeita_adjust_float_voltage_comp = of_property_read_bool(node,
 	                                        "qcom,jeita-adjust-float-voltage-comp");
 	#endif
@@ -8572,7 +8572,7 @@ static int smbchg_init_speed_current_map(struct smbchg_chip *chip)
 }
 #endif
 
-#ifdef CONFIG_PROJECT_HS2
+#ifdef CONFIG_PLATFORM_V12BN
 static void smbchg_get_input_voltage_work(struct work_struct *work)
 {
 	struct smbchg_chip *chip =
@@ -8774,7 +8774,7 @@ static int smbchg_probe(struct spmi_device *spmi)
 		}
 	}
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	if (of_find_property(spmi->dev.of_node, "qcom,usbin-vadc", NULL)) {
 		vadc_dev = qpnp_get_vadc(&spmi->dev, "usbin");
 		if (IS_ERR(vadc_dev)) {
@@ -8880,7 +8880,7 @@ static int smbchg_probe(struct spmi_device *spmi)
 	INIT_DELAYED_WORK(&chip->vfloat_adjust_work, smbchg_vfloat_adjust_work);
 	INIT_DELAYED_WORK(&chip->hvdcp_det_work, smbchg_hvdcp_det_work);
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	INIT_DELAYED_WORK(&chip->get_input_voltage_work, smbchg_get_input_voltage_work);
 	#endif
 

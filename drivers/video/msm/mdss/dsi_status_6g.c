@@ -166,7 +166,7 @@ void mdss_check_dsi_ctrl_status(struct work_struct *work, uint32_t interval)
 	if ((mipi->mode == DSI_CMD_MODE) && !ctrl_pdata->burst_mode_enabled)
 		mutex_unlock(&mdp5_data->ov_lock);
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	if(ctrl_pdata->tinno_vio_te_enable) {
 		if(ctrl_pdata->te_count_priv!= ctrl_pdata->te_count) {
 			ctrl_pdata->te_count_priv = ctrl_pdata->te_count;

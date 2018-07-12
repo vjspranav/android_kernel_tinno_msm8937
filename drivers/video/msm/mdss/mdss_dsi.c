@@ -3959,7 +3959,7 @@ static int mdss_dsi_parse_gpio_params(struct platform_device *ctrl_pdev,
 					__func__, __LINE__);
 	}
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	ctrl_pdata->tinno_vio_te_gpio= of_get_named_gpio(ctrl_pdev->dev.of_node,
 	                               "qcom,irq-te-tinno-vio", 0);
 	if (!gpio_is_valid(ctrl_pdata->tinno_vio_te_gpio)) {
@@ -4189,7 +4189,7 @@ int dsi_panel_device_register(struct platform_device *ctrl_pdev,
 	panel_debug_register_base("panel",
 		ctrl_pdata->ctrl_base, ctrl_pdata->reg_size);
 
-	#ifdef CONFIG_PROJECT_HS2
+	#ifdef CONFIG_PLATFORM_V12BN
 	if(ctrl_pdata->tinno_vio_te_enable)
 		init_te_irq(ctrl_pdata);
 	#endif

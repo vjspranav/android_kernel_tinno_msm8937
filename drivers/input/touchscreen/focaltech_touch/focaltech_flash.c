@@ -554,7 +554,6 @@ static int fts_ctpm_check_need_upgrade(struct i2c_client *client)
 	int fw_status = 0;
 	int bUpgradeFlag = false;
 	int ret = 0;
-	char *non_mba_project_name = "Snapdragon";
 
 	FTS_FUNC_ENTER();
 
@@ -570,13 +569,12 @@ static int fts_ctpm_check_need_upgrade(struct i2c_client *client)
 	} else if (fw_status == FTS_RUN_IN_APP) {
 		FTS_INFO("[UPGRADE]**********FW APP valid**********");
 
-		if (tinno_project_is(non_mba_project_name))
-			ret = fts_ctpm_get_i_file(client, 1);
-//demo code for v12bnlite and v12fnlite, no need for the other projects currently
-		else if (tinno_project_is("v12bnlite") || tinno_project_is("v12fnlite") || tinno_project_is("c860"))
-			ret = fts_ft5x46_get_i_file_MBA(client, 1);
-		else
-			ret = fts_ctpm_get_i_file(client, 1);
+		#ifdef CONFIG_PROJECT_HS2
+		ret = fts_ft5x46_get_i_file_MBA(client, 1);
+		#else
+		ret = fts_ctpm_get_i_file(client, 1);
+		#endif
+
 		if (ret) {
 			FTS_INFO("[UPGRADE]******Get upgrade file(fw) fail******");
 			return -EIO;
@@ -594,13 +592,12 @@ static int fts_ctpm_check_need_upgrade(struct i2c_client *client)
 		FTS_INFO("[UPGRADE]**********FW APP invalid**********");
 		fts_ctpm_rom_or_pram_reset(client);
 
-		if (tinno_project_is(non_mba_project_name))
-			ret = fts_ctpm_get_i_file(client, 1);
-//demo code for v12bnlite and v12fnlite, no need for the other projects currently
-		else if (tinno_project_is("v12bnlite") || tinno_project_is("v12fnlite") || tinno_project_is("c860"))
-			ret = fts_ft5x46_get_i_file_MBA(client, 0);
-		else
-			ret = fts_ctpm_get_i_file(client, 0);
+		#ifdef CONFIG_PROJECT_HS2
+		ret = fts_ft5x46_get_i_file_MBA(client, 0);
+		#else
+		ret = fts_ctpm_get_i_file(client, 0);
+		#endif
+
 		if (ret) {
 			FTS_INFO("[UPGRADE]******Get upgrade file(flash) fail******");
 			fts_ctpm_rom_or_pram_reset(client);
@@ -614,39 +611,6 @@ static int fts_ctpm_check_need_upgrade(struct i2c_client *client)
 
 	return bUpgradeFlag;
 }
-
-#ifdef CONFIG_DEV_INFO
-int save_ft5xx_tp_info(int product_id, char *config_id, int id)
-{
-	char buf[80];
-	char ic_name[16];
-	char *project_name = tinno_get_project_name();
-
-	if (id == 0x54) {
-		sprintf(ic_name, "FT%d4%dI",5,46);
-	}
-
-	FTS_INFO("xiongdajun add %d %x %d\n", product_id, config_id[0], id);
-	if (product_id == FTS_CTP_VENDOR_YEJI) {
-		sprintf(buf, "YEJI-%s-%s--V%X",
-		        project_name, ic_name, config_id[0]);
-	} else if(product_id == FTS_CTP_VENDOR_BOEN) {
-		sprintf(buf, "BOEN-%s-%s--V%X",
-		        project_name, ic_name, config_id[0]);
-	} else if(product_id == FTS_CTP_VENDOR_DIJING) {
-		sprintf(buf, "DIJING-%s-%s--V%X",
-		        project_name, ic_name, config_id[0]);
-	} else if(product_id == FTS_CTP_VENDOR_HOLITECH) {
-		sprintf(buf, "HOLITECH-%s-%s--V%X",
-		        project_name, ic_name, config_id[0]);
-	} else {
-		sprintf(buf, "JIEMIAN-%s-S%d--V%d%d",
-		        project_name, id, config_id[2]-0x30, config_id[3]-0x30);
-	}
-	store_tp_info(buf);
-	return 0;
-}
-#endif
 
 /************************************************************************
 * Name: fts_ctpm_auto_upgrade
@@ -694,10 +658,6 @@ int fts_ctpm_auto_upgrade(struct i2c_client *client)
 			}
 		} while (uc_upgrade_times < 2); /* if upgrade fail, upgrade again. then return */
 	}
-
-#ifdef CONFIG_DEV_INFO
-	save_ft5xx_tp_info(p_ts_data->fw_vendor_id,p_ts_data->fw_ver,chip_types.chip_idh);
-#endif
 
 	return i_ret;
 }

@@ -227,9 +227,9 @@
  */
 //#define FTS_UPGRADE_FW_APP                      "include/firmware/FT8716_app_sample.i"
 
-#if defined(CONFIG_PROJECT_V12bn)
+#if defined(CONFIG_PROJECT_HS3)
 #define FTS_UPGRADE_FW_APP                      "include/firmware/FT5346DQQ_V12BN_ID0X80_V01_D01_20170614_app.i"
-#elif defined(CONFIG_PROJECT_V12bnlite)
+#elif defined(CONFIG_PROJECT_HS2)
 #define FTS_UPGRADE_FW_APP                      "include/firmware/FT5346DQQ_V12LITE_ID0X80_V02_D01_20170525_app.i"
 #else
 #define FTS_UPGRADE_FW_APP                      "include/firmware/FT8716_app_sample.i"
@@ -245,7 +245,7 @@
  * if FTS_GET_VENDOR_ID_NUM == 3, fw corrsponding with FTS_VENDOR_3_ID
  * define your own fw_app, the sample one is invalid
  */
-#if defined(CONFIG_PROJECT_V12bnlite)
+#if defined(CONFIG_PROJECT_HS2)
 #define FTS_UPGRADE_FW3_APP                     "include/firmware/CCF9723_TLv12_720x1440_5436DQQ_V11_82_20170913_app.i"
 #else
 #define FTS_UPGRADE_FW3_APP                     "include/firmware/FT8716_app_sample.i"

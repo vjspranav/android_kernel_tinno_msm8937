@@ -180,7 +180,6 @@ struct fts_ts_data {
 #endif
 };
 
-#include <linux/tinno_project_info.h>
 int fts_ft5x46_get_i_file_MBA(struct i2c_client *client, int fw_valid);
 int fts_ft5x46_get_vendor_id_flash(struct i2c_client *client, u8 *vendor_id);
 

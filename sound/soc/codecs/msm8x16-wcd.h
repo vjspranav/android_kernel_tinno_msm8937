@@ -226,7 +226,7 @@ struct wcd_imped_i_ref {
 struct msm8916_asoc_mach_data {
 	int codec_type;
 	int ext_pa;
-	#ifdef CONFIG_PROJECT_GARLIC
+	#ifdef CONFIG_PLATFORM_TINNO
 	int ext_pa_mode;
 	#endif
 	int us_euro_gpio;

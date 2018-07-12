@@ -305,7 +305,7 @@ enum msm_pcm_routing_event {
 	MSM_PCM_RT_EVT_MAX,
 };
 
-#ifdef CONFIG_PROJECT_WIMLITE || CONFIG_PROJECT_HS2
+#if defined(CONFIG_PROJECT_WIMLITE) || defined(CONFIG_PLATFORM_V12BN)
 enum {
 	EXT_EC_REF_NONE = 0,
 	EXT_EC_REF_PRI_MI2S_TX,

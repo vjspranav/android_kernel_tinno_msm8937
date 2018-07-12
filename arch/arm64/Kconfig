@@ -1082,6 +1082,11 @@ config PLATFORM_TINNO
 	help
 	  Tells whether it is a tinno device or not
 
+config PLATFORM_V12BN
+	tristate "Tinno Platform"
+	help
+	  Tells whether it is device from V12* familly
+
 config PROJECT_GARLIC
 	bool "GARLIC project support"
 	help

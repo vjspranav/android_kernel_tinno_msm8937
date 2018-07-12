@@ -5568,7 +5568,7 @@ static int msm8x16_wcd_device_down(struct snd_soc_codec *codec)
 	pdata = snd_soc_card_get_drvdata(codec->component.card);
 	dev_dbg(codec->dev, "%s: device down!\n", __func__);
 	msm8x16_wcd_write(codec,
-#ifdef CONFIG_PLATFORM_TINNO (* Hmmm *)
+#ifdef CONFIG_PLATFORM_TINNO // Hmmm
 		MSM8X16_WCD_A_ANALOG_TX_1_EN, 0x33);
 	msm8x16_wcd_write(codec,
 		MSM8X16_WCD_A_ANALOG_TX_2_EN, 0x33);
