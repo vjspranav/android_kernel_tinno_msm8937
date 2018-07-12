@@ -10,8 +10,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+&tlmm {
 
-cci {
+	/delete-node/ cam_sensor_rear_vdig;
+	/delete-node/ cam_sensor_rear_vdig_sleep;
+
 	cam_sensor_rear_vdig: cam_sensor_rear_vdig {
 		/* VDIG */
 		mux {
@@ -95,6 +98,3 @@ cci {
 		};
 	};
 };
-
-
-

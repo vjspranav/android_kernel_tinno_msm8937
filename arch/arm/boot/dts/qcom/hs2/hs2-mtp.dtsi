@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-#include "msm8917-tinno.dtsi"
+#include "hs2-tinno.dtsi"
 
 &i2c_3{
 		focaltech@38 {
@@ -82,11 +82,6 @@
 	};
 };
 
-/delete-node/ &pmi_haptic;
-&pmi_haptic{
-	qcom,wave-play-rate-us = <4165>;
-	qcom,actuator-type = "erm"; 
-};
 
 &mdss_dsi0 {
 	qcom,dsi-pref-prim-pan = <&dsi_ili9881c_720_1440_vid>;
@@ -98,7 +93,6 @@
 
 /delete-node/ &dsi_truly_720_vid;
 /delete-node/ &dsi_truly_720_cmd;
-/delete-node/ &dsi_icn9706_720_1440_vid;
 &dsi_ili9881c_720_1440_vid {
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
 };

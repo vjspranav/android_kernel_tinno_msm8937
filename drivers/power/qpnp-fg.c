@@ -6811,6 +6811,68 @@ reschedule:
 	return 0;
 }
 
+#ifdef CONFIG_TINNO_BATTERY_FEATURE
+#define LOW_BATTERY_SHUTDOWN_VOL	3200
+#define FG_EMPTY_SOC_MS			10000
+#define LOW_BATTERY_COUNT		4
+extern void do_kernel_power_off(void);
+
+static bool check_poweroff_charger(void)
+{
+	bool chg_boot_flag=false;
+	if(strstr(saved_command_line,CHARGER_MODE_BOOT))
+		chg_boot_flag=true;
+	else
+		chg_boot_flag=false;
+	return chg_boot_flag;
+}
+
+static bool is_battery_charging(struct fg_chip *chip)
+{
+	union power_supply_propval ret = {0,};
+
+	if (chip->batt_psy == NULL)
+		chip->batt_psy = power_supply_get_by_name("battery");
+	if (chip->batt_psy) {
+		/* if battery has been registered, use the type property */
+		chip->batt_psy->get_property(chip->batt_psy,
+		                             POWER_SUPPLY_PROP_STATUS, &ret);
+		return ret.intval == POWER_SUPPLY_STATUS_CHARGING;
+	}
+
+	/* Default to false if the battery power supply is not registered. */
+	pr_err("battery power supply is not registered\n");
+	return false;
+}
+
+static void check_lowbatt_shutdown_work(struct work_struct *work)
+{
+	struct fg_chip *chip = container_of(work,struct fg_chip,check_lowbatt_shutdown_work.work);
+	static int low_count;
+	int fg_ocv,fg_soc,vbat;
+	pr_err("check_empty_work:chip->soc_empty222=%d,is_battery_charging=%d\n",chip->soc_empty,is_battery_charging(chip));
+	fg_ocv = get_sram_prop_now(chip, FG_DATA_OCV)/1000;
+	vbat = get_sram_prop_now(chip, FG_DATA_VOLTAGE)/1000;
+	fg_soc = get_prop_capacity(chip);
+	if ((fg_soc == EMPTY_CAPACITY || chip->soc_empty) && !check_poweroff_charger()) {
+		if(fg_ocv < LOW_BATTERY_SHUTDOWN_VOL) {
+			low_count++;
+			pr_err("check_empty_work:low_count=%d,fg_ocv=%d,vbat=%d\n",low_count,fg_ocv,vbat);
+		} else {
+			low_count = 0;
+			pr_err("check_empty_work:set low_count1111111=0,soc = %d,ocv = %d,vbat=%d\n",fg_soc,fg_ocv,vbat);
+		}
+		if(low_count > LOW_BATTERY_COUNT) {
+			pr_err("check_empty_work:low battery,power off ------ \n");
+			do_kernel_power_off();
+		}
+		schedule_delayed_work(&chip->check_lowbatt_shutdown_work,msecs_to_jiffies(FG_EMPTY_SOC_MS));
+	} else {
+		pr_err("check_empty_work:set low_count2222=0,soc = %d,ocv = %d,vbat = %d\n",fg_soc,fg_ocv,vbat);
+	}
+}
+#endif
+
 static void check_empty_work(struct work_struct *work)
 {
 	struct fg_chip *chip = container_of(work,

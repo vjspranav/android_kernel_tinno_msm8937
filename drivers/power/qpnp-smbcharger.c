@@ -58,7 +58,6 @@ bool g_do_not_support_qc = false;
 #define TINNO_SPECIAL_TEMP_SETTING
 #define CONFIG_SMART_CHARGING_CONTROL //enable smart charging control.
 int tinno_battery_capacity;
-static int rerun_count = 0;
 #endif
 
 /* Mask/Bit helpers */
@@ -6142,10 +6141,10 @@ static enum power_supply_property smbchg_battery_properties[] = {
 	POWER_SUPPLY_PROP_ALLOW_HVDCP3,
 	POWER_SUPPLY_PROP_MAX_PULSE_ALLOWED,
 #ifdef CONFIG_SMART_CHARGING_CONTROL
-	POWER_SUPPLY_PROP_CHARGE_SPEED
+	POWER_SUPPLY_PROP_CHARGE_SPEED,
 #endif
 #ifdef CONFIG_PLATFORM_V12BN
-	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN
+	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
 #endif
 };
 

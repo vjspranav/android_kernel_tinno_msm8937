@@ -4374,10 +4374,6 @@ struct msm_otg_platform_data *msm_otg_dt_to_pdata(struct platform_device *pdev)
 	if (pdata->enable_floated_charger == FLOATING_AS_DCP ||
 		pdata->enable_floated_charger == FLOATING_AS_INVALID)
 		debug_floated_charger_enabled = true;
-	#ifdef CONFIG_PLATFORM_V12BN
-	pdata->vbus_low_as_hostmode = of_property_read_bool(node,
-	                              "qcom,vbus-low-as-hostmode");
-	#endif
 	return pdata;
 }
 

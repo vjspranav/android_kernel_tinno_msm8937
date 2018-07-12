@@ -11,15 +11,15 @@
  * GNU General Public License for more details.
  */
 
-#include "hs2-audio.mtp"
+#include "hs2-msm-pmi8940.dtsi"
+#include "hs2-mdss.dtsi"
+#include "hs2-pinctrl.dtsi"
+#include "hs2.dtsi"
+#include "hs2-mtp.dtsi"
+#include "hs2-audio.dtsi"
 #include "hs2-audio-mtp.dtsi"
 #include "hs2-camera-pinctrl.dtsi"
 #include "hs2-camera-sensor-mtp.dtsi"
-#include "hs2-tinno.dtsi"
-#include "hs2.dtsi"
-#include "hs2-mdss.dtsi"
-#include "hs2-mtp.dtsi"
-#include "hs2-pinctrl.dtsi"
 
 /{
 	mtp_batterydata: qcom,battery-data {

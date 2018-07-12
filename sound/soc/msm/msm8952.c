@@ -560,8 +560,7 @@ static int ext_drcv_amp_put(struct snd_kcontrol *kcontrol,
 	         ucontrol->value.integer.value[0]);
 	return 0;
 }
-#endif
-#ifdef CONFIG_PLATFORM_V12BN
+
 static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 {
 	struct snd_soc_card *card = codec->component.card;

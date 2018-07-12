@@ -57,22 +57,27 @@ u8 c860_fw_dijing[] = {
 u8 c860_fw_yeji[] = {
 #include "../include/firmware/FT5446_Each_Tinno_C800_C860_ID0X80_V18_D01_20180112_app.i"
 };
-struct tp_fw_map {
-	const char * project_name;
+
+struct tp_fw_map{
 	unsigned char tp_vendor_id;
 	unsigned char *fw_array;
 	unsigned int fw_len;
 };
 
-struct tp_fw_map tinno_tp_fw_map[] = {
-	{"v12bnlite",	FTS_CTP_VENDOR_YEJI,		v12bnlite_fw_yeji,	sizeof(v12bnlite_fw_yeji)	},
-	{"v12bnlite",	FTS_CTP_VENDOR_HOLITECH,	v12bnlite_fw_holitech,	sizeof(v12bnlite_fw_holitech)	},
+struct tp_fw_map tinno_tp_fw_map[] =
+{
+	#ifdef CONFIG_PROJECT_HS2
+	{FTS_CTP_VENDOR_YEJI,		v12bnlite_fw_yeji,	sizeof(v12bnlite_fw_yeji)	},
+	{FTS_CTP_VENDOR_HOLITECH,	v12bnlite_fw_holitech,	sizeof(v12bnlite_fw_holitech)	},
+	#endif
+	/* Unused
 	{"v12fnlite",	FTS_CTP_VENDOR_YEJI,		v12fnlite_fw_yeji,	sizeof(v12fnlite_fw_yeji)	},
 	{"v12fnlite",	FTS_CTP_VENDOR_HOLITECH,	v12fnlite_fw_holitech,	sizeof(v12fnlite_fw_holitech)	},
 	{"c860",	FTS_CTP_VENDOR_DIJING,		c860_fw_dijing,		sizeof(c860_fw_dijing)		},
 	{"c860",	FTS_CTP_VENDOR_YEJI,		c860_fw_yeji,		sizeof(c860_fw_yeji)		},
 	{"Snapdragon",	FTS_CTP_VENDOR_YEJI,		v12bnlite_fw_yeji,	sizeof(v12bnlite_fw_yeji)	}, //default
-	{NULL, 0, NULL, 0},
+	*/
+	{0, NULL, 0},
 };
 
 #if (IC_SERIALS == 0x02)
@@ -242,16 +247,14 @@ static int fts_ft5x46_get_i_file(struct i2c_client *client, int fw_valid)
 	return ret;
 }
 
-int tinno_get_project_tp_fw(char *project_name, char vendor_id)
+int tinno_get_project_tp_fw(char vendor_id)
 {
 	struct tp_fw_map *p;
-	for(p = tinno_tp_fw_map; p->project_name != NULL; p++) {
-		if((!strcmp(p->project_name, project_name)) &&
-		   (p->tp_vendor_id == vendor_id)) {
+	for (p = tinno_tp_fw_map; p->fw_len != 0; p++) {
+		if (p->tp_vendor_id == vendor_id) {
 			g_fw_file = p->fw_array;
 			g_fw_len = p->fw_len;
-			FTS_INFO("[UPGRADE]project_name = %s, tp_vendor_id = 0x%x, fw_len = %d",
-			         p->project_name, p->tp_vendor_id, p->fw_len);
+			FTS_INFO("[UPGRADE]tp_vendor_id = 0x%x, fw_len = %d", p->tp_vendor_id, p->fw_len);
 			return 0;
 		}
 	}
@@ -264,7 +267,6 @@ int fts_ft5x46_get_i_file_MBA(struct i2c_client *client, int fw_valid)
 {
 	int ret = 0;
 	u8 vendor_id = 0;
-	char *project_name = tinno_get_project_name();
 
 	struct fts_ts_data * p_ts_data = i2c_get_clientdata(client);
 
@@ -281,7 +283,7 @@ int fts_ft5x46_get_i_file_MBA(struct i2c_client *client, int fw_valid)
 		return ret;
 	}
 
-	ret = tinno_get_project_tp_fw(project_name, vendor_id);
+	ret = tinno_get_project_tp_fw(vendor_id);
 	if (ret) {
 		FTS_ERROR("[UPGRADE]unable to get fw file");
 	}

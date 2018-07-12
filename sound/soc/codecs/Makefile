@@ -381,3 +381,4 @@ obj-$(CONFIG_SND_SOC_TFA9890) += tfa/
 obj-$(CONFIG_SND_SOC_TFA9896) += tfa9896/
 
 obj-$(CONFIG_SND_SOC_AW87319) += aw87319_audio_m.o
+obj-$(CONFIG_SND_SOC_AW87339) += aw87339_audio.o

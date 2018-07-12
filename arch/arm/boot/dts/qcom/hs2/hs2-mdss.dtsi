@@ -10,6 +10,9 @@
  * GNU General Public License for more details.
  */
 
+#include "dsi-panel-icn9706-720-1440p-video.dtsi"
+#include "dsi-panel-ili9881c-720-1440p-video.dtsi"
+
 &mdss_dsi0 {
 	/delete-property/ vdd-supply;
 };
